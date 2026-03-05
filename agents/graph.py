@@ -1,6 +1,6 @@
 """
 Graphe LangGraph principal — Orchestration agentique.
-Phase 2 - Étape 2.1
+Phase 2 - Étape 2.2 (Retriever réel intégré)
 """
 
 import structlog
@@ -8,6 +8,7 @@ from langgraph.graph import StateGraph, END
 
 from agents.state import AgentState
 from agents.planner import PlannerAgent
+from agents.retriever import RetrieverAgent
 from agents.generator import GeneratorAgent
 
 logger = structlog.get_logger(__name__)
@@ -23,39 +24,37 @@ def build_graph():
                            generate ← ← ← ←
     """
     planner = PlannerAgent()
+    retriever = RetrieverAgent(hybrid_candidates=20, rerank_top_k=5)
     generator = GeneratorAgent()
 
-    # Nœuds placeholder pour retriever et tool_executor
-    # (seront remplacés aux étapes 2.2 et 2.3)
-    def retriever_placeholder(state: AgentState) -> AgentState:
-        logger.info("Retriever placeholder appelé")
-        return {
-            **state,
-            "retrieved_context": f"[Placeholder] Contexte pour : {state['query']}",
-            "action_history": [{"agent": "retriever", "action": "placeholder"}],
-        }
-
+    # Placeholder tool_executor (Phase 2.3)
     def tool_placeholder(state: AgentState) -> AgentState:
         logger.info("Tool executor placeholder appelé")
         return {
             **state,
-            "tool_results": [{"tool": "placeholder", "result": "outil non encore implémenté"}],
-            "action_history": [{"agent": "tool_executor", "action": "placeholder"}],
+            "tool_results": [{
+                "tool": "placeholder",
+                "result": "Outils non encore implémentés"
+            }],
+            "action_history": [{
+                "agent": "tool_executor",
+                "action": "placeholder"
+            }],
         }
 
     # Construction du graphe
     workflow = StateGraph(AgentState)
 
-    # Ajouter les nœuds
+    # Nœuds
     workflow.add_node("planner", planner.plan)
-    workflow.add_node("retriever", retriever_placeholder)
+    workflow.add_node("retriever", retriever.retrieve)
     workflow.add_node("tool_executor", tool_placeholder)
     workflow.add_node("generate", generator.generate)
 
     # Point d'entrée
     workflow.set_entry_point("planner")
 
-    # Edges conditionnels depuis planner
+    # Routing conditionnel depuis planner
     workflow.add_conditional_edges(
         "planner",
         planner.route,
@@ -66,7 +65,7 @@ def build_graph():
         }
     )
 
-    # Edges fixes vers generate
+    # Edges fixes
     workflow.add_edge("retriever", "generate")
     workflow.add_edge("tool_executor", "generate")
     workflow.add_edge("generate", END)
@@ -74,20 +73,12 @@ def build_graph():
     return workflow.compile()
 
 
-# Instance globale du graphe
+# Instance globale
 agent_graph = build_graph()
 
 
 def run_agent(query: str) -> dict:
-    """
-    Point d'entrée principal pour exécuter le graphe agentique.
-
-    Args:
-        query: question utilisateur
-
-    Returns:
-        État final avec réponse et métadonnées
-    """
+    """Point d'entrée principal du système agentique."""
     initial_state: AgentState = {
         "query": query,
         "plan": [],
@@ -107,6 +98,9 @@ def run_agent(query: str) -> dict:
         "Graphe terminé",
         task_type=final_state.get("task_type"),
         iterations=final_state.get("iteration_count"),
+        chunks=final_state.get("metadata", {}).get(
+            "rag_pipeline", {}
+        ).get("chunks_reranked", 0),
         response_length=len(final_state.get("final_response", "")),
     )
 
