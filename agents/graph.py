@@ -1,6 +1,6 @@
 """
 Graphe LangGraph principal — Orchestration agentique.
-Phase 2 - Étape 2.2 (Retriever réel intégré)
+Phase 2 - Étape 2.3 (Tool Executor réel intégré)
 """
 
 import structlog
@@ -10,6 +10,7 @@ from agents.state import AgentState
 from agents.planner import PlannerAgent
 from agents.retriever import RetrieverAgent
 from agents.generator import GeneratorAgent
+from agents.tool_executor import ToolExecutorAgent
 
 logger = structlog.get_logger(__name__)
 
@@ -26,21 +27,7 @@ def build_graph():
     planner = PlannerAgent()
     retriever = RetrieverAgent(hybrid_candidates=20, rerank_top_k=5)
     generator = GeneratorAgent()
-
-    # Placeholder tool_executor (Phase 2.3)
-    def tool_placeholder(state: AgentState) -> AgentState:
-        logger.info("Tool executor placeholder appelé")
-        return {
-            **state,
-            "tool_results": [{
-                "tool": "placeholder",
-                "result": "Outils non encore implémentés"
-            }],
-            "action_history": [{
-                "agent": "tool_executor",
-                "action": "placeholder"
-            }],
-        }
+    tool_executor = ToolExecutorAgent()
 
     # Construction du graphe
     workflow = StateGraph(AgentState)
@@ -48,7 +35,7 @@ def build_graph():
     # Nœuds
     workflow.add_node("planner", planner.plan)
     workflow.add_node("retriever", retriever.retrieve)
-    workflow.add_node("tool_executor", tool_placeholder)
+    workflow.add_node("tool_executor", tool_executor.execute)
     workflow.add_node("generate", generator.generate)
 
     # Point d'entrée
