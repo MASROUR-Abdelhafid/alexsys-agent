@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alexsys RAG Multi-Agent</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, #1a1d2e, #16213e);
+      border-bottom: 1px solid #2d3561;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #3498db, #9b59b6);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .header h1 { font-size: 18px; font-weight: 700; color: #fff; }
+    .header p { font-size: 12px; color: #7f8c8d; margin-top: 2px; }
+    .status-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: #1a2f1a; border: 1px solid #27ae60;
+      padding: 6px 12px; border-radius: 20px;
+      font-size: 12px; color: #27ae60;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      background: #27ae60; border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* MAIN LAYOUT */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 280px;
+      background: #1a1d2e;
+      border-right: 1px solid #2d3561;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 16px;
+      overflow-y: auto;
+    }
+    .sidebar-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #7f8c8d;
+      font-weight: 600;
+    }
+    .session-box {
+      background: #0f1117;
+      border: 1px solid #2d3561;
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .session-box label {
+      font-size: 11px; color: #7f8c8d;
+      display: block; margin-bottom: 6px;
+    }
+    .session-box input {
+      width: 100%;
+      background: #1a1d2e;
+      border: 1px solid #2d3561;
+      border-radius: 6px;
+      padding: 8px;
+      color: #e0e0e0;
+      font-size: 13px;
+    }
+    .session-box input:focus { outline: none; border-color: #3498db; }
+
+    .metrics-box {
+      background: #0f1117;
+      border: 1px solid #2d3561;
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .metric-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid #1a1d2e;
+      font-size: 12px;
+    }
+    .metric-item:last-child { border-bottom: none; }
+    .metric-label { color: #7f8c8d; }
+    .metric-value { color: #3498db; font-weight: 600; }
+
+    .quick-questions { display: flex; flex-direction: column; gap: 6px; }
+    .quick-btn {
+      background: #0f1117;
+      border: 1px solid #2d3561;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #b0b0b0;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .quick-btn:hover {
+      border-color: #3498db;
+      color: #3498db;
+      background: #0d1b2a;
+    }
+
+    /* CHAT AREA */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .messages::-webkit-scrollbar { width: 4px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: #2d3561; border-radius: 2px; }
+
+    /* WELCOME */
+    .welcome {
+      text-align: center;
+      padding: 60px 20px;
+      color: #7f8c8d;
+    }
+    .welcome-icon {
+      font-size: 48px; margin-bottom: 16px;
+    }
+    .welcome h2 { color: #e0e0e0; font-size: 22px; margin-bottom: 8px; }
+    .welcome p { font-size: 14px; line-height: 1.6; max-width: 400px; margin: 0 auto; }
+
+    /* MESSAGES */
+    .message { display: flex; gap: 12px; max-width: 85%; }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .message.assistant { align-self: flex-start; }
+
+    .avatar {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .user .avatar { background: linear-gradient(135deg, #3498db, #2980b9); }
+    .assistant .avatar { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+    .bubble {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 100%;
+    }
+    .user .bubble {
+      background: linear-gradient(135deg, #1a4a6e, #1e3a5f);
+      border: 1px solid #2d6a9f;
+      border-radius: 12px 4px 12px 12px;
+    }
+    .assistant .bubble {
+      background: #1a1d2e;
+      border: 1px solid #2d3561;
+      border-radius: 4px 12px 12px 12px;
+    }
+
+    /* METADATA PANEL */
+    .meta-panel {
+      margin-top: 8px;
+      background: #0f1117;
+      border: 1px solid #2d3561;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 12px;
+    }
+    .meta-header {
+      padding: 8px 12px;
+      background: #1a1d2e;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #7f8c8d;
+    }
+    .meta-header:hover { color: #3498db; }
+    .meta-content { padding: 12px; display: none; }
+    .meta-content.open { display: block; }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      margin: 2px;
+      font-weight: 600;
+    }
+    .tag-retrieval { background: #1a3a5c; color: #3498db; border: 1px solid #2d6a9f; }
+    .tag-tool { background: #3a1a5c; color: #9b59b6; border: 1px solid #6a2d9f; }
+    .tag-hybrid { background: #1a3a2a; color: #27ae60; border: 1px solid #2d9f6a; }
+    .tag-direct { background: #3a2a1a; color: #e67e22; border: 1px solid #9f6a2d; }
+
+    .plan-list { list-style: none; padding: 0; }
+    .plan-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 4px 0; color: #b0b0b0;
+    }
+    .plan-num {
+      background: #2d3561; color: #3498db;
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; flex-shrink: 0;
+    }
+
+    .latency-bar {
+      display: flex; align-items: center; gap: 8px;
+      margin: 4px 0;
+    }
+    .latency-label { color: #7f8c8d; min-width: 120px; }
+    .latency-track {
+      flex: 1; height: 4px; background: #2d3561; border-radius: 2px;
+    }
+    .latency-fill {
+      height: 100%; background: linear-gradient(90deg, #3498db, #9b59b6);
+      border-radius: 2px; transition: width 0.5s;
+    }
+    .latency-val { color: #3498db; min-width: 60px; text-align: right; font-weight: 600; }
+
+    /* TYPING INDICATOR */
+    .typing {
+      display: flex; gap: 4px; align-items: center;
+      padding: 12px 16px;
+    }
+    .typing span {
+      width: 8px; height: 8px; background: #3498db;
+      border-radius: 50%; animation: bounce 1.4s infinite;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-8px); }
+    }
+
+    /* ERROR */
+    .error-bubble {
+      background: #2a1a1a; border: 1px solid #c0392b;
+      color: #e74c3c; padding: 10px 14px; border-radius: 8px;
+      font-size: 13px;
+    }
+
+    /* INPUT AREA */
+    .input-area {
+      padding: 16px 24px;
+      background: #1a1d2e;
+      border-top: 1px solid #2d3561;
+    }
+    .input-row {
+      display: flex; gap: 12px; align-items: flex-end;
+    }
+    .input-wrapper {
+      flex: 1;
+      background: #0f1117;
+      border: 1px solid #2d3561;
+      border-radius: 12px;
+      padding: 12px 16px;
+      transition: border-color 0.2s;
+    }
+    .input-wrapper:focus-within { border-color: #3498db; }
+    #userInput {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e0e0e0;
+      font-size: 14px;
+      resize: none;
+      max-height: 120px;
+      font-family: inherit;
+    }
+    #userInput::placeholder { color: #4a5568; }
+
+    .send-btn {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, #3498db, #9b59b6);
+      border: none; border-radius: 12px;
+      color: white; font-size: 18px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .send-btn:hover { opacity: 0.9; transform: scale(1.05); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .input-hint {
+      font-size: 11px; color: #4a5568; margin-top: 8px; text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">🤖</div>
+    <div>
+      <h1>Alexsys RAG Multi-Agent</h1>
+      <p>Système d'agents IA autonomes · RAG Agentique</p>
+    </div>
+  </div>
+  <div class="status-badge">
+    <div class="status-dot"></div>
+    Système opérationnel
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-title">Session</div>
+    <div class="session-box">
+      <label>Session ID</label>
+      <input type="text" id="sessionId" value="user_session_1" />
+    </div>
+
+    <div class="sidebar-title">Métriques</div>
+    <div class="metrics-box">
+      <div class="metric-item">
+        <span class="metric-label">Questions</span>
+        <span class="metric-value" id="m-questions">0</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">Latence moy.</span>
+        <span class="metric-value" id="m-latency">— ms</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">Task types</span>
+        <span class="metric-value" id="m-tasks">—</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">Mémoire STM</span>
+        <span class="metric-value" id="m-memory">0 tours</span>
+      </div>
+    </div>
+
+    <div class="sidebar-title">Questions rapides</div>
+    <div class="quick-questions">
+      <button class="quick-btn" onclick="quickAsk('Quel est le SLA pour les clients Premium ?')">
+        💎 SLA clients Premium ?
+      </button>
+      <button class="quick-btn" onclick="quickAsk('Quelle est la politique de télétravail ?')">
+        🏠 Politique télétravail ?
+      </button>
+      <button class="quick-btn" onclick="quickAsk('Quels sont les KPIs suivis par Alexsys ?')">
+        📊 KPIs Alexsys ?
+      </button>
+      <button class="quick-btn" onclick="quickAsk('Génère un rapport PDF des clients Premium')">
+        📄 Rapport PDF clients
+      </button>
+      <button class="quick-btn" onclick="quickAsk('Quelle est la politique de sécurité RGPD ?')">
+        🔒 Sécurité RGPD ?
+      </button>
+      <button class="quick-btn" onclick="quickAsk('Quel est le budget formation par employé ?')">
+        🎓 Budget formation ?
+      </button>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-area">
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">🧠</div>
+        <h2>RAG Multi-Agent Alexsys</h2>
+        <p>Système intelligent combinant Hybrid Search, Cross-Encoder Reranking et orchestration agentique LangGraph.</p>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <div class="input-wrapper">
+          <textarea
+            id="userInput"
+            rows="1"
+            placeholder="Posez votre question à l'agent..."
+          ></textarea>
+        </div>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+      </div>
+      <div class="input-hint">Entrée pour envoyer · Shift+Entrée pour nouvelle ligne</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const API_BASE = "http://localhost:8000/api/v1";
+  let totalLatency = 0;
+  let questionCount = 0;
+  let taskTypes = {};
+
+  // Auto-resize textarea
+  const textarea = document.getElementById('userInput');
+  textarea.addEventListener('input', () => {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+  });
+
+  // Enter to send
+  textarea.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  function quickAsk(question) {
+    document.getElementById('userInput').value = question;
+    sendMessage();
+  }
+
+  function getTagClass(taskType) {
+    const map = {
+      retrieval: 'tag-retrieval',
+      tool: 'tag-tool',
+      hybrid: 'tag-hybrid',
+      direct: 'tag-direct',
+    };
+    return map[taskType] || 'tag-retrieval';
+  }
+
+  function addMessage(role, content, metadata = null) {
+    const welcome = document.getElementById('welcome');
+    if (welcome) welcome.remove();
+
+    const messages = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = `message ${role}`;
+
+    const avatar = role === 'user' ? '👤' : '🤖';
+    const avatarEl = `<div class="avatar">${avatar}</div>`;
+
+    let metaHTML = '';
+    if (metadata && role === 'assistant') {
+      const taskType = metadata.task_type || 'retrieval';
+      const plan = metadata.plan || [];
+      const latency = metadata.metadata?.total_api_latency_ms || 0;
+      const ragLatency = metadata.metadata?.rag_pipeline?.total_latency_ms || 0;
+      const rerankLatency = metadata.metadata?.rag_pipeline?.rerank_latency_ms || 0;
+      const chunks = metadata.metadata?.rag_pipeline?.chunks_reranked || 0;
+
+      const planHTML = plan.map((step, i) =>
+        `<li class="plan-item"><span class="plan-num">${i+1}</span><span>${step}</span></li>`
+      ).join('');
+
+      const maxLatency = Math.max(latency, 1);
+
+      metaHTML = `
+        <div class="meta-panel">
+          <div class="meta-header" onclick="toggleMeta(this)">
+            <span>
+              <span class="tag ${getTagClass(taskType)}">${taskType}</span>
+              &nbsp;${chunks} chunks · ${latency}ms
+            </span>
+            <span>▼ Détails</span>
+          </div>
+          <div class="meta-content">
+            <div style="margin-bottom:10px">
+              <div class="sidebar-title" style="margin-bottom:6px">Plan d'exécution</div>
+              <ul class="plan-list">${planHTML}</ul>
+            </div>
+            <div>
+              <div class="sidebar-title" style="margin-bottom:6px">Latences</div>
+              <div class="latency-bar">
+                <span class="latency-label">Total API</span>
+                <div class="latency-track"><div class="latency-fill" style="width:100%"></div></div>
+                <span class="latency-val">${latency}ms</span>
+              </div>
+              <div class="latency-bar">
+                <span class="latency-label">RAG Pipeline</span>
+                <div class="latency-track"><div class="latency-fill" style="width:${Math.min(100, ragLatency/maxLatency*100)}%"></div></div>
+                <span class="latency-val">${ragLatency}ms</span>
+              </div>
+              <div class="latency-bar">
+                <span class="latency-label">Re-ranking</span>
+                <div class="latency-track"><div class="latency-fill" style="width:${Math.min(100, rerankLatency/maxLatency*100)}%"></div></div>
+                <span class="latency-val">${rerankLatency}ms</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    div.innerHTML = `
+      ${avatarEl}
+      <div style="flex:1;min-width:0">
+        <div class="bubble">${content}</div>
+        ${metaHTML}
+      </div>`;
+
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function addTyping() {
+    const messages = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = 'message assistant';
+    div.id = 'typing-indicator';
+    div.innerHTML = `
+      <div class="avatar">🤖</div>
+      <div class="bubble">
+        <div class="typing">
+          <span></span><span></span><span></span>
+        </div>
+      </div>`;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typing-indicator');
+    if (t) t.remove();
+  }
+
+  function toggleMeta(header) {
+    const content = header.nextElementSibling;
+    content.classList.toggle('open');
+    header.querySelector('span:last-child').textContent =
+      content.classList.contains('open') ? '▲ Réduire' : '▼ Détails';
+  }
+
+  function updateMetrics(data) {
+    questionCount++;
+    const latency = data.metadata?.total_api_latency_ms || 0;
+    totalLatency += latency;
+    const taskType = data.task_type || 'retrieval';
+    taskTypes[taskType] = (taskTypes[taskType] || 0) + 1;
+
+    document.getElementById('m-questions').textContent = questionCount;
+    document.getElementById('m-latency').textContent =
+      Math.round(totalLatency / questionCount) + ' ms';
+    document.getElementById('m-tasks').textContent =
+      Object.entries(taskTypes).map(([k,v]) => `${k}:${v}`).join(', ');
+
+    // Memory stats
+    const sessionId = document.getElementById('sessionId').value;
+    fetch(`${API_BASE}/memory/${sessionId}`)
+      .then(r => r.json())
+      .then(m => {
+        document.getElementById('m-memory').textContent = `${m.stm_turns} tours`;
+      }).catch(() => {});
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const question = input.value.trim();
+    if (!question) return;
+
+    const sessionId = document.getElementById('sessionId').value || 'default';
+    const sendBtn = document.getElementById('sendBtn');
+
+    // Reset input
+    input.value = '';
+    input.style.height = 'auto';
+    sendBtn.disabled = true;
+
+    // Afficher message user
+    addMessage('user', question);
+    addTyping();
+
+    try {
+      const response = await fetch(`${API_BASE}/query`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, session_id: sessionId }),
+      });
+
+      removeTyping();
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+      const answer = data.answer || 'Aucune réponse générée.';
+
+      addMessage('assistant', answer.replace(/\n/g, '<br>'), data);
+      updateMetrics(data);
+
+    } catch (err) {
+      removeTyping();
+      const messages = document.getElementById('messages');
+      const div = document.createElement('div');
+      div.className = 'message assistant';
+      div.innerHTML = `
+        <div class="avatar">🤖</div>
+        <div class="error-bubble">
+          ⚠️ Erreur de connexion à l'API.<br>
+          Vérifiez que le serveur tourne sur <code>localhost:8000</code><br>
+          <small>${err.message}</small>
+        </div>`;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    sendBtn.disabled = false;
+    input.focus();
+  }
+</script>
+</body>
+</html>
