@@ -1,6 +1,6 @@
 """
-Graphe LangGraph principal — Orchestration agentique.
-Phase 2 - Étape 2.3 (Tool Executor réel intégré)
+Graphe LangGraph complet — Phase 2.5
+Orchestration agentique avec Memory intégrée.
 """
 
 import structlog
@@ -11,37 +11,35 @@ from agents.planner import PlannerAgent
 from agents.retriever import RetrieverAgent
 from agents.generator import GeneratorAgent
 from agents.tool_executor import ToolExecutorAgent
+from memory.memory_manager import MemoryManager
 
 logger = structlog.get_logger(__name__)
 
+# Sessions mémoire (session_id → MemoryManager)
+_memory_sessions: dict = {}
+
+
+def get_memory(session_id: str = "default") -> MemoryManager:
+    if session_id not in _memory_sessions:
+        _memory_sessions[session_id] = MemoryManager(session_id=session_id)
+    return _memory_sessions[session_id]
+
 
 def build_graph():
-    """
-    Construit le graphe agentique LangGraph.
-
-    Topologie :
-    START → planner → [retriever | tool_executor | generate]
-                              ↓              ↓
-                           generate ← ← ← ←
-    """
     planner = PlannerAgent()
     retriever = RetrieverAgent(hybrid_candidates=20, rerank_top_k=5)
     generator = GeneratorAgent()
     tool_executor = ToolExecutorAgent()
 
-    # Construction du graphe
     workflow = StateGraph(AgentState)
 
-    # Nœuds
     workflow.add_node("planner", planner.plan)
     workflow.add_node("retriever", retriever.retrieve)
     workflow.add_node("tool_executor", tool_executor.execute)
     workflow.add_node("generate", generator.generate)
 
-    # Point d'entrée
     workflow.set_entry_point("planner")
 
-    # Routing conditionnel depuis planner
     workflow.add_conditional_edges(
         "planner",
         planner.route,
@@ -52,7 +50,6 @@ def build_graph():
         }
     )
 
-    # Edges fixes
     workflow.add_edge("retriever", "generate")
     workflow.add_edge("tool_executor", "generate")
     workflow.add_edge("generate", END)
@@ -60,34 +57,43 @@ def build_graph():
     return workflow.compile()
 
 
-# Instance globale
 agent_graph = build_graph()
 
 
-def run_agent(query: str) -> dict:
-    """Point d'entrée principal du système agentique."""
+def run_agent(query: str, session_id: str = "default") -> dict:
+    """Point d'entrée principal avec mémoire."""
+    memory = get_memory(session_id)
+
+    # Contexte mémoire
+    memory_context = memory.get_full_context(query)
+
     initial_state: AgentState = {
         "query": query,
         "plan": [],
         "task_type": "",
-        "retrieved_context": "",
+        "retrieved_context": memory_context,
         "tool_results": [],
         "action_history": [],
         "final_response": "",
-        "metadata": {},
+        "metadata": {"session_id": session_id},
         "iteration_count": 0,
         "errors": [],
     }
 
-    logger.info("Démarrage graphe agentique", query=query[:80])
+    logger.info("Démarrage agent", query=query[:80], session=session_id)
     final_state = agent_graph.invoke(initial_state)
+
+    # Sauvegarder en mémoire
+    memory.save_interaction(
+        query=query,
+        response=final_state.get("final_response", ""),
+        metadata=final_state.get("metadata", {}),
+    )
+
     logger.info(
-        "Graphe terminé",
+        "Agent terminé",
         task_type=final_state.get("task_type"),
-        iterations=final_state.get("iteration_count"),
-        chunks=final_state.get("metadata", {}).get(
-            "rag_pipeline", {}
-        ).get("chunks_reranked", 0),
+        session=session_id,
         response_length=len(final_state.get("final_response", "")),
     )
 
