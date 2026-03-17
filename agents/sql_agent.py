@@ -12,7 +12,7 @@ from agents.state import AgentState
 from kpi.engine import KPIEngine
 from kpi.definitions import detect_kpi, KPI_DEFINITIONS
 from agents.llm_factory import get_llm
-from langchain.schema import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 
 logger = structlog.get_logger(__name__)
 

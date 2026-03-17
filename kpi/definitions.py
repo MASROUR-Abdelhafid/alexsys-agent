@@ -108,12 +108,20 @@ KPI_DEFINITIONS = {
 def detect_kpi(query: str) -> list:
     """
     Détecte les KPIs pertinents dans une query.
-    Retourne liste de KPI keys.
+    Priorité : defauts_brames avant production_brames.
     """
     query_lower = query.lower()
     detected = []
 
+    # Priorité explicite défauts
+    defaut_keywords = ["défaut", "defaut", "qualité", "qualite",
+                       "gravité", "gravite", "rebut", "frequents", "fréquents"]
+    if any(k in query_lower for k in defaut_keywords):
+        detected.append("defauts_brames")
+
     for kpi_key, kpi_data in KPI_DEFINITIONS.items():
+        if kpi_key == "defauts_brames":
+            continue  # Déjà traité
         for mot in kpi_data["mots_cles"]:
             if mot in query_lower:
                 if kpi_key not in detected:
