@@ -66,9 +66,15 @@ class KPIEngine:
             "unite": "%",
             "details": {
                 "nb_jours": int(row.get("nb_jours", 0)),
-                "temps_requis_heures": round(float(row.get("temps_requis_sec", 0)) / 3600, 2),
-                "tous_arrets_heures": round(float(row.get("tous_arrets_sec", 0)) / 3600, 2),
-                "arrets_programmes_heures": round(float(row.get("arrets_programmes_sec", 0)) / 3600, 2),
+                "temps_requis_heures": round(
+                    float(row.get("temps_requis_sec", 0)) / 3600, 2
+                ),
+                "arrets_non_dispo_heures": round(
+                    float(row.get("arrets_non_dispo_sec", 0)) / 3600, 2
+                ),
+                "arrets_programmes_heures": round(
+                    float(row.get("arrets_programmes_sec", 0)) / 3600, 2
+                ),
             },
         }
 

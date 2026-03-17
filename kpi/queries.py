@@ -12,7 +12,10 @@ def get_taux_disponibilite_query(
 ) -> str:
     """
     Taux de Disponibilité EAF.
-    TD% = (Temps_Requis - Somme_Arrêts) / Temps_Requis * 100
+    TD% = (Temps_Requis - Somme_Arrêts_Non_Techniques) / Temps_Requis * 100
+    
+    Exclus : Programmé + Technique (opérations normales)
+    Inclus  : Incident, Mécanique, Électrique, Fonctionnel, Induit, Panne
     """
     date_filter = ""
     if date_debut and date_fin:
@@ -21,40 +24,39 @@ def get_taux_disponibilite_query(
         AND DELAYSTART <= '{date_fin}'"""
 
     return f"""
--- Étape 1 : Calcul arrêts programmés
 WITH arrets_programmes AS (
     SELECT COALESCE(SUM(DURATION), 0) AS total_programme
     FROM EAF_Arrets
-    WHERE SECTIONNAME = 'Programmé'
+    WHERE SECTIONNAME IN ('Programmé')
     {date_filter}
 ),
--- Étape 2 : Calcul tous arrêts
-tous_arrets AS (
+arrets_non_disponibilite AS (
     SELECT COALESCE(SUM(DURATION), 0) AS total_arrets
     FROM EAF_Arrets
-    WHERE 1=1
+    WHERE SECTIONNAME NOT IN ('Programmé', 'Technique', ' ')
+    AND SECTIONNAME IS NOT NULL
     {date_filter}
 ),
--- Étape 3 : Calcul période
 periode AS (
-    SELECT
-        COUNT(DISTINCT DATE(DELAYSTART)) AS nb_jours
+    SELECT COUNT(DISTINCT DATE(DELAYSTART)) AS nb_jours
     FROM EAF_Arrets
     WHERE DELAYSTART IS NOT NULL
     {date_filter}
 )
 SELECT
     p.nb_jours,
-    p.nb_jours * 24 * 3600 AS temps_ouverture_sec,
-    ap.total_programme AS arrets_programmes_sec,
-    (p.nb_jours * 24 * 3600 - ap.total_programme) AS temps_requis_sec,
-    ta.total_arrets AS tous_arrets_sec,
+    p.nb_jours * 24 * 3600                          AS temps_ouverture_sec,
+    ap.total_programme                               AS arrets_programmes_sec,
+    (p.nb_jours * 24 * 3600 - ap.total_programme)   AS temps_requis_sec,
+    an.total_arrets                                  AS arrets_non_dispo_sec,
     ROUND(
-        CAST((p.nb_jours * 24 * 3600 - ap.total_programme - ta.total_arrets) AS FLOAT)
-        / NULLIF(p.nb_jours * 24 * 3600 - ap.total_programme, 0) * 100,
+        CAST(
+            (p.nb_jours * 24 * 3600 - ap.total_programme - an.total_arrets)
+            AS FLOAT
+        ) / NULLIF(p.nb_jours * 24 * 3600 - ap.total_programme, 0) * 100,
         2
     ) AS taux_disponibilite_pct
-FROM periode p, arrets_programmes ap, tous_arrets ta;
+FROM periode p, arrets_programmes ap, arrets_non_disponibilite an;
 """
 
 
