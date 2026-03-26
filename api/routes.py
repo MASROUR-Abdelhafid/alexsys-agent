@@ -1,69 +1,37 @@
-"""Routes FastAPI Aciérie."""
+"""
+Définition des endpoints de l'API REST.
+"""
 import time
-from fastapi import APIRouter, HTTPException
-from api.schemas import QueryRequest, QueryResponse, HealthResponse
-from agents.graph import run_agent
 import structlog
+from fastapi import APIRouter, HTTPException
+from api.schemas import ChatRequest, ChatResponse
+from agents.graph import run_agent
 
 logger = structlog.get_logger(__name__)
 router = APIRouter()
 
-
-@router.post("/chat", response_model=QueryResponse)
-async def chat(request: QueryRequest):
-    """Point d'entrée principal du chatbot aciérie."""
-    t_start = time.time()
+@router.post("/chat", response_model=ChatResponse)
+async def chat_endpoint(request: ChatRequest):
+    logger.info("Requete API '/chat' reçue", query=request.query, session_id=request.session_id)
+    start_time = time.time()
+    
     try:
-        result = run_agent(
-            query=request.question,
-            session_id=request.session_id,
-        )
-        latency = round((time.time() - t_start) * 1000, 2)
-        return QueryResponse(
-            question=request.question,
-            answer=result.get("final_response", ""),
-            session_id=request.session_id,
-            task_type=result.get("task_type", ""),
+        # Invocation du graphe principal LangGraph
+        result = run_agent(request.query, session_id=request.session_id)
+        
+        latency = (time.time() - start_time) * 1000 # Conversion en millisecondes
+        
+        return ChatResponse(
+            task_type=result.get("task_type", "unknown"),
             plan=result.get("plan", []),
-            metadata={
-                **result.get("metadata", {}),
-                "total_latency_ms": latency,
-                "actions": len(result.get("action_history", [])),
-            },
-            errors=result.get("errors", []),
+            response=result.get("final_response", "Erreur: Pas de réponse finale générée par le graphe."),
+            latency_ms=round(latency, 2)
         )
     except Exception as e:
-        logger.error("Erreur API /chat", error=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Erreur critique dans l'API", error=str(e))
+        raise HTTPException(status_code=500, detail=f"Erreur interne de l'agent: {str(e)}")
 
-
-@router.get("/health", response_model=HealthResponse)
-async def health():
-    """Health check."""
-    return HealthResponse(
-        status="healthy",
-        version="2.0.0",
-        components={
-            "api": "up",
-            "database": "up",
-            "kpi_engine": "up",
-            "llm": "groq/llama-3.1-8b",
-        }
-    )
-
-
-@router.get("/kpis")
-async def get_kpis():
-    """Liste des KPIs disponibles."""
-    from kpi.definitions import KPI_DEFINITIONS
-    return {
-        "kpis": [
-            {
-                "key": k,
-                "nom": v["nom"],
-                "unite": v["unite"],
-                "description": v["description"],
-            }
-            for k, v in KPI_DEFINITIONS.items()
-        ]
-    }
+@router.get("/health")
+async def health_check():
+    """Endpoint de monitoring pour vérifier que l'API est Up."""
+    return {"status": "ok", "system": "Alexsys Multi-Agent RAG API"}
