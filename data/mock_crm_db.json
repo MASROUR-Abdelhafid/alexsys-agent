@@ -1,0 +1,28 @@
+{
+    "tickets": [
+        {
+            "id": "TKT-ACIERIE-0001",
+            "title": "Chute du Taux de Disponibilité",
+            "description": "Le TD du four EAF est tombé en dessous de 85% la semaine 18.",
+            "priority": "Haute",
+            "status": "Ouvert",
+            "created_at": "2026-03-25T18:15:15.823828"
+        },
+        {
+            "id": "TKT-ACIERIE-0002",
+            "title": "Taux de Disponibilité EAF en baisse",
+            "description": "Le Taux de Disponibilité du four EAF a chuté à 78% cette semaine, ce qui constitue une alerte majeure.",
+            "priority": "Critique",
+            "status": "Ouvert",
+            "created_at": "2026-03-26T16:57:09.806316"
+        },
+        {
+            "id": "TKT-ACIERIE-0003",
+            "title": "Surchauffe anormale du transformateur du four LF",
+            "description": "Le transformateur du four LF présente une surchauffe anormale qui nécessite une intervention immédiate pour éviter tout dommage",
+            "priority": "Critique",
+            "status": "Ouvert",
+            "created_at": "2026-03-26T17:08:30.112528"
+        }
+    ]
+}
