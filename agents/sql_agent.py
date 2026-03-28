@@ -207,18 +207,21 @@ class SQLAgent:
                     k_clean = k.replace("_", " ").title()
                     lines.append(f"  - {k_clean} : {v}")
 
-            if "valeur_totale_mwh" in result:
-                lines.append(f"Total : {result['valeur_totale_mwh']} MWh")
-                if "details" in result:
-                    d = result["details"]
-                    lines.append(f"  - EAF : {d.get('eaf_mwh', 0)} MWh")
-                    lines.append(f"  - LF  : {d.get('lf_mwh', 0)} MWh")
+        if "valeur_totale_mwh" in result:
+            lines.append(f"Total : {result['valeur_totale_mwh']} MWh")
+            if "details" in result:
+                d = result["details"]
+                lines.append(f"  - EAF : {d.get('eaf_mwh', 0)} MWh")
+                lines.append(f"  - LF  : {d.get('lf_mwh', 0)} MWh")
 
-            if "data" in result and result["data"]:
-                lines.append(f"Données ({len(result['data'])} entrées) :")
-                for row in result["data"][:8]:
-                    row_str = " | ".join([f"{k}: {v}" for k, v in row.items()])
-                    lines.append(f"  → {row_str}")
+        if "data" in result and result.get("data"):
+            lines.append(f"Données par période :")
+            for row in result["data"][:12]:
+                periode = row.get("periode", "")
+                total_mwh = round(row.get("conso_totale_wh", 0) / 1_000_000, 3)
+                eaf_mwh = round(row.get("conso_eaf_wh", 0) / 1_000_000, 3)
+                lf_mwh = round(row.get("conso_lf_wh", 0) / 1_000_000, 3)
+                lines.append(f"  → {periode} : Total={total_mwh} MWh (EAF={eaf_mwh}, LF={lf_mwh})")
 
             if "total_coulees" in result:
                 lines.append(f"Total coulées : {result['total_coulees']}")

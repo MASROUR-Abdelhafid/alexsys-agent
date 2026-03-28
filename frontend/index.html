@@ -417,47 +417,53 @@ function newChat() {
 
 // Markdown-like formatter
 function formatText(text) {
-  // Escape HTML
-  let t = text
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
+  const lines = text.split('\n');
+  let html = '';
+  let inList = false;
 
-  // Bold + Italic
-  t = t.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
-  t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i]
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;');
 
-  // Headers
-  t = t.replace(/^### (.+)$/gm, '<h4 style="color:var(--accent-light);font-size:13px;margin:10px 0 4px;font-weight:600">$1</h4>');
-  t = t.replace(/^## (.+)$/gm,  '<h3 style="color:var(--accent-light);font-size:14px;margin:12px 0 6px;font-weight:700">$1</h3>');
-  t = t.replace(/^# (.+)$/gm,   '<h2 style="color:var(--accent-light);font-size:16px;margin:14px 0 8px;font-weight:700">$1</h2>');
+    // Bold
+    line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Code inline
+    line = line.replace(/`([^`]+)`/g, '<code style="background:#21262d;border:1px solid #30363d;padding:1px 5px;border-radius:4px;font-family:monospace;font-size:12px">$1</code>');
 
-  // Bullet lists — lignes commençant par "- " ou "* "
-  t = t.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
+    // Headers
+    if (line.match(/^### /)) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<h4 style="color:#fed7aa;font-size:13px;margin:10px 0 4px;font-weight:600">${line.replace(/^### /,'')}</h4>`;
+    } else if (line.match(/^## /)) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<h3 style="color:#fed7aa;font-size:14px;margin:12px 0 6px;font-weight:700">${line.replace(/^## /,'')}</h3>`;
+    }
+    // Bullet list
+    else if (line.match(/^[\*\-\+] /)) {
+      if (!inList) { html += '<ul style="padding-left:20px;margin:8px 0;display:flex;flex-direction:column;gap:5px">'; inList = true; }
+      html += `<li style="color:#e6edf3;line-height:1.6">${line.replace(/^[\*\-\+] /,'')}</li>`;
+    }
+    // Numbered list
+    else if (line.match(/^\d+\. /)) {
+      if (!inList) { html += '<ul style="padding-left:20px;margin:8px 0;display:flex;flex-direction:column;gap:5px;list-style:decimal">'; inList = true; }
+      html += `<li style="color:#e6edf3;line-height:1.6">${line.replace(/^\d+\. /,'')}</li>`;
+    }
+    // Empty line
+    else if (line.trim() === '') {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += '<br>';
+    }
+    // Normal paragraph
+    else {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<p style="margin:4px 0;line-height:1.7">${line}</p>`;
+    }
+  }
 
-  // Numbered lists
-  t = t.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-
-  // Wrap consecutive <li> in <ul>
-  t = t.replace(/(<li>[\s\S]*?<\/li>)(\n<li>[\s\S]*?<\/li>)*/g, m =>
-    `<ul style="padding-left:18px;margin:8px 0;display:flex;flex-direction:column;gap:4px">${m}</ul>`
-  );
-
-  // Code inline
-  t = t.replace(/`([^`]+)`/g,
-    '<code style="background:var(--bg-tertiary);border:1px solid var(--border);padding:1px 5px;border-radius:4px;font-family:monospace;font-size:12px">$1</code>'
-  );
-
-  // Paragraphes — double saut de ligne
-  t = t.replace(/\n\n+/g, '</p><p style="margin:8px 0">');
-
-  // Sauts de ligne simples
-  t = t.replace(/\n/g, '<br>');
-
-  // Wrapper final
-  t = `<p style="margin:0">${t}</p>`;
-
-  return t;
+  if (inList) html += '</ul>';
+  return html;
 }
 
 function tagCls(t) {

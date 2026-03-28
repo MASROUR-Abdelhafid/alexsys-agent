@@ -176,3 +176,59 @@ class KPIEngine:
             }
         except Exception as e:
             return {"error": str(e)}
+        
+
+
+    def get_consommation_oxygene(self) -> Dict[str, Any]:
+        """Consommation oxygène EAF."""
+        sql = """
+        SELECT
+            ROUND(SUM(BURNER_TOTALOXY), 2) AS total_oxy_nm3,
+            ROUND(AVG(BURNER_TOTALOXY), 2) AS moy_par_coulee,
+            COUNT(*) AS nb_coulees
+        FROM EAF
+        WHERE BURNER_TOTALOXY IS NOT NULL AND BURNER_TOTALOXY > 0
+        """
+        df = self._execute(sql)
+        if df.empty:
+            return {"error": "Aucune donnée oxygène"}
+        row = df.iloc[0]
+        return {
+            "kpi": "Consommation Oxygène EAF",
+            "valeur": float(row.get("total_oxy_nm3", 0)),
+            "unite": "Nm³",
+            "details": {
+                "total_nm3": float(row.get("total_oxy_nm3", 0)),
+                "moyenne_par_coulee_nm3": float(row.get("moy_par_coulee", 0)),
+                "nb_coulees": int(row.get("nb_coulees", 0)),
+            }
+        }
+
+    def get_poids_brames(self) -> Dict[str, Any]:
+        """Poids moyen et total des brames."""
+        sql = """
+        SELECT
+            COUNT(*) AS nb_brames,
+            ROUND(AVG(PIECE_WEIGHT_MEAS), 2) AS poids_moyen_kg,
+            ROUND(SUM(PIECE_WEIGHT_MEAS) / 1000.0, 2) AS poids_total_t,
+            ROUND(MIN(PIECE_WEIGHT_MEAS), 2) AS poids_min_kg,
+            ROUND(MAX(PIECE_WEIGHT_MEAS), 2) AS poids_max_kg
+        FROM CCM_Brame
+        WHERE PIECE_WEIGHT_MEAS IS NOT NULL AND PIECE_WEIGHT_MEAS > 0
+        """
+        df = self._execute(sql)
+        if df.empty:
+            return {"error": "Aucune donnée brames"}
+        row = df.iloc[0]
+        return {
+            "kpi": "Poids Brames",
+            "valeur": float(row.get("poids_moyen_kg", 0)),
+            "unite": "kg (moyenne)",
+            "details": {
+                "nb_brames": int(row.get("nb_brames", 0)),
+                "poids_moyen_kg": float(row.get("poids_moyen_kg", 0)),
+                "poids_total_tonnes": float(row.get("poids_total_t", 0)),
+                "poids_min_kg": float(row.get("poids_min_kg", 0)),
+                "poids_max_kg": float(row.get("poids_max_kg", 0)),
+            }
+        }
