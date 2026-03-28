@@ -187,50 +187,49 @@ class SQLAgent:
             },
         }
 
-    def _format_result(
-        self, query: str, result: Dict, mode: str
-    ) -> str:
+    def _format_result(self, query: str, result: Dict, mode: str) -> str:
         """Formate le résultat KPI/SQL pour le LLM Generator."""
         if "error" in result:
-            return f"Erreur lors du calcul : {result['error']}"
+            return f"Erreur : {result['error']}"
 
-        lines = [f"Résultats pour : {query}\n"]
+        lines = []
 
         if mode == "kpi_predefined":
             kpi_name = result.get("kpi", "KPI")
             lines.append(f"KPI : {kpi_name}")
 
             if "valeur" in result:
-                lines.append(
-                    f"Valeur : {result['valeur']} {result.get('unite', '')}"
-                )
+                lines.append(f"Valeur principale : {result['valeur']} {result.get('unite', '')}")
+
             if "details" in result:
                 lines.append("Détails :")
                 for k, v in result["details"].items():
-                    lines.append(f"  - {k} : {v}")
-            if "data" in result:
-                lines.append("Données :")
-                for row in result["data"][:10]:
-                    lines.append(f"  {row}")
-            if "valeur_totale_mwh" in result:
-                lines.append(
-                    f"Total : {result['valeur_totale_mwh']} MWh"
-                )
-                if "details" in result:
-                    lines.append(
-                        f"  EAF : {result['details']['eaf_mwh']} MWh"
-                    )
-                    lines.append(
-                        f"  LF  : {result['details']['lf_mwh']} MWh"
-                    )
-        else:
-            if "data" in result:
-                lines.append(
-                    f"Résultats ({result.get('row_count', 0)} lignes) :"
-                )
-                for row in result["data"][:10]:
-                    lines.append(f"  {row}")
-            if "generated_sql" in result:
-                lines.append(f"\nSQL exécuté : {result['generated_sql']}")
+                    k_clean = k.replace("_", " ").title()
+                    lines.append(f"  - {k_clean} : {v}")
 
-        return "\n".join(lines)
+            if "valeur_totale_mwh" in result:
+                lines.append(f"Total : {result['valeur_totale_mwh']} MWh")
+                if "details" in result:
+                    d = result["details"]
+                    lines.append(f"  - EAF : {d.get('eaf_mwh', 0)} MWh")
+                    lines.append(f"  - LF  : {d.get('lf_mwh', 0)} MWh")
+
+            if "data" in result and result["data"]:
+                lines.append(f"Données ({len(result['data'])} entrées) :")
+                for row in result["data"][:8]:
+                    row_str = " | ".join([f"{k}: {v}" for k, v in row.items()])
+                    lines.append(f"  → {row_str}")
+
+            if "total_coulees" in result:
+                lines.append(f"Total coulées : {result['total_coulees']}")
+
+        else:
+            if "data" in result and result["data"]:
+                lines.append(f"Résultats ({result.get('row_count', 0)} lignes) :")
+                for row in result["data"][:8]:
+                    row_str = " | ".join([f"{k}: {v}" for k, v in row.items()])
+                    lines.append(f"  → {row_str}")
+            elif "row_count" in result and result["row_count"] == 0:
+                lines.append("Aucun résultat trouvé pour cette période.")
+
+        return "\n".join(lines) if lines else "Aucune donnée disponible."

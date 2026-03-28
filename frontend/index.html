@@ -3,247 +3,520 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Aciérie Maghreb Steel — Chatbot KPI IA</title>
+  <title>Aciérie Maghreb Steel — Assistant KPI IA</title>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Segoe UI',sans-serif;background:#0a0e1a;color:#e0e0e0;height:100vh;display:flex;flex-direction:column}
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --bg-hover: #30363d;
+      --border: #30363d;
+      --accent: #f97316;
+      --accent-dark: #c2410c;
+      --accent-light: #fed7aa;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #484f58;
+      --green: #3fb950;
+      --blue: #58a6ff;
+      --purple: #bc8cff;
+      --red: #f85149;
+      --yellow: #d29922;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+    }
 
-    /* HEADER */
-    .header{background:linear-gradient(135deg,#1a1200,#2d1f00);border-bottom:2px solid #ff6b00;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
-    .header-left{display:flex;align-items:center;gap:14px}
-    .logo{width:46px;height:46px;background:linear-gradient(135deg,#ff6b00,#ff9500);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px}
-    .header h1{font-size:17px;font-weight:700;color:#fff}
-    .header p{font-size:11px;color:#ff9500;margin-top:2px}
-    .status-badge{display:flex;align-items:center;gap:6px;background:#1a2f1a;border:1px solid #27ae60;padding:6px 14px;border-radius:20px;font-size:12px;color:#27ae60}
-    .status-dot{width:8px;height:8px;background:#27ae60;border-radius:50%;animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    /* ── HEADER ── */
+    .header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent), #fb923c);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(249,115,22,.3);
+    }
+    .header-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .header-sub { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .status-pill {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(63,185,80,.1); border: 1px solid rgba(63,185,80,.3);
+      padding: 5px 12px; border-radius: 20px; font-size: 12px; color: var(--green);
+    }
+    .dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .model-badge {
+      background: var(--bg-tertiary); border: 1px solid var(--border);
+      padding: 4px 10px; border-radius: 6px; font-size: 11px; color: var(--text-secondary);
+    }
 
-    /* LAYOUT */
-    .main{display:flex;flex:1;overflow:hidden}
+    /* ── LAYOUT ── */
+    .layout { display: flex; flex: 1; overflow: hidden; }
 
-    /* SIDEBAR */
-    .sidebar{width:270px;background:#0f1520;border-right:1px solid #1e2a3a;display:flex;flex-direction:column;padding:14px;gap:14px;overflow-y:auto}
-    .sidebar-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#ff6b00;font-weight:700;margin-bottom:4px}
-    .metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .metric-card{background:#0a0e1a;border:1px solid #1e2a3a;border-radius:8px;padding:10px;text-align:center}
-    .metric-card .val{font-size:18px;font-weight:700;color:#ff6b00}
-    .metric-card .lbl{font-size:10px;color:#7f8c8d;margin-top:2px}
-    .kpi-badge{display:inline-block;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:600;margin:2px}
-    .kpi-kpi{background:#2d1f00;color:#ff9500;border:1px solid #ff6b00}
-    .kpi-doc{background:#0d2040;color:#3498db;border:1px solid #2d6a9f}
-    .kpi-sql{background:#1a2f1a;color:#27ae60;border:1px solid #27ae60}
-    .quick-btn{background:#0a0e1a;border:1px solid #1e2a3a;border-radius:8px;padding:9px 12px;color:#b0b0b0;font-size:12px;cursor:pointer;text-align:left;transition:all .2s;width:100%;margin-bottom:4px}
-    .quick-btn:hover{border-color:#ff6b00;color:#ff9500;background:#1a1200}
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 256px; flex-shrink: 0;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-inner { flex: 1; overflow-y: auto; padding: 12px; }
+    .sidebar-inner::-webkit-scrollbar { width: 3px; }
+    .sidebar-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-    /* CHAT */
-    .chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
-    .messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px}
-    .messages::-webkit-scrollbar{width:4px}
-    .messages::-webkit-scrollbar-thumb{background:#1e2a3a;border-radius:2px}
+    .section-label {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-muted);
+      padding: 4px 0; margin-bottom: 6px; margin-top: 12px;
+    }
+    .section-label:first-child { margin-top: 0; }
 
-    /* WELCOME */
-    .welcome{text-align:center;padding:50px 20px;color:#7f8c8d}
-    .welcome-icon{font-size:56px;margin-bottom:16px}
-    .welcome h2{color:#ff9500;font-size:22px;margin-bottom:8px}
-    .welcome p{font-size:13px;line-height:1.7;max-width:420px;margin:0 auto}
-    .kpi-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:16px}
-    .kpi-pill{background:#1a1200;border:1px solid #ff6b00;color:#ff9500;padding:4px 12px;border-radius:12px;font-size:11px}
+    /* Stats grid */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px; }
+    .stat-box {
+      background: var(--bg-tertiary); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 8px; text-align: center;
+    }
+    .stat-box .num { font-size: 20px; font-weight: 700; color: var(--accent); line-height: 1; }
+    .stat-box .lbl { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
 
-    /* MESSAGES */
-    .message{display:flex;gap:10px;max-width:88%}
-    .message.user{align-self:flex-end;flex-direction:row-reverse}
-    .message.assistant{align-self:flex-start}
-    .avatar{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-    .user .avatar{background:linear-gradient(135deg,#ff6b00,#ff9500)}
-    .assistant .avatar{background:linear-gradient(135deg,#1e2a3a,#2d3a4a)}
-    .bubble{padding:11px 15px;border-radius:10px;font-size:13px;line-height:1.6;max-width:100%}
-    .user .bubble{background:linear-gradient(135deg,#2d1f00,#1a1200);border:1px solid #ff6b00;border-radius:10px 3px 10px 10px}
-    .assistant .bubble{background:#0f1520;border:1px solid #1e2a3a;border-radius:3px 10px 10px 10px}
+    /* Task types */
+    .tag-row { display: flex; flex-wrap: wrap; gap: 4px; min-height: 24px; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;
+    }
+    .tag-kpi { background: rgba(249,115,22,.15); color: var(--accent); border: 1px solid rgba(249,115,22,.3); }
+    .tag-doc { background: rgba(88,166,255,.15); color: var(--blue); border: 1px solid rgba(88,166,255,.3); }
+    .tag-sql { background: rgba(63,185,80,.15); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
+    .tag-direct { background: rgba(188,140,255,.15); color: var(--purple); border: 1px solid rgba(188,140,255,.3); }
 
-    /* META */
-    .meta-panel{margin-top:6px;background:#0a0e1a;border:1px solid #1e2a3a;border-radius:8px;overflow:hidden;font-size:11px}
-    .meta-header{padding:7px 12px;background:#0f1520;cursor:pointer;display:flex;justify-content:space-between;color:#7f8c8d}
-    .meta-header:hover{color:#ff9500}
-    .meta-content{padding:10px 12px;display:none}
-    .meta-content.open{display:block}
-    .plan-step{display:flex;align-items:center;gap:8px;padding:3px 0;color:#b0b0b0}
-    .plan-num{background:#1e2a3a;color:#ff9500;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-    .lat-row{display:flex;align-items:center;gap:8px;margin:3px 0}
-    .lat-lbl{color:#7f8c8d;min-width:110px;font-size:11px}
-    .lat-bar{flex:1;height:3px;background:#1e2a3a;border-radius:2px}
-    .lat-fill{height:100%;background:linear-gradient(90deg,#ff6b00,#ff9500);border-radius:2px;transition:width .5s}
-    .lat-val{color:#ff9500;min-width:55px;text-align:right;font-weight:600;font-size:11px}
+    /* Quick btns */
+    .quick-list { display: flex; flex-direction: column; gap: 3px; }
+    .qbtn {
+      background: transparent; border: 1px solid transparent;
+      border-radius: 6px; padding: 7px 10px;
+      color: var(--text-secondary); font-size: 12px;
+      cursor: pointer; text-align: left; transition: all .15s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .qbtn:hover { background: var(--bg-tertiary); border-color: var(--border); color: var(--text-primary); }
+    .qbtn .icon { font-size: 13px; flex-shrink: 0; }
 
-    /* TYPING */
-    .typing{display:flex;gap:4px;align-items:center;padding:10px 14px}
-    .typing span{width:7px;height:7px;background:#ff6b00;border-radius:50%;animation:bounce 1.4s infinite}
-    .typing span:nth-child(2){animation-delay:.2s}
-    .typing span:nth-child(3){animation-delay:.4s}
-    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+    /* New chat btn */
+    .new-chat-btn {
+      margin: 12px; padding: 9px;
+      background: var(--accent); border: none; border-radius: 8px;
+      color: #fff; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background .15s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .new-chat-btn:hover { background: var(--accent-dark); }
 
-    /* INPUT */
-    .input-area{padding:14px 20px;background:#0f1520;border-top:1px solid #1e2a3a}
-    .input-row{display:flex;gap:10px;align-items:flex-end}
-    .input-wrapper{flex:1;background:#0a0e1a;border:1px solid #1e2a3a;border-radius:10px;padding:10px 14px;transition:border-color .2s}
-    .input-wrapper:focus-within{border-color:#ff6b00}
-    #userInput{width:100%;background:transparent;border:none;outline:none;color:#e0e0e0;font-size:13px;resize:none;max-height:100px;font-family:inherit}
-    #userInput::placeholder{color:#3a4a5a}
-    .send-btn{width:42px;height:42px;background:linear-gradient(135deg,#ff6b00,#ff9500);border:none;border-radius:10px;color:#fff;font-size:17px;cursor:pointer;transition:opacity .2s,transform .1s;display:flex;align-items:center;justify-content:center}
-    .send-btn:hover{opacity:.9;transform:scale(1.05)}
-    .send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-    .input-hint{font-size:10px;color:#3a4a5a;margin-top:6px;text-align:center}
-    .error-msg{background:#2a1a1a;border:1px solid #c0392b;color:#e74c3c;padding:9px 13px;border-radius:8px;font-size:12px}
+    /* ── CHAT AREA ── */
+    .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .messages {
+      flex: 1; overflow-y: auto;
+      padding: 0; scroll-behavior: smooth;
+    }
+    .messages::-webkit-scrollbar { width: 5px; }
+    .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Welcome */
+    .welcome {
+      max-width: 680px; margin: 60px auto; padding: 0 24px;
+      text-align: center;
+    }
+    .welcome .w-icon { font-size: 52px; margin-bottom: 16px; }
+    .welcome h2 { font-size: 26px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+    .welcome p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px; }
+    .welcome-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+    .chip {
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 16px; font-size: 12px;
+      color: var(--text-secondary); cursor: pointer; transition: all .15s;
+    }
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Message rows */
+    .msg-row {
+      padding: 20px 24px; border-bottom: 1px solid transparent;
+      transition: background .1s;
+    }
+    .msg-row:hover { background: rgba(255,255,255,.01); }
+    .msg-row.user { background: rgba(255,255,255,.02); }
+
+    .msg-inner { max-width: 780px; margin: 0 auto; display: flex; gap: 14px; }
+    .msg-avatar {
+      width: 32px; height: 32px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0; margin-top: 2px;
+    }
+    .user .msg-avatar { background: linear-gradient(135deg, var(--accent), #fb923c); }
+    .assistant .msg-avatar { background: var(--bg-tertiary); border: 1px solid var(--border); }
+
+    .msg-content { flex: 1; min-width: 0; }
+    .msg-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+    .msg-text {
+      font-size: 14px; line-height: 1.75; color: var(--text-primary);
+    }
+    .msg-text strong { color: var(--accent-light); }
+    .msg-text p { margin-bottom: 10px; }
+    .msg-text p:last-child { margin-bottom: 0; }
+    .msg-text ul, .msg-text ol { padding-left: 20px; margin-bottom: 10px; }
+    .msg-text li { margin-bottom: 4px; }
+    .msg-text code {
+      background: var(--bg-tertiary); border: 1px solid var(--border);
+      padding: 1px 5px; border-radius: 4px; font-family: monospace; font-size: 12px;
+    }
+
+    /* KPI result cards */
+    .kpi-card {
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px; padding: 14px 16px; margin-top: 12px;
+    }
+    .kpi-card .kpi-val { font-size: 28px; font-weight: 700; color: var(--accent); }
+    .kpi-card .kpi-unit { font-size: 14px; color: var(--text-secondary); margin-left: 4px; }
+    .kpi-card .kpi-name { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .kpi-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .kpi-detail { background: var(--bg-tertiary); border-radius: 6px; padding: 8px 10px; }
+    .kpi-detail .d-val { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .kpi-detail .d-lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Meta footer */
+    .msg-meta { margin-top: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .meta-tag { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+    .meta-tag.kpi { background: rgba(249,115,22,.15); color: var(--accent); }
+    .meta-tag.doc { background: rgba(88,166,255,.15); color: var(--blue); }
+    .meta-tag.sql { background: rgba(63,185,80,.15); color: var(--green); }
+    .meta-tag.direct { background: rgba(188,140,255,.15); color: var(--purple); }
+    .meta-lat { font-size: 11px; color: var(--text-muted); }
+    .meta-expand {
+      font-size: 11px; color: var(--text-muted); cursor: pointer;
+      background: none; border: none; padding: 0;
+    }
+    .meta-expand:hover { color: var(--text-secondary); }
+    .meta-plan {
+      margin-top: 8px; background: var(--bg-tertiary); border-radius: 6px;
+      padding: 10px 12px; display: none;
+    }
+    .meta-plan.open { display: block; }
+    .plan-step {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 12px; color: var(--text-secondary); padding: 3px 0;
+    }
+    .step-num {
+      width: 18px; height: 18px; background: var(--bg-hover);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; color: var(--accent); flex-shrink: 0;
+    }
+
+    /* Typing */
+    .typing-row { padding: 20px 24px; }
+    .typing-inner { max-width: 780px; margin: 0 auto; display: flex; gap: 14px; }
+    .typing-dots { display: flex; gap: 4px; align-items: center; padding: 8px 0; }
+    .typing-dots span {
+      width: 7px; height: 7px; background: var(--text-muted);
+      border-radius: 50%; animation: tdot 1.4s infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: .2s; }
+    .typing-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes tdot { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-6px);opacity:1} }
+
+    /* Error */
+    .error-row { padding: 12px 24px; }
+    .error-box {
+      max-width: 780px; margin: 0 auto;
+      background: rgba(248,81,73,.1); border: 1px solid rgba(248,81,73,.3);
+      border-radius: 8px; padding: 12px 16px;
+      color: var(--red); font-size: 13px;
+    }
+
+    /* ── INPUT ── */
+    .input-section { flex-shrink: 0; padding: 16px 24px 20px; }
+    .input-box-wrap { max-width: 780px; margin: 0 auto; }
+    .input-box {
+      background: var(--bg-secondary); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+      transition: border-color .2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+    .input-box:focus-within { border-color: var(--accent); }
+    .input-top { display: flex; align-items: flex-end; padding: 12px 14px; gap: 10px; }
+    #userInput {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text-primary); font-size: 14px; resize: none;
+      max-height: 150px; min-height: 22px; font-family: inherit; line-height: 1.5;
+    }
+    #userInput::placeholder { color: var(--text-muted); }
+    .send-btn {
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: var(--accent); border: none; border-radius: 7px;
+      color: #fff; cursor: pointer; transition: all .15s;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .send-btn:hover { background: var(--accent-dark); transform: scale(1.05); }
+    .send-btn:disabled { background: var(--bg-tertiary); color: var(--text-muted); transform: none; cursor: not-allowed; }
+    .input-bottom {
+      padding: 0 14px 10px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .input-hint { font-size: 11px; color: var(--text-muted); }
+    .char-count { font-size: 11px; color: var(--text-muted); }
   </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
   <div class="header-left">
     <div class="logo">🏭</div>
     <div>
-      <h1>Aciérie Maghreb Steel — Chatbot KPI IA</h1>
-      <p>Assistant intelligent · Indicateurs de performance industrielle</p>
+      <div class="header-title">Aciérie Maghreb Steel — Assistant KPI IA</div>
+      <div class="header-sub">Indicateurs de performance industrielle · EAF · LF · CCM · PAF</div>
     </div>
   </div>
-  <div class="status-badge">
-    <div class="status-dot"></div>
-    Système opérationnel
+  <div class="header-right">
+    <div class="model-badge">⚡ Groq · llama-3.1-8b</div>
+    <div class="status-pill"><div class="dot"></div>En ligne</div>
   </div>
 </div>
 
-<div class="main">
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="sidebar-title">📊 Métriques Session</div>
-    <div class="metrics-grid">
-      <div class="metric-card"><div class="val" id="m-q">0</div><div class="lbl">Questions</div></div>
-      <div class="metric-card"><div class="val" id="m-lat">—</div><div class="lbl">Latence ms</div></div>
-      <div class="metric-card"><div class="val" id="m-kpi">0</div><div class="lbl">KPI</div></div>
-      <div class="metric-card"><div class="val" id="m-doc">0</div><div class="lbl">Doc</div></div>
+    <button class="new-chat-btn" onclick="newChat()">＋ Nouvelle conversation</button>
+
+    <div class="sidebar-inner">
+      <div class="section-label">Métriques session</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="num" id="m-q">0</div><div class="lbl">Questions</div></div>
+        <div class="stat-box"><div class="num" id="m-lat">—</div><div class="lbl">Latence moy.</div></div>
+        <div class="stat-box"><div class="num" id="m-kpi">0</div><div class="lbl">KPI calculés</div></div>
+        <div class="stat-box"><div class="num" id="m-doc">0</div><div class="lbl">Doc répondus</div></div>
+      </div>
+
+      <div class="section-label">Types de requêtes</div>
+      <div class="tag-row" id="task-tags"><span style="font-size:11px;color:var(--text-muted)">Aucune requête</span></div>
+
+      <div class="section-label">Questions fréquentes</div>
+      <div class="quick-list">
+        <button class="qbtn" onclick="ask('Quel est le taux de disponibilité EAF ?')"><span class="icon">📈</span>Taux de disponibilité EAF</button>
+        <button class="qbtn" onclick="ask('Quelle est la consommation électrique totale ?')"><span class="icon">⚡</span>Consommation électrique</button>
+        <button class="qbtn" onclick="ask('Combien de coulées ont été produites ?')"><span class="icon">🔥</span>Production coulées</button>
+        <button class="qbtn" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')"><span class="icon">⚠️</span>Défauts brames</button>
+        <button class="qbtn" onclick="ask('Quels sont les arrêts les plus longs ?')"><span class="icon">🛑</span>Top arrêts EAF</button>
+        <button class="qbtn" onclick="ask('Quelle est la consommation électrique par mois ?')"><span class="icon">📅</span>Conso par mois</button>
+        <button class="qbtn" onclick="ask('Comment fonctionne le four EAF ?')"><span class="icon">📖</span>Procédé EAF</button>
+        <button class="qbtn" onclick="ask('Quel est le rôle du four LF ?')"><span class="icon">📖</span>Rôle du four LF</button>
+        <button class="qbtn" onclick="ask('Quelle est la consommation d oxygène EAF ?')"><span class="icon">💨</span>Conso oxygène</button>
+        <button class="qbtn" onclick="ask('Quel est le poids moyen des brames produites ?')"><span class="icon">⚖️</span>Poids moyen brames</button>
+      </div>
     </div>
-
-    <div class="sidebar-title">🏷️ Types détectés</div>
-    <div id="task-types" style="min-height:30px"></div>
-
-    <div class="sidebar-title">⚡ Questions rapides</div>
-    <button class="quick-btn" onclick="ask('Quel est le taux de disponibilité EAF ?')">📈 Taux de disponibilité EAF</button>
-    <button class="quick-btn" onclick="ask('Quelle est la consommation électrique totale ?')">⚡ Consommation électrique</button>
-    <button class="quick-btn" onclick="ask('Combien de coulées ont été produites ?')">🔥 Production coulées</button>
-    <button class="quick-btn" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')">⚠️ Défauts brames</button>
-    <button class="quick-btn" onclick="ask('Quels sont les arrêts les plus longs ?')">🛑 Arrêts EAF</button>
-    <button class="quick-btn" onclick="ask('Quelle est la consommation électrique par mois ?')">📅 Conso par mois</button>
-    <button class="quick-btn" onclick="ask('Comment fonctionne le four EAF ?')">📖 Procédé EAF</button>
-    <button class="quick-btn" onclick="ask('Quel est le rôle du four LF ?')">📖 Rôle du LF</button>
   </div>
 
+  <!-- CHAT -->
   <div class="chat-area">
     <div class="messages" id="messages">
       <div class="welcome" id="welcome">
-        <div class="welcome-icon">🏭</div>
-        <h2>Bienvenue sur le Chatbot KPI Aciérie</h2>
-        <p>Posez vos questions sur les indicateurs de performance de l'aciérie. Je peux calculer des KPIs, analyser les données de production et répondre à vos questions techniques.</p>
-        <div class="kpi-pills">
-          <span class="kpi-pill">TD% EAF</span>
-          <span class="kpi-pill">Conso Électrique</span>
-          <span class="kpi-pill">Production Coulées</span>
-          <span class="kpi-pill">Défauts Brames</span>
-          <span class="kpi-pill">Arrêts</span>
-          <span class="kpi-pill">Procédé EAF/LF/CCM</span>
+        <div class="w-icon">🏭</div>
+        <h2>Comment puis-je vous aider ?</h2>
+        <p>Je suis votre assistant IA spécialisé pour l'Aciérie Maghreb Steel.<br>
+        Posez vos questions sur les KPIs de production, la consommation énergétique,<br>
+        les défauts qualité ou le fonctionnement des équipements.</p>
+        <div class="welcome-chips">
+          <span class="chip" onclick="ask('Quel est le taux de disponibilité EAF ?')">📈 TD% EAF</span>
+          <span class="chip" onclick="ask('Quelle est la consommation électrique totale ?')">⚡ Conso électrique</span>
+          <span class="chip" onclick="ask('Combien de coulées ont été produites ?')">🔥 Production</span>
+          <span class="chip" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')">⚠️ Défauts</span>
+          <span class="chip" onclick="ask('Comment fonctionne le four EAF ?')">📖 EAF</span>
+          <span class="chip" onclick="ask('Quels sont les arrêts les plus longs ?')">🛑 Arrêts</span>
         </div>
       </div>
     </div>
 
-    <div class="input-area">
-      <div class="input-row">
-        <div class="input-wrapper">
-          <textarea id="userInput" rows="1" placeholder="Posez votre question KPI ou technique..."></textarea>
+    <div class="input-section">
+      <div class="input-box-wrap">
+        <div class="input-box">
+          <div class="input-top">
+            <textarea id="userInput" rows="1"
+              placeholder="Posez votre question sur les KPIs, la production, les arrêts..."></textarea>
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          <div class="input-bottom">
+            <span class="input-hint">Entrée pour envoyer · Shift+Entrée pour nouvelle ligne</span>
+            <span class="char-count" id="charCount">0</span>
+          </div>
         </div>
-        <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
       </div>
-      <div class="input-hint">Entrée pour envoyer · Shift+Entrée pour nouvelle ligne</div>
     </div>
   </div>
 </div>
 
 <script>
 const API = "http://localhost:8000/api/v1";
-let totalLat = 0, qCount = 0, kpiCount = 0, docCount = 0;
-const taskTypesSet = {};
+let qCount=0, totalLat=0, kpiCount=0, docCount=0;
+const taskMap = {};
 
-const textarea = document.getElementById('userInput');
-textarea.addEventListener('input', () => {
-  textarea.style.height = 'auto';
-  textarea.style.height = Math.min(textarea.scrollHeight, 100) + 'px';
+// Auto-resize textarea
+const ta = document.getElementById('userInput');
+ta.addEventListener('input', () => {
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(ta.scrollHeight, 150) + 'px';
+  document.getElementById('charCount').textContent = ta.value.length;
 });
-textarea.addEventListener('keydown', e => {
+ta.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
 
-function ask(q) { textarea.value = q; sendMessage(); }
+function ask(q) { ta.value = q; ta.style.height = 'auto'; sendMessage(); }
 
-function tagClass(t) {
-  return t === 'kpi' || t === 'sql' ? 'kpi-kpi' : t === 'doc' ? 'kpi-doc' : 'kpi-sql';
+function newChat() {
+  document.getElementById('messages').innerHTML =
+    `<div class="welcome" id="welcome">
+      <div class="w-icon">🏭</div>
+      <h2>Comment puis-je vous aider ?</h2>
+      <p>Je suis votre assistant IA spécialisé pour l'Aciérie Maghreb Steel.<br>
+      Posez vos questions sur les KPIs, la production ou les équipements.</p>
+      <div class="welcome-chips">
+        <span class="chip" onclick="ask('Quel est le taux de disponibilité EAF ?')">📈 TD% EAF</span>
+        <span class="chip" onclick="ask('Quelle est la consommation électrique totale ?')">⚡ Conso</span>
+        <span class="chip" onclick="ask('Combien de coulées ont été produites ?')">🔥 Production</span>
+        <span class="chip" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')">⚠️ Défauts</span>
+      </div>
+    </div>`;
 }
 
-function toggleMeta(h) {
-  const c = h.nextElementSibling;
-  c.classList.toggle('open');
-  h.querySelector('.tog').textContent = c.classList.contains('open') ? '▲' : '▼';
+// Markdown-like formatter
+function formatText(text) {
+  return text
+    .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code>$1</code>')
+    .replace(/^### (.*$)/gm, '<h4 style="color:var(--accent-light);margin:8px 0 4px">$1</h4>')
+    .replace(/^## (.*$)/gm, '<h3 style="color:var(--accent-light);margin:10px 0 6px">$1</h3>')
+    .replace(/^# (.*$)/gm, '<h2 style="color:var(--accent-light);margin:12px 0 8px">$1</h2>')
+    .replace(/^- (.*$)/gm, '<li style="margin:3px 0">$1</li>')
+    .replace(/^(\d+)\. (.*$)/gm, '<li style="margin:3px 0"><strong>$1.</strong> $2</li>')
+    .replace(/(<li.*<\/li>\n?)+/g, m => `<ul style="padding-left:18px;margin:6px 0">${m}</ul>`)
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>')
+    .replace(/^(.+)$/, '<p>$1</p>');
 }
 
-function addMsg(role, content, meta) {
+function tagCls(t) {
+  if (t==='kpi'||t==='sql') return 'kpi';
+  if (t==='doc') return 'doc';
+  if (t==='direct') return 'direct';
+  return 'sql';
+}
+
+function addUserMsg(text) {
   document.getElementById('welcome')?.remove();
   const msgs = document.getElementById('messages');
   const d = document.createElement('div');
-  d.className = `message ${role}`;
-  const av = role === 'user' ? '👤' : '🏭';
-
-  let metaHTML = '';
-  if (meta && role === 'assistant') {
-    const t = meta.task_type || '';
-    const plan = meta.plan || [];
-    const lat = meta.metadata?.total_latency_ms || 0;
-    const planHTML = plan.map((s,i) =>
-      `<div class="plan-step"><span class="plan-num">${i+1}</span><span>${s}</span></div>`
-    ).join('');
-    metaHTML = `
-      <div class="meta-panel">
-        <div class="meta-header" onclick="toggleMeta(this)">
-          <span><span class="kpi-badge ${tagClass(t)}">${t}</span> &nbsp; ${lat}ms</span>
-          <span class="tog">▼</span>
-        </div>
-        <div class="meta-content">
-          <div style="margin-bottom:8px">
-            <div style="color:#ff9500;font-size:10px;text-transform:uppercase;margin-bottom:4px">Plan d'exécution</div>
-            ${planHTML}
-          </div>
-          <div>
-            <div style="color:#ff9500;font-size:10px;text-transform:uppercase;margin-bottom:4px">Latence</div>
-            <div class="lat-row">
-              <span class="lat-lbl">Total API</span>
-              <div class="lat-bar"><div class="lat-fill" style="width:100%"></div></div>
-              <span class="lat-val">${lat}ms</span>
-            </div>
-          </div>
-        </div>
-      </div>`;
-  }
-
+  d.className = 'msg-row user';
   d.innerHTML = `
-    <div class="avatar">${av}</div>
-    <div style="flex:1;min-width:0">
-      <div class="bubble">${content.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
-      ${metaHTML}
+    <div class="msg-inner">
+      <div class="msg-avatar">👤</div>
+      <div class="msg-content">
+        <div class="msg-name">Vous</div>
+        <div class="msg-text">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>
+      </div>
     </div>`;
   msgs.appendChild(d);
   msgs.scrollTop = msgs.scrollHeight;
 }
 
 function addTyping() {
-  document.getElementById('welcome')?.remove();
   const msgs = document.getElementById('messages');
   const d = document.createElement('div');
-  d.className = 'message assistant'; d.id = 'typing';
-  d.innerHTML = `<div class="avatar">🏭</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  d.className = 'typing-row'; d.id = 'typing';
+  d.innerHTML = `
+    <div class="typing-inner">
+      <div class="msg-avatar assistant" style="background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center">🏭</div>
+      <div>
+        <div class="msg-name" style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px">Assistant KPI</div>
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addAssistantMsg(data) {
+  const msgs = document.getElementById('messages');
+  const answer = data.answer || '';
+  const taskType = data.task_type || '';
+  const plan = data.plan || [];
+  const lat = data.metadata?.total_latency_ms || 0;
+  const planId = 'plan_' + Date.now();
+
+  const planHTML = plan.map((s,i) =>
+    `<div class="plan-step"><span class="step-num">${i+1}</span><span>${s}</span></div>`
+  ).join('');
+
+  const d = document.createElement('div');
+  d.className = 'msg-row assistant';
+  d.innerHTML = `
+    <div class="msg-inner">
+      <div class="msg-avatar" style="background:var(--bg-tertiary);border:1px solid var(--border)">🏭</div>
+      <div class="msg-content">
+        <div class="msg-name">Assistant KPI · Maghreb Steel</div>
+        <div class="msg-text">${formatText(answer)}</div>
+        <div class="msg-meta">
+          <span class="meta-tag ${tagCls(taskType)}">${taskType}</span>
+          <span class="meta-lat">⚡ ${lat}ms</span>
+          ${plan.length ? `<button class="meta-expand" onclick="togglePlan('${planId}')">▾ Voir le plan</button>` : ''}
+        </div>
+        ${plan.length ? `<div class="meta-plan" id="${planId}">${planHTML}</div>` : ''}
+      </div>
+    </div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function togglePlan(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+  const btn = el.previousElementSibling.querySelector('.meta-expand');
+  if (btn) btn.textContent = el.classList.contains('open') ? '▴ Masquer' : '▾ Voir le plan';
+}
+
+function addError(msg) {
+  const msgs = document.getElementById('messages');
+  const d = document.createElement('div');
+  d.className = 'error-row';
+  d.innerHTML = `<div class="error-box">⚠️ ${msg}</div>`;
   msgs.appendChild(d);
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -253,49 +526,52 @@ function updateMetrics(data) {
   const lat = data.metadata?.total_latency_ms || 0;
   totalLat += lat;
   const t = data.task_type || '';
-  if (t === 'kpi' || t === 'sql') kpiCount++;
-  else if (t === 'doc') docCount++;
-  taskTypesSet[t] = (taskTypesSet[t] || 0) + 1;
+  if (t==='kpi'||t==='sql') kpiCount++;
+  else if (t==='doc') docCount++;
+  taskMap[t] = (taskMap[t]||0) + 1;
 
   document.getElementById('m-q').textContent = qCount;
-  document.getElementById('m-lat').textContent = Math.round(totalLat / qCount);
+  document.getElementById('m-lat').textContent = Math.round(totalLat/qCount);
   document.getElementById('m-kpi').textContent = kpiCount;
   document.getElementById('m-doc').textContent = docCount;
 
-  const tt = document.getElementById('task-types');
-  tt.innerHTML = Object.entries(taskTypesSet)
-    .map(([k,v]) => `<span class="kpi-badge ${tagClass(k)}">${k}: ${v}</span>`).join('');
+  const tt = document.getElementById('task-tags');
+  tt.innerHTML = Object.entries(taskMap)
+    .map(([k,v]) => `<span class="tag tag-${tagCls(k)}">${k} <strong>${v}</strong></span>`)
+    .join('');
 }
 
 async function sendMessage() {
-  const q = textarea.value.trim();
-  if (!q) return;
-  textarea.value = ''; textarea.style.height = 'auto';
+  const q = ta.value.trim();
+  if (!q || document.getElementById('sendBtn').disabled) return;
+
+  ta.value = ''; ta.style.height = 'auto';
+  document.getElementById('charCount').textContent = '0';
   document.getElementById('sendBtn').disabled = true;
-  addMsg('user', q);
+
+  addUserMsg(q);
   addTyping();
 
   try {
     const r = await fetch(`${API}/chat`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type':'application/json'},
       body: JSON.stringify({question: q, session_id: 'acierie_session'}),
     });
     document.getElementById('typing')?.remove();
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+
+    if (!r.ok) throw new Error(`Erreur serveur (${r.status})`);
     const data = await r.json();
-    addMsg('assistant', data.answer || 'Aucune réponse.', data);
+
+    addAssistantMsg(data);
     updateMetrics(data);
   } catch(err) {
     document.getElementById('typing')?.remove();
-    const msgs = document.getElementById('messages');
-    const d = document.createElement('div');
-    d.className = 'message assistant';
-    d.innerHTML = `<div class="avatar">🏭</div><div class="error-msg">⚠️ Erreur : ${err.message}<br><small>Vérifiez que l'API tourne sur localhost:8000</small></div>`;
-    msgs.appendChild(d);
+    addError(`${err.message} — Vérifiez que l'API tourne sur <code>localhost:8000</code>`);
   }
+
   document.getElementById('sendBtn').disabled = false;
-  textarea.focus();
+  ta.focus();
 }
 </script>
 </body>

@@ -42,17 +42,29 @@ class PlannerAgent:
         """Analyse la requête et détermine le routing."""
         t_start = time.time()
         query = state["query"]
+        query_lower = query.lower()
         logger.info("Planner analyse", query=query[:80])
 
-        # Détection rapide sans LLM
-        if is_kpi_query(query):
+        # Questions hors-domaine → direct avec message clair
+        hors_domaine = [
+            "bonjour", "bonsoir", "salut", "merci", "au revoir",
+            "date", "heure", "météo", "actualité", "news",
+            "blague", "poème", "histoire",
+        ]
+        if any(w in query_lower for w in hors_domaine) and not is_kpi_query(query):
+            task_type = "direct"
+            plan = ["Répondre directement"]
+
+        elif is_kpi_query(query):
             task_type = "kpi"
             plan = ["Détecter KPI", "Calculer via KPIEngine", "Générer réponse"]
+
         elif is_doc_query(query):
             task_type = "doc"
             plan = ["Rechercher dans documentation", "Générer réponse"]
+
         else:
-            # Utiliser LLM pour les cas ambigus
+            # LLM pour les cas ambigus
             try:
                 messages = [
                     SystemMessage(content=PLANNER_PROMPT),
@@ -100,8 +112,8 @@ class PlannerAgent:
             "kpi":    "sql_agent",
             "sql":    "sql_agent",
             "doc":    "retriever",
-            "direct": "generate",
-        }
+            "direct": "direct",
+}
         next_node = routing.get(task_type, "sql_agent")
         logger.info("Routing vers", next_node=next_node)
         return next_node
