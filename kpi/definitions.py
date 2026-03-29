@@ -42,7 +42,11 @@ KPI_DEFINITIONS = {
         "unite": "brames / tonnes",
         "table": "CCM_Brame",
         "mots_cles": [
-            "brame", "slab", "poids brame", "production brame",
+            "brame", "brames", "slab",
+            "poids", "poids brame", "poids moyen brame",
+            "poids des brames", "poids moyen des brames",
+            "production brame", "brame poids",
+            "brames produites", "ccm production",
             "ccm", "coulée continue"
         ],
     },
@@ -62,7 +66,9 @@ KPI_DEFINITIONS = {
         "unite": "Nm³",
         "table": "EAF",
         "mots_cles": [
-            "oxygène", "oxygene", "o2", "burner", "oxy"
+            "oxygène", "oxygene", "o2", "burner", "oxy",
+            "consommation oxygene", "consommation d oxygene",
+            "conso oxygene", "conso oxy"
         ],
     },
     "consommation_gaz": {

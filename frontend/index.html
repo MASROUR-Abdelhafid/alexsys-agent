@@ -2,220 +2,366 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Maghreb Steel · Assistant KPI</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Maghreb Steel · KPI Assistant</title>
 <style>
-:root {
-  --bg0:#0a0c10; --bg1:#0f1318; --bg2:#161b22; --bg3:#1c2128; --bg4:#22272e;
-  --border:#2d333b; --border2:#373e47;
-  --orange:#f97316; --orange2:#fb923c; --orange3:#fed7aa; --orange-dim:rgba(249,115,22,.12);
-  --blue:#58a6ff; --green:#3fb950; --red:#f85149; --purple:#bc8cff; --yellow:#e3b341;
-  --t1:#cdd9e5; --t2:#8b949e; --t3:#545d68; --t4:#373e47;
-  --radius:10px; --radius-sm:6px;
-  --shadow:0 8px 32px rgba(0,0,0,.4);
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+:root{
+  --bg:#070b14;
+  --surface:#0d1321;
+  --surface2:#111827;
+  --surface3:#1a2235;
+  --surface4:#1e2a3a;
+  --border:rgba(255,255,255,.06);
+  --border2:rgba(255,255,255,.1);
+  --accent:#f97316;
+  --accent2:#fb923c;
+  --accent3:#fdba74;
+  --accent-glow:rgba(249,115,22,.2);
+  --blue:#3b82f6;
+  --green:#22c55e;
+  --red:#ef4444;
+  --purple:#a855f7;
+  --yellow:#eab308;
+  --t1:#f1f5f9;
+  --t2:#94a3b8;
+  --t3:#475569;
+  --t4:#1e293b;
+  --r:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg0);color:var(--t1);font-size:14px;display:flex;flex-direction:column}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);font-size:14px;display:flex;flex-direction:column}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.15)}
 
 /* TOPBAR */
-.topbar{height:52px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:10}
-.topbar-logo{width:32px;height:32px;background:linear-gradient(135deg,var(--orange),var(--orange2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 16px rgba(249,115,22,.25);flex-shrink:0}
-.topbar-info{flex:1}
-.topbar-title{font-size:14px;font-weight:600;color:var(--t1)}
-.topbar-sub{font-size:11px;color:var(--t3);margin-top:1px}
-.topbar-right{display:flex;align-items:center;gap:8px}
-.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500}
-.pill-green{background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.25);color:var(--green)}
-.pill-model{background:var(--bg3);border:1px solid var(--border);color:var(--t3)}
-.dot-live{width:6px;height:6px;background:var(--green);border-radius:50%;animation:live 2s infinite}
-@keyframes live{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(63,185,80,.4)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(63,185,80,0)}}
+.topbar{
+  height:56px;flex-shrink:0;
+  background:rgba(13,19,33,.8);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 20px;gap:14px;
+  position:sticky;top:0;z-index:100;
+}
+.logo-box{
+  width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,#f97316,#fb923c);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 0 20px rgba(249,115,22,.3);
+}
+.top-name{font-size:15px;font-weight:600}
+.top-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;
+}
+.badge-live{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:var(--green)}
+.badge-model{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--t3)}
+.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);animation:livepulse 2s infinite}
+@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* LAYOUT */
-.app{display:flex;flex:1;overflow:hidden}
+.layout{display:flex;flex:1;overflow:hidden}
 
 /* SIDEBAR */
-.sidebar{width:248px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.sidebar-top{padding:12px}
-.btn-new{width:100%;padding:9px 12px;background:var(--orange-dim);border:1px solid rgba(249,115,22,.3);border-radius:var(--radius-sm);color:var(--orange2);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
-.btn-new:hover{background:rgba(249,115,22,.2);border-color:var(--orange)}
-.sidebar-scroll{flex:1;overflow-y:auto;padding:0 12px 12px}
-.sidebar-scroll::-webkit-scrollbar{width:3px}
-.sidebar-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-.sec{margin-top:14px}
-.sec-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--t4);padding:0 2px;margin-bottom:8px}
-
-/* Stats */
-.stats2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.scard{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;transition:border-color .2s}
-.scard:hover{border-color:var(--border2)}
-.scard-val{font-size:22px;font-weight:700;color:var(--orange);line-height:1}
-.scard-lbl{font-size:10px;color:var(--t3);margin-top:3px}
-
-/* Tags */
-.tags{display:flex;flex-wrap:wrap;gap:4px;min-height:20px}
-.stag{padding:3px 8px;border-radius:10px;font-size:11px;font-weight:500}
-.stag-kpi{background:rgba(249,115,22,.12);color:var(--orange2);border:1px solid rgba(249,115,22,.25)}
-.stag-doc{background:rgba(88,166,255,.1);color:var(--blue);border:1px solid rgba(88,166,255,.2)}
-.stag-sql{background:rgba(63,185,80,.1);color:var(--green);border:1px solid rgba(63,185,80,.2)}
-.stag-direct{background:rgba(188,140,255,.1);color:var(--purple);border:1px solid rgba(188,140,255,.2)}
-
-/* Quick btns */
-.qlist{display:flex;flex-direction:column;gap:2px}
-.qbtn{background:transparent;border:none;border-radius:var(--radius-sm);padding:8px 10px;color:var(--t2);font-size:12px;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:8px;line-height:1.4}
-.qbtn:hover{background:var(--bg3);color:var(--t1)}
-.qbtn .qi{font-size:12px;flex-shrink:0;width:16px;text-align:center}
+.sidebar{
+  width:256px;flex-shrink:0;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sb-header{padding:14px}
+.btn-new{
+  width:100%;padding:10px 14px;
+  background:linear-gradient(135deg,rgba(249,115,22,.15),rgba(251,146,60,.1));
+  border:1px solid rgba(249,115,22,.25);border-radius:var(--r);
+  color:var(--accent2);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  font-family:inherit;
+}
+.btn-new:hover{background:linear-gradient(135deg,rgba(249,115,22,.25),rgba(251,146,60,.2));border-color:var(--accent);transform:translateY(-1px)}
+.sb-scroll{flex:1;overflow-y:auto;padding:0 12px 16px}
+.sb-section{margin-top:16px}
+.sb-label{
+  font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--t3);padding:0 4px;margin-bottom:8px;
+}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stat{
+  background:var(--surface3);border:1px solid var(--border);
+  border-radius:var(--r);padding:11px 8px;text-align:center;
+  transition:all .2s;cursor:default;
+}
+.stat:hover{border-color:rgba(249,115,22,.2);background:var(--surface4)}
+.stat-n{font-size:24px;font-weight:700;color:var(--accent);line-height:1}
+.stat-l{font-size:10px;color:var(--t3);margin-top:3px}
+.tag-wrap{display:flex;flex-wrap:wrap;gap:4px;min-height:22px}
+.stag{
+  padding:3px 9px;border-radius:10px;font-size:11px;font-weight:500;
+  transition:transform .15s;cursor:default;
+}
+.stag:hover{transform:scale(1.05)}
+.sk{background:rgba(249,115,22,.12);color:var(--accent2);border:1px solid rgba(249,115,22,.2)}
+.sd{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.2)}
+.ss{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.2)}
+.sx{background:rgba(168,85,247,.12);color:#c084fc;border:1px solid rgba(168,85,247,.2)}
+.qlist{display:flex;flex-direction:column;gap:1px}
+.qb{
+  background:transparent;border:none;border-radius:8px;
+  padding:8px 10px;color:var(--t2);font-size:12px;
+  cursor:pointer;text-align:left;transition:all .15s;
+  display:flex;align-items:center;gap:9px;
+  font-family:inherit;line-height:1.4;
+}
+.qb:hover{background:var(--surface3);color:var(--t1);padding-left:14px}
+.qi{font-size:13px;width:16px;text-align:center;flex-shrink:0}
+.sb-divider{height:1px;background:var(--border);margin:10px 0}
 
 /* MAIN */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg0)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
 
-/* Messages */
-.messages{flex:1;overflow-y:auto;scroll-behavior:smooth}
-.messages::-webkit-scrollbar{width:6px}
-.messages::-webkit-scrollbar-track{background:transparent}
-.messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-.messages::-webkit-scrollbar-thumb:hover{background:var(--border2)}
+/* Background subtle pattern */
+.main::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(249,115,22,.04),transparent);
+}
+
+/* MESSAGES */
+.msgs{flex:1;overflow-y:auto;padding-bottom:8px;position:relative}
 
 /* Welcome */
-.welcome{max-width:640px;margin:80px auto 0;padding:0 24px;text-align:center}
-.w-logo{width:64px;height:64px;background:linear-gradient(135deg,var(--orange),var(--orange2));border-radius:16px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 0 32px rgba(249,115,22,.2)}
-.welcome h2{font-size:24px;font-weight:700;color:var(--t1);margin-bottom:10px}
-.welcome p{font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:28px}
+.welcome{
+  max-width:600px;margin:70px auto 0;padding:0 24px;text-align:center;
+}
+.w-icon{
+  width:72px;height:72px;margin:0 auto 22px;border-radius:20px;
+  background:linear-gradient(135deg,#f97316,#fb923c);
+  display:flex;align-items:center;justify-content:center;font-size:34px;
+  box-shadow:0 0 40px rgba(249,115,22,.25),0 8px 32px rgba(0,0,0,.3);
+}
+.welcome h2{font-size:26px;font-weight:700;margin-bottom:12px;letter-spacing:-.3px}
+.welcome p{font-size:14px;color:var(--t2);line-height:1.75;margin-bottom:28px}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
-.chip{background:var(--bg2);border:1px solid var(--border);padding:8px 14px;border-radius:20px;font-size:12px;color:var(--t2);cursor:pointer;transition:all .2s}
-.chip:hover{border-color:var(--orange);color:var(--orange2);background:var(--orange-dim)}
+.chip{
+  background:var(--surface2);border:1px solid var(--border2);
+  padding:8px 16px;border-radius:20px;font-size:12px;
+  color:var(--t2);cursor:pointer;transition:all .2s;font-family:inherit;
+}
+.chip:hover{border-color:rgba(249,115,22,.4);color:var(--accent2);background:rgba(249,115,22,.06);transform:translateY(-2px)}
 
-/* Message row */
-.mrow{padding:20px 0;border-bottom:1px solid rgba(255,255,255,.02)}
-.mrow-inner{max-width:780px;margin:0 auto;padding:0 24px;display:flex;gap:14px}
-.mrow.user{background:rgba(255,255,255,.015)}
-.mav{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px}
-.mav-user{background:linear-gradient(135deg,var(--orange),var(--orange2))}
-.mav-bot{background:var(--bg3);border:1px solid var(--border)}
-.mname{font-size:12px;font-weight:600;color:var(--t3);margin-bottom:7px}
+/* Message */
+.mrow{padding:16px 0;transition:background .1s}
+.mrow:hover{background:rgba(255,255,255,.01)}
+.mrow.user{background:rgba(249,115,22,.02)}
+.minner{max-width:800px;margin:0 auto;padding:0 24px;display:flex;gap:14px}
+.mav{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex-shrink:0;margin-top:1px;
+}
+.mav-u{background:linear-gradient(135deg,#f97316,#fb923c);box-shadow:0 2px 8px rgba(249,115,22,.3)}
+.mav-b{background:var(--surface3);border:1px solid var(--border2)}
 .mbody{flex:1;min-width:0}
-.mtext{font-size:14px;line-height:1.75;color:var(--t1)}
-.mtext p{margin-bottom:8px}
+.mwho{font-size:12px;font-weight:600;color:var(--t3);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.mwho-dot{width:5px;height:5px;background:var(--accent);border-radius:50%;animation:livepulse 2s infinite}
+.mtext{font-size:14px;line-height:1.8;color:var(--t1)}
+.mtext p{margin-bottom:10px}
 .mtext p:last-child{margin-bottom:0}
-.mtext ul,.mtext ol{padding-left:20px;margin:8px 0;display:flex;flex-direction:column;gap:4px}
-.mtext li{color:var(--t1);line-height:1.65}
-.mtext strong{color:var(--orange3);font-weight:600}
-.mtext em{color:var(--t2);font-style:italic}
-.mtext code{background:var(--bg3);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'SF Mono',monospace;font-size:12px;color:var(--orange2)}
-.mtext h3,.mtext h4{color:var(--orange3);margin:12px 0 6px;font-weight:600}
-.mtext h3{font-size:15px}.mtext h4{font-size:13px}
+.mtext ul,.mtext ol{padding-left:22px;margin:10px 0;display:flex;flex-direction:column;gap:5px}
+.mtext li{color:var(--t1);line-height:1.7}
+.mtext strong{color:var(--accent3);font-weight:600}
+.mtext em{color:var(--t2)}
+.mtext code{
+  background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.15);
+  padding:2px 7px;border-radius:5px;font-family:'SF Mono','Fira Code',monospace;
+  font-size:12px;color:var(--accent2);
+}
+.mtext h3{color:var(--accent3);font-size:15px;font-weight:600;margin:14px 0 7px}
+.mtext h4{color:var(--accent3);font-size:13px;font-weight:600;margin:10px 0 5px}
+.mtext blockquote{
+  border-left:3px solid rgba(249,115,22,.4);
+  padding:8px 14px;margin:10px 0;
+  background:rgba(249,115,22,.04);border-radius:0 8px 8px 0;
+  color:var(--t2);font-style:italic;
+}
 
-/* KPI card inline */
-.kpi-inline{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:var(--radius);padding:14px 16px;margin-top:10px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
-.kpi-big{font-size:32px;font-weight:800;color:var(--orange);line-height:1}
-.kpi-unit{font-size:13px;color:var(--t2);margin-top:2px}
-.kpi-sublabel{font-size:12px;color:var(--t3)}
+/* KPI highlight */
+.kpi-highlight{
+  display:inline-flex;align-items:baseline;gap:6px;
+  background:linear-gradient(135deg,rgba(249,115,22,.1),rgba(251,146,60,.05));
+  border:1px solid rgba(249,115,22,.2);border-radius:10px;
+  padding:10px 16px;margin:8px 0;
+}
+.kpi-val{font-size:28px;font-weight:800;color:var(--accent);line-height:1}
+.kpi-u{font-size:14px;color:var(--t2)}
 
-/* Footer meta */
-.mfooter{margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.ftag{padding:2px 7px;border-radius:8px;font-size:11px;font-weight:500}
-.ftag-kpi{background:rgba(249,115,22,.1);color:var(--orange2)}
-.ftag-doc{background:rgba(88,166,255,.1);color:var(--blue)}
-.ftag-sql{background:rgba(63,185,80,.1);color:var(--green)}
-.ftag-direct{background:rgba(188,140,255,.1);color:var(--purple)}
-.flat{font-size:11px;color:var(--t4)}
-.fplan-btn{background:none;border:none;font-size:11px;color:var(--t4);cursor:pointer;padding:0;transition:color .15s}
+/* Footer */
+.mfooter{margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ftag{padding:3px 9px;border-radius:8px;font-size:11px;font-weight:500}
+.fk{background:rgba(249,115,22,.1);color:var(--accent2)}
+.fd{background:rgba(59,130,246,.1);color:#60a5fa}
+.fs{background:rgba(34,197,94,.1);color:#4ade80}
+.fx{background:rgba(168,85,247,.1);color:#c084fc}
+.flat{font-size:11px;color:var(--t3)}
+.fplan-btn{
+  background:none;border:none;font-size:11px;color:var(--t3);
+  cursor:pointer;padding:0;font-family:inherit;transition:color .15s;
+}
 .fplan-btn:hover{color:var(--t2)}
-.fplan{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-top:6px;display:none}
-.fplan.open{display:flex;flex-direction:column;gap:5px}
-.fplan-step{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--t2)}
-.fplan-n{width:18px;height:18px;background:var(--bg4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--orange);flex-shrink:0}
+.fplan{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:12px;margin-top:8px;display:none;
+  flex-direction:column;gap:6px;
+}
+.fplan.open{display:flex}
+.fstep{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--t2)}
+.fstep-n{
+  width:20px;height:20px;background:rgba(249,115,22,.15);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:var(--accent);flex-shrink:0;
+}
 
 /* Typing */
-.typing-row{padding:20px 0}
-.typing-inner{max-width:780px;margin:0 auto;padding:0 24px;display:flex;gap:14px;align-items:flex-start}
+.typing-row{padding:16px 0}
+.tinner{max-width:800px;margin:0 auto;padding:0 24px;display:flex;gap:14px;align-items:flex-start}
 .tdots{display:flex;gap:5px;align-items:center;padding:8px 0}
-.tdots span{width:7px;height:7px;background:var(--t4);border-radius:50%;animation:td 1.4s infinite}
-.tdots span:nth-child(2){animation-delay:.18s}
-.tdots span:nth-child(3){animation-delay:.36s}
-@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.tdots span{
+  width:8px;height:8px;background:var(--t3);border-radius:50%;
+  animation:td 1.4s infinite ease-in-out;
+}
+.tdots span:nth-child(2){animation-delay:.16s}
+.tdots span:nth-child(3){animation-delay:.32s}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-7px);opacity:1}}
 
 /* Error */
-.err{max-width:780px;margin:8px auto;padding:0 24px}
-.err-box{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.25);border-radius:var(--radius);padding:12px 16px;color:var(--red);font-size:13px}
+.err-wrap{max-width:800px;margin:0 auto;padding:8px 24px}
+.err-box{
+  background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);
+  border-radius:10px;padding:12px 16px;color:#fca5a5;font-size:13px;
+}
 
-/* INPUT AREA */
-.input-area{flex-shrink:0;padding:12px 24px 20px;background:linear-gradient(to top,var(--bg0) 60%,transparent)}
-.input-wrap{max-width:780px;margin:0 auto}
-.input-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s,box-shadow .2s;box-shadow:var(--shadow)}
-.input-box:focus-within{border-color:rgba(249,115,22,.5);box-shadow:0 0 0 3px rgba(249,115,22,.08),var(--shadow)}
-.input-top{display:flex;align-items:flex-end;padding:14px 14px 10px}
-#inp{flex:1;background:transparent;border:none;outline:none;color:var(--t1);font-size:14px;resize:none;max-height:160px;min-height:24px;font-family:inherit;line-height:1.6;padding-right:8px}
-#inp::placeholder{color:var(--t4)}
-.send{width:36px;height:36px;flex-shrink:0;background:var(--orange);border:none;border-radius:9px;color:#fff;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
-.send:hover{background:var(--orange2);transform:scale(1.08)}
-.send:disabled{background:var(--bg4);color:var(--t4);transform:none;cursor:not-allowed}
-.send svg{pointer-events:none}
-.input-bot{display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px}
-.input-hint{font-size:11px;color:var(--t4)}
-.input-hint kbd{background:var(--bg3);border:1px solid var(--border);padding:1px 5px;border-radius:4px;font-size:10px}
+/* INPUT */
+.input-section{flex-shrink:0;padding:10px 24px 18px;position:relative}
+.input-section::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,var(--bg) 70%,transparent);
+}
+.input-wrap{max-width:800px;margin:0 auto;position:relative;z-index:1}
+.input-box{
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  border-radius:16px;overflow:hidden;
+  transition:border-color .2s,box-shadow .2s;
+  box-shadow:0 4px 24px rgba(0,0,0,.3);
+}
+.input-box:focus-within{
+  border-color:rgba(249,115,22,.4);
+  box-shadow:0 0 0 3px rgba(249,115,22,.06),0 4px 24px rgba(0,0,0,.3);
+}
+.input-top{display:flex;align-items:flex-end;padding:14px 14px 10px;gap:10px}
+#inp{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--t1);font-size:14px;resize:none;
+  max-height:160px;min-height:24px;
+  font-family:'Inter',sans-serif;line-height:1.6;padding-right:6px;
+}
+#inp::placeholder{color:var(--t3)}
+.send-btn{
+  width:38px;height:38px;flex-shrink:0;
+  background:linear-gradient(135deg,#f97316,#fb923c);
+  border:none;border-radius:10px;color:#fff;
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(249,115,22,.3);
+}
+.send-btn:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(249,115,22,.4)}
+.send-btn:disabled{background:var(--surface4);color:var(--t3);transform:none;box-shadow:none;cursor:not-allowed}
+.input-bot{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 14px 10px;
+}
+.input-hint{font-size:11px;color:var(--t3)}
+.input-hint kbd{
+  background:var(--surface3);border:1px solid var(--border);
+  padding:1px 5px;border-radius:4px;font-size:10px;font-family:inherit;
+}
 </style>
 </head>
 <body>
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="topbar-logo">🏭</div>
-  <div class="topbar-info">
-    <div class="topbar-title">Maghreb Steel · Assistant KPI IA</div>
-    <div class="topbar-sub">EAF · LF · CCM · PAF · Indicateurs de performance</div>
+  <div class="logo-box">🏭</div>
+  <div>
+    <div class="top-name">Maghreb Steel · Assistant KPI IA</div>
+    <div class="top-sub">Indicateurs de performance · EAF · LF · CCM · PAF</div>
   </div>
-  <div class="topbar-right">
-    <span class="pill pill-model">⚡ Groq · llama-3.1-8b</span>
-    <span class="pill pill-green"><span class="dot-live"></span>En ligne</span>
+  <div class="top-right">
+    <span class="badge badge-model">⚡ Groq · Llama 3.1</span>
+    <span class="badge badge-live"><span class="live-dot"></span>En ligne</span>
   </div>
 </div>
 
 <!-- APP -->
-<div class="app">
+<div class="layout">
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="sidebar-top">
+    <div class="sb-header">
       <button class="btn-new" onclick="newChat()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Nouvelle conversation
       </button>
     </div>
-    <div class="sidebar-scroll">
-      <div class="sec">
-        <div class="sec-label">Session</div>
-        <div class="stats2">
-          <div class="scard"><div class="scard-val" id="sq">0</div><div class="scard-lbl">Questions</div></div>
-          <div class="scard"><div class="scard-val" id="slat">—</div><div class="scard-lbl">Latence ms</div></div>
-          <div class="scard"><div class="scard-val" id="skpi">0</div><div class="scard-lbl">KPI</div></div>
-          <div class="scard"><div class="scard-val" id="sdoc">0</div><div class="scard-lbl">Doc</div></div>
+
+    <div class="sb-scroll">
+      <div class="sb-section">
+        <div class="sb-label">Session actuelle</div>
+        <div class="stats-grid">
+          <div class="stat"><div class="stat-n" id="sq">0</div><div class="stat-l">Questions</div></div>
+          <div class="stat"><div class="stat-n" id="slat">—</div><div class="stat-l">Latence ms</div></div>
+          <div class="stat"><div class="stat-n" id="skpi">0</div><div class="stat-l">KPI</div></div>
+          <div class="stat"><div class="stat-n" id="sdoc">0</div><div class="stat-l">Doc</div></div>
         </div>
       </div>
-      <div class="sec">
-        <div class="sec-label">Types détectés</div>
-        <div class="tags" id="stags"><span style="font-size:11px;color:var(--t4)">—</span></div>
+
+      <div class="sb-section">
+        <div class="sb-label">Types de requêtes</div>
+        <div class="tag-wrap" id="stags"><span style="font-size:11px;color:var(--t3)">—</span></div>
       </div>
-      <div class="sec">
-        <div class="sec-label">KPIs disponibles</div>
+
+      <div class="sb-divider"></div>
+
+      <div class="sb-section">
+        <div class="sb-label">📊 KPIs Production</div>
         <div class="qlist">
-          <button class="qbtn" onclick="ask('Quel est le taux de disponibilité EAF ?')"><span class="qi">📈</span>Taux de disponibilité EAF</button>
-          <button class="qbtn" onclick="ask('Quelle est la consommation électrique totale ?')"><span class="qi">⚡</span>Consommation électrique</button>
-          <button class="qbtn" onclick="ask('Quelle est la consommation électrique par mois ?')"><span class="qi">📅</span>Conso électrique / mois</button>
-          <button class="qbtn" onclick="ask('Combien de coulées ont été produites ?')"><span class="qi">🔥</span>Production coulées</button>
-          <button class="qbtn" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')"><span class="qi">⚠️</span>Défauts brames</button>
-          <button class="qbtn" onclick="ask('Quels sont les arrêts les plus longs ?')"><span class="qi">🛑</span>Top arrêts EAF</button>
-          <button class="qbtn" onclick="ask('Quelle est la consommation d oxygène EAF ?')"><span class="qi">💨</span>Consommation oxygène</button>
-          <button class="qbtn" onclick="ask('Quel est le poids moyen des brames ?')"><span class="qi">⚖️</span>Poids moyen brames</button>
+          <button class="qb" onclick="ask('Quel est le taux de disponibilité EAF ?')"><span class="qi">📈</span>Taux de disponibilité EAF</button>
+          <button class="qb" onclick="ask('Quelle est la consommation électrique totale ?')"><span class="qi">⚡</span>Consommation électrique</button>
+          <button class="qb" onclick="ask('Quelle est la consommation électrique par mois ?')"><span class="qi">📅</span>Conso élec par mois</button>
+          <button class="qb" onclick="ask('Combien de coulées ont été produites ?')"><span class="qi">🔥</span>Production coulées</button>
+          <button class="qb" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')"><span class="qi">⚠️</span>Défauts brames</button>
+          <button class="qb" onclick="ask('Quels sont les arrêts les plus longs ?')"><span class="qi">🛑</span>Top arrêts EAF</button>
+          <button class="qb" onclick="ask('Quelle est la consommation d oxygène EAF ?')"><span class="qi">💨</span>Consommation oxygène</button>
+          <button class="qb" onclick="ask('Quel est le poids moyen des brames ?')"><span class="qi">⚖️</span>Poids moyen brames</button>
         </div>
       </div>
-      <div class="sec">
-        <div class="sec-label">Documentation</div>
+
+      <div class="sb-divider"></div>
+
+      <div class="sb-section">
+        <div class="sb-label">📖 Documentation</div>
         <div class="qlist">
-          <button class="qbtn" onclick="ask('Comment fonctionne le four EAF ?')"><span class="qi">📖</span>Procédé EAF</button>
-          <button class="qbtn" onclick="ask('Quel est le rôle du four LF ?')"><span class="qi">📖</span>Rôle du four LF</button>
-          <button class="qbtn" onclick="ask('Comment fonctionne la coulée continue CCM ?')"><span class="qi">📖</span>Coulée continue CCM</button>
-          <button class="qbtn" onclick="ask('Qu est ce que le PAF ?')"><span class="qi">📖</span>Parc à ferraille PAF</button>
+          <button class="qb" onclick="ask('Comment fonctionne le four EAF ?')"><span class="qi">🔬</span>Procédé EAF</button>
+          <button class="qb" onclick="ask('Quel est le rôle du four LF ?')"><span class="qi">🔬</span>Rôle du four LF</button>
+          <button class="qb" onclick="ask('Comment fonctionne la coulée continue CCM ?')"><span class="qi">🔬</span>Coulée continue CCM</button>
+          <button class="qb" onclick="ask('Qu est ce que le PAF ?')"><span class="qi">🔬</span>Parc à ferraille PAF</button>
         </div>
       </div>
     </div>
@@ -223,11 +369,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 
   <!-- MAIN -->
   <div class="main">
-    <div class="messages" id="msgs">
+    <div class="msgs" id="msgs">
       <div class="welcome" id="welcome">
-        <div class="w-logo">🏭</div>
+        <div class="w-icon">🏭</div>
         <h2>Comment puis-je vous aider ?</h2>
-        <p>Assistant IA spécialisé pour l'Aciérie Maghreb Steel.<br>
+        <p>Votre assistant IA pour l'Aciérie Maghreb Steel.<br>
         Posez vos questions sur les KPIs, la production ou les équipements.</p>
         <div class="chips">
           <span class="chip" onclick="ask('Quel est le taux de disponibilité EAF ?')">📈 TD% EAF</span>
@@ -240,17 +386,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       </div>
     </div>
 
-    <div class="input-area">
+    <div class="input-section">
       <div class="input-wrap">
         <div class="input-box">
           <div class="input-top">
             <textarea id="inp" rows="1" placeholder="Posez votre question sur les KPIs ou les équipements..."></textarea>
-            <button class="send" id="sbtn" onclick="send()">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <button class="send-btn" id="sbtn" onclick="send()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
             </button>
           </div>
           <div class="input-bot">
-            <span class="input-hint"><kbd>Enter</kbd> envoyer · <kbd>Shift+Enter</kbd> nouvelle ligne</span>
+            <span class="input-hint"><kbd>Enter</kbd> pour envoyer · <kbd>Shift+Enter</kbd> nouvelle ligne</span>
           </div>
         </div>
       </div>
@@ -259,19 +408,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 </div>
 
 <script>
-const API = "http://localhost:8000/api/v1";
+const API="http://localhost:8000/api/v1";
 let qc=0,tl=0,kc=0,dc=0;
 const tm={};
 
-const ta = document.getElementById('inp');
-ta.addEventListener('input',()=>{ ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,160)+'px'; });
-ta.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+const ta=document.getElementById('inp');
+ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,160)+'px'});
+ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
 
-function ask(q){ ta.value=q; ta.style.height='auto'; send(); }
+function ask(q){ta.value=q;ta.style.height='auto';send()}
+
 function newChat(){
   document.getElementById('msgs').innerHTML=`<div class="welcome" id="welcome">
-    <div class="w-logo">🏭</div><h2>Comment puis-je vous aider ?</h2>
-    <p>Assistant IA spécialisé pour l'Aciérie Maghreb Steel.</p>
+    <div class="w-icon">🏭</div><h2>Comment puis-je vous aider ?</h2>
+    <p>Votre assistant IA pour l'Aciérie Maghreb Steel.</p>
     <div class="chips">
       <span class="chip" onclick="ask('Quel est le taux de disponibilité EAF ?')">📈 TD% EAF</span>
       <span class="chip" onclick="ask('Quelle est la consommation électrique totale ?')">⚡ Conso</span>
@@ -279,18 +429,15 @@ function newChat(){
       <span class="chip" onclick="ask('Comment fonctionne le four EAF ?')">📖 EAF</span>
     </div></div>`;
   qc=0;tl=0;kc=0;dc=0;
-  document.getElementById('sq').textContent='0';
-  document.getElementById('slat').textContent='—';
-  document.getElementById('skpi').textContent='0';
-  document.getElementById('sdoc').textContent='0';
-  document.getElementById('stags').innerHTML='<span style="font-size:11px;color:var(--t4)">—</span>';
+  ['sq','slat','skpi','sdoc'].forEach((id,i)=>{document.getElementById(id).textContent=i===1?'—':'0'});
+  document.getElementById('stags').innerHTML='<span style="font-size:11px;color:var(--t3)">—</span>';
 }
 
 function fmt(text){
   const lines=text.split('\n');
-  let html='',inUL=false,inOL=false;
-  function closeList(){ if(inUL){html+='</ul>';inUL=false;} if(inOL){html+='</ol>';inOL=false;} }
-  function proc(l){
+  let html='',ul=false,ol=false;
+  function cL(){if(ul){html+='</ul>';ul=false}if(ol){html+='</ol>';ol=false}}
+  function p(l){
     l=l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     l=l.replace(/\*\*\*(.*?)\*\*\*/g,'<strong><em>$1</em></strong>');
     l=l.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
@@ -298,60 +445,43 @@ function fmt(text){
     l=l.replace(/`([^`]+)`/g,'<code>$1</code>');
     return l;
   }
-  for(let i=0;i<lines.length;i++){
-    const raw=lines[i];
-    const l=proc(raw);
-    if(/^### /.test(raw)){closeList();html+=`<h4>${l.replace(/^### /,'')}</h4>`;}
-    else if(/^## /.test(raw)){closeList();html+=`<h3>${l.replace(/^## /,'')}</h3>`;}
-    else if(/^[\-\*\+] /.test(raw)){
-      if(inOL){html+='</ol>';inOL=false;}
-      if(!inUL){html+='<ul>';inUL=true;}
-      html+=`<li>${l.replace(/^[\-\*\+] /,'')}</li>`;
-    }
-    else if(/^\d+\. /.test(raw)){
-      if(inUL){html+='</ul>';inUL=false;}
-      if(!inOL){html+='<ol>';inOL=true;}
-      html+=`<li>${l.replace(/^\d+\. /,'')}</li>`;
-    }
-    else if(raw.trim()===''){closeList();html+='<br>';}
-    else{closeList();html+=`<p>${l}</p>`;}
+  for(const raw of lines){
+    const l=p(raw);
+    if(/^### /.test(raw)){cL();html+=`<h4>${l.slice(4)}</h4>`}
+    else if(/^## /.test(raw)){cL();html+=`<h3>${l.slice(3)}</h3>`}
+    else if(/^[\-\*\+] /.test(raw)){if(ol){html+='</ol>';ol=false}if(!ul){html+='<ul>';ul=true}html+=`<li>${l.slice(2)}</li>`}
+    else if(/^\d+\. /.test(raw)){if(ul){html+='</ul>';ul=false}if(!ol){html+='<ol>';ol=true}html+=`<li>${l.replace(/^\d+\. /,'')}</li>`}
+    else if(raw.trim()===''){cL();html+='<br>'}
+    else{cL();html+=`<p>${l}</p>`}
   }
-  closeList();
+  cL();
   return html;
 }
 
-function tclass(t){
-  if(t==='kpi'||t==='sql') return 'kpi';
-  if(t==='doc') return 'doc';
-  if(t==='direct') return 'direct';
-  return 'sql';
-}
+function tc(t){return t==='kpi'||t==='sql'?'k':t==='doc'?'d':t==='direct'?'x':'s'}
+function tagEl(t){return`<span class="ftag f${tc(t)}">${t}</span>`}
+function stagEl(t,v){return`<span class="stag s${tc(t)}">${t} ${v}</span>`}
 
 function addUser(q){
   document.getElementById('welcome')?.remove();
   const m=document.getElementById('msgs');
   const d=document.createElement('div');
   d.className='mrow user';
-  d.innerHTML=`<div class="mrow-inner">
-    <div class="mav mav-user">👤</div>
-    <div class="mbody">
-      <div class="mname">Vous</div>
-      <div class="mtext"><p>${q.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p></div>
+  d.innerHTML=`<div class="minner"><div class="mav mav-u">👤</div>
+    <div class="mbody"><div class="mwho">Vous</div>
+    <div class="mtext"><p>${q.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p></div>
     </div></div>`;
-  m.appendChild(d); m.scrollTop=m.scrollHeight;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
 }
 
 function addTyping(){
   const m=document.getElementById('msgs');
   const d=document.createElement('div');
-  d.className='typing-row';d.id='trow';
-  d.innerHTML=`<div class="typing-inner">
-    <div class="mav mav-bot">🏭</div>
-    <div>
-      <div class="mname">Assistant KPI</div>
-      <div class="tdots"><span></span><span></span><span></span></div>
-    </div></div>`;
-  m.appendChild(d); m.scrollTop=m.scrollHeight;
+  d.className='typing-row';d.id='tr';
+  d.innerHTML=`<div class="tinner"><div class="mav mav-b">🏭</div>
+    <div><div class="mwho">Assistant KPI <span class="mwho-dot"></span></div>
+    <div class="tdots"><span></span><span></span><span></span></div></div></div>`;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
 }
 
 function addBot(data){
@@ -361,72 +491,63 @@ function addBot(data){
   const plan=data.plan||[];
   const lat=data.metadata?.total_latency_ms||0;
   const pid='p'+Date.now();
-  const planHTML=plan.map((s,i)=>`<div class="fplan-step"><span class="fplan-n">${i+1}</span><span>${s}</span></div>`).join('');
+  const ph=plan.map((s,i)=>`<div class="fstep"><span class="fstep-n">${i+1}</span><span>${s}</span></div>`).join('');
   const d=document.createElement('div');
   d.className='mrow assistant';
-  d.innerHTML=`<div class="mrow-inner">
-    <div class="mav mav-bot">🏭</div>
+  d.innerHTML=`<div class="minner"><div class="mav mav-b">🏭</div>
     <div class="mbody">
-      <div class="mname">Assistant KPI · Maghreb Steel</div>
+      <div class="mwho">Assistant KPI · Maghreb Steel</div>
       <div class="mtext">${fmt(ans)}</div>
       <div class="mfooter">
-        <span class="ftag ftag-${tclass(tt)}">${tt||'—'}</span>
+        ${tagEl(tt)}
         <span class="flat">⚡ ${lat}ms</span>
-        ${plan.length?`<button class="fplan-btn" onclick="togglePlan('${pid}')">▾ Plan</button>`:''}
+        ${plan.length?`<button class="fplan-btn" onclick="tp('${pid}')">▾ Plan d'exécution</button>`:''}
       </div>
-      ${plan.length?`<div class="fplan" id="${pid}">${planHTML}</div>`:''}
+      ${plan.length?`<div class="fplan" id="${pid}">${ph}</div>`:''}
     </div></div>`;
-  m.appendChild(d); m.scrollTop=m.scrollHeight;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
 }
 
-function togglePlan(id){
+function tp(id){
   const el=document.getElementById(id);
   el.classList.toggle('open');
   const b=el.previousElementSibling.querySelector('.fplan-btn');
-  if(b) b.textContent=el.classList.contains('open')?'▴ Plan':'▾ Plan';
+  if(b)b.textContent=el.classList.contains('open')?'▴ Masquer':'▾ Plan d\'exécution';
 }
 
-function updateStats(data){
-  qc++;
-  const lat=data.metadata?.total_latency_ms||0;
-  tl+=lat;
+function upd(data){
+  qc++;const lat=data.metadata?.total_latency_ms||0;tl+=lat;
   const t=data.task_type||'';
-  if(t==='kpi'||t==='sql') kc++; else if(t==='doc') dc++;
+  if(t==='kpi'||t==='sql')kc++;else if(t==='doc')dc++;
   tm[t]=(tm[t]||0)+1;
   document.getElementById('sq').textContent=qc;
   document.getElementById('slat').textContent=Math.round(tl/qc);
   document.getElementById('skpi').textContent=kc;
   document.getElementById('sdoc').textContent=dc;
-  const ts=document.getElementById('stags');
-  ts.innerHTML=Object.entries(tm).map(([k,v])=>
-    `<span class="stag stag-${tclass(k)}">${k} ${v}</span>`).join('');
+  document.getElementById('stags').innerHTML=Object.entries(tm).map(([k,v])=>stagEl(k,v)).join('');
 }
 
 async function send(){
   const q=ta.value.trim();
-  if(!q||document.getElementById('sbtn').disabled) return;
-  ta.value=''; ta.style.height='auto';
+  if(!q||document.getElementById('sbtn').disabled)return;
+  ta.value='';ta.style.height='auto';
   document.getElementById('sbtn').disabled=true;
-  addUser(q); addTyping();
+  addUser(q);addTyping();
   try{
-    const r=await fetch(`${API}/chat`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({question:q,session_id:'acierie_main'})
-    });
-    document.getElementById('trow')?.remove();
-    if(!r.ok) throw new Error(`Erreur ${r.status}`);
+    const r=await fetch(`${API}/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,session_id:'acierie'})});
+    document.getElementById('tr')?.remove();
+    if(!r.ok)throw new Error(`Erreur serveur (${r.status})`);
     const data=await r.json();
-    addBot(data); updateStats(data);
+    addBot(data);upd(data);
   }catch(e){
-    document.getElementById('trow')?.remove();
+    document.getElementById('tr')?.remove();
     const m=document.getElementById('msgs');
     const d=document.createElement('div');
-    d.className='err';
-    d.innerHTML=`<div class="err-box">⚠️ ${e.message} — Vérifiez que l'API tourne sur <code>localhost:8000</code></div>`;
-    m.appendChild(d); m.scrollTop=m.scrollHeight;
+    d.className='err-wrap';
+    d.innerHTML=`<div class="err-box">⚠️ ${e.message}</div>`;
+    m.appendChild(d);m.scrollTop=m.scrollHeight;
   }
-  document.getElementById('sbtn').disabled=false; ta.focus();
+  document.getElementById('sbtn').disabled=false;ta.focus();
 }
 </script>
 </body>

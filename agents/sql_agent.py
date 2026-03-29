@@ -68,7 +68,6 @@ class SQLAgent:
         elif "par grade" in query_lower or "grade" in query_lower:
             params["groupby"] = "grade"
 
-        # Extraction grade
         grade_match = re.search(r'\b([A-Z]{2,4}\d{3,}[A-Z0-9]*)\b', query)
         if grade_match:
             params["grade"] = grade_match.group(1)
@@ -82,8 +81,7 @@ class SQLAgent:
         try:
             if kpi_key == "taux_disponibilite":
                 return self.kpi_engine.get_taux_disponibilite(
-                    params.get("date_debut"),
-                    params.get("date_fin"),
+                    params.get("date_debut"), params.get("date_fin"),
                 )
             elif kpi_key == "consommation_electrique":
                 return self.kpi_engine.get_consommation_electrique(
@@ -100,18 +98,37 @@ class SQLAgent:
                 )
             elif kpi_key == "defauts_brames":
                 return self.kpi_engine.get_defauts_brames(limit=10)
-            elif kpi_key in ["consommation_oxygene", "consommation_gaz", "poids_acier"]:
-                col_map = {
-                    "consommation_oxygene": ("BURNER_TOTALOXY", "Nm³"),
-                    "consommation_gaz": ("BURNER_TOTALGAS", "Nm³"),
-                    "poids_acier": ("TAPPING_WEIGHT", "kg"),
-                }
-                col, unite = col_map[kpi_key]
+
+            elif kpi_key == "consommation_oxygene":
+                return self.kpi_engine.get_consommation_oxygene()
+
+            elif kpi_key == "production_brames":
+                return self.kpi_engine.get_poids_brames()
+
+            elif kpi_key == "poids_acier":
                 return self.kpi_engine.execute_custom_sql(
-                    f"SELECT ROUND(SUM({col}),2) as total, "
-                    f"ROUND(AVG({col}),2) as moyenne, "
-                    f"COUNT(*) as nb_coulees FROM EAF "
-                    f"WHERE {col} IS NOT NULL"
+                    "SELECT ROUND(SUM(TAPPING_WEIGHT)/1000.0,2) as total_t, "
+                    "ROUND(AVG(TAPPING_WEIGHT)/1000.0,2) as moy_t, "
+                    "COUNT(*) as nb FROM EAF WHERE TAPPING_WEIGHT > 0"
+                )
+            elif kpi_key == "consommation_gaz":
+                return self.kpi_engine.execute_custom_sql(
+                    "SELECT ROUND(SUM(BURNER_TOTALGAS),2) as total_gaz_nm3, "
+                    "ROUND(AVG(BURNER_TOTALGAS),2) as moy_par_coulee, "
+                    "COUNT(*) as nb_coulees FROM EAF WHERE BURNER_TOTALGAS > 0"
+                )
+            elif kpi_key == "duree_tap_to_tap":
+                return self.kpi_engine.execute_custom_sql(
+                    "SELECT ROUND(AVG((strftime('%s',HEATDEPARTURE_ACT)"
+                    "-strftime('%s',HEATANNOUNCE_ACT))/60.0),2) as duree_moy_min, "
+                    "COUNT(*) as nb FROM EAF WHERE HEATANNOUNCE_ACT IS NOT NULL "
+                    "AND HEATDEPARTURE_ACT IS NOT NULL"
+                )
+            elif kpi_key == "ferraille_chargee":
+                return self.kpi_engine.execute_custom_sql(
+                    "SELECT CAT_NOM, ROUND(SUM(CSD_POIDS),2) as total_kg, "
+                    "COUNT(*) as nb FROM PAF WHERE CSD_POIDS > 0 "
+                    "GROUP BY CAT_NOM ORDER BY total_kg DESC LIMIT 10"
                 )
             else:
                 return self.kpi_engine.get_arrets_by_type(limit=10)
@@ -119,25 +136,34 @@ class SQLAgent:
         except Exception as e:
             logger.error("Erreur KPI", kpi=kpi_key, error=str(e))
             return {"error": str(e)}
-
+        
     def _handle_free_sql(self, query: str) -> Dict[str, Any]:
         """Génère et exécute SQL libre via LLM."""
         try:
+            safe_query = query.replace("{", "").replace("}", "")
+            prompt = SQL_AGENT_PROMPT.replace("{question}", safe_query)
+
             messages = [
                 SystemMessage(content="Tu es expert SQL SQLite pour une aciérie."),
-                HumanMessage(content=SQL_AGENT_PROMPT.format(question=query)),
+                HumanMessage(content=prompt),
             ]
+
             response = self.llm.invoke(messages)
             sql = response.content.strip()
 
-            # Nettoyer markdown si présent
             sql = re.sub(r'```sql|```', '', sql).strip()
 
             if not sql.upper().startswith("SELECT"):
                 return {"error": "SQL non valide généré", "sql": sql}
 
+            if ";" in sql.strip()[:-1]:
+                return {"error": "Requête multiple interdite", "sql": sql}
+
             result = self.kpi_engine.execute_custom_sql(sql)
-            result["generated_sql"] = sql
+
+            if "error" not in result:
+                result["generated_sql"] = sql
+
             return result
 
         except Exception as e:
@@ -151,7 +177,6 @@ class SQLAgent:
 
         logger.info("SQLAgent démarre", query=query[:80])
 
-        # Détecter KPIs
         detected_kpis = detect_kpi(query)
 
         if detected_kpis:
@@ -166,14 +191,13 @@ class SQLAgent:
 
         latency = round((time.time() - t_start) * 1000, 2)
 
-        # Formater résultat pour le contexte
         context = self._format_result(query, result, mode)
 
         return {
             **state,
             "retrieved_context": context,
             "tool_results": [result],
-            "action_history": [{
+            "action_history": state.get("action_history", []) + [{
                 "agent": "sql_agent",
                 "action": mode,
                 "kpis_detected": detected_kpis,
@@ -214,25 +238,19 @@ class SQLAgent:
                 lines.append(f"  - EAF : {d.get('eaf_mwh', 0)} MWh")
                 lines.append(f"  - LF  : {d.get('lf_mwh', 0)} MWh")
 
-        if "data" in result and result.get("data"):
-            lines.append(f"Données par période :")
-            for row in result["data"][:12]:
-                periode = row.get("periode", "")
-                total_mwh = round(row.get("conso_totale_wh", 0) / 1_000_000, 3)
-                eaf_mwh = round(row.get("conso_eaf_wh", 0) / 1_000_000, 3)
-                lf_mwh = round(row.get("conso_lf_wh", 0) / 1_000_000, 3)
-                lines.append(f"  → {periode} : Total={total_mwh} MWh (EAF={eaf_mwh}, LF={lf_mwh})")
+        if "data" in result:
+            if result["data"]:
+                lines.append(f"Données par période :")
+                for row in result["data"][:12]:
+                    periode = row.get("periode", "")
+                    total_mwh = round(row.get("conso_totale_wh", 0) / 1_000_000, 3)
+                    eaf_mwh = round(row.get("conso_eaf_wh", 0) / 1_000_000, 3)
+                    lf_mwh = round(row.get("conso_lf_wh", 0) / 1_000_000, 3)
+                    lines.append(f"  → {periode} : Total={total_mwh} MWh (EAF={eaf_mwh}, LF={lf_mwh})")
 
-            if "total_coulees" in result:
-                lines.append(f"Total coulées : {result['total_coulees']}")
-
-        else:
-            if "data" in result and result["data"]:
-                lines.append(f"Résultats ({result.get('row_count', 0)} lignes) :")
-                for row in result["data"][:8]:
-                    row_str = " | ".join([f"{k}: {v}" for k, v in row.items()])
-                    lines.append(f"  → {row_str}")
-            elif "row_count" in result and result["row_count"] == 0:
+                if "total_coulees" in result:
+                    lines.append(f"Total coulées : {result['total_coulees']}")
+            else:
                 lines.append("Aucun résultat trouvé pour cette période.")
 
         return "\n".join(lines) if lines else "Aucune donnée disponible."
