@@ -1,355 +1,237 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Aciérie Maghreb Steel — Assistant KPI IA</title>
-  <style>
-    :root {
-      --bg-primary: #0d1117;
-      --bg-secondary: #161b22;
-      --bg-tertiary: #21262d;
-      --bg-hover: #30363d;
-      --border: #30363d;
-      --accent: #f97316;
-      --accent-dark: #c2410c;
-      --accent-light: #fed7aa;
-      --text-primary: #e6edf3;
-      --text-secondary: #8b949e;
-      --text-muted: #484f58;
-      --green: #3fb950;
-      --blue: #58a6ff;
-      --purple: #bc8cff;
-      --red: #f85149;
-      --yellow: #d29922;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      font-size: 14px;
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Maghreb Steel · Assistant KPI</title>
+<style>
+:root {
+  --bg0:#0a0c10; --bg1:#0f1318; --bg2:#161b22; --bg3:#1c2128; --bg4:#22272e;
+  --border:#2d333b; --border2:#373e47;
+  --orange:#f97316; --orange2:#fb923c; --orange3:#fed7aa; --orange-dim:rgba(249,115,22,.12);
+  --blue:#58a6ff; --green:#3fb950; --red:#f85149; --purple:#bc8cff; --yellow:#e3b341;
+  --t1:#cdd9e5; --t2:#8b949e; --t3:#545d68; --t4:#373e47;
+  --radius:10px; --radius-sm:6px;
+  --shadow:0 8px 32px rgba(0,0,0,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg0);color:var(--t1);font-size:14px;display:flex;flex-direction:column}
 
-    /* ── HEADER ── */
-    .header {
-      background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .logo {
-      width: 38px; height: 38px;
-      background: linear-gradient(135deg, var(--accent), #fb923c);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; flex-shrink: 0;
-      box-shadow: 0 0 12px rgba(249,115,22,.3);
-    }
-    .header-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
-    .header-sub { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
-    .header-right { display: flex; align-items: center; gap: 10px; }
-    .status-pill {
-      display: flex; align-items: center; gap: 6px;
-      background: rgba(63,185,80,.1); border: 1px solid rgba(63,185,80,.3);
-      padding: 5px 12px; border-radius: 20px; font-size: 12px; color: var(--green);
-    }
-    .dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-    .model-badge {
-      background: var(--bg-tertiary); border: 1px solid var(--border);
-      padding: 4px 10px; border-radius: 6px; font-size: 11px; color: var(--text-secondary);
-    }
+/* TOPBAR */
+.topbar{height:52px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:10}
+.topbar-logo{width:32px;height:32px;background:linear-gradient(135deg,var(--orange),var(--orange2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 16px rgba(249,115,22,.25);flex-shrink:0}
+.topbar-info{flex:1}
+.topbar-title{font-size:14px;font-weight:600;color:var(--t1)}
+.topbar-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.pill-green{background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.25);color:var(--green)}
+.pill-model{background:var(--bg3);border:1px solid var(--border);color:var(--t3)}
+.dot-live{width:6px;height:6px;background:var(--green);border-radius:50%;animation:live 2s infinite}
+@keyframes live{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(63,185,80,.4)}50%{opacity:.7;box-shadow:0 0 0 4px rgba(63,185,80,0)}}
 
-    /* ── LAYOUT ── */
-    .layout { display: flex; flex: 1; overflow: hidden; }
+/* LAYOUT */
+.app{display:flex;flex:1;overflow:hidden}
 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: 256px; flex-shrink: 0;
-      background: var(--bg-secondary);
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
-      overflow: hidden;
-    }
-    .sidebar-inner { flex: 1; overflow-y: auto; padding: 12px; }
-    .sidebar-inner::-webkit-scrollbar { width: 3px; }
-    .sidebar-inner::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* SIDEBAR */
+.sidebar{width:248px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-top{padding:12px}
+.btn-new{width:100%;padding:9px 12px;background:var(--orange-dim);border:1px solid rgba(249,115,22,.3);border-radius:var(--radius-sm);color:var(--orange2);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-new:hover{background:rgba(249,115,22,.2);border-color:var(--orange)}
+.sidebar-scroll{flex:1;overflow-y:auto;padding:0 12px 12px}
+.sidebar-scroll::-webkit-scrollbar{width:3px}
+.sidebar-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.sec{margin-top:14px}
+.sec-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--t4);padding:0 2px;margin-bottom:8px}
 
-    .section-label {
-      font-size: 10px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 1px; color: var(--text-muted);
-      padding: 4px 0; margin-bottom: 6px; margin-top: 12px;
-    }
-    .section-label:first-child { margin-top: 0; }
+/* Stats */
+.stats2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.scard{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;transition:border-color .2s}
+.scard:hover{border-color:var(--border2)}
+.scard-val{font-size:22px;font-weight:700;color:var(--orange);line-height:1}
+.scard-lbl{font-size:10px;color:var(--t3);margin-top:3px}
 
-    /* Stats grid */
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px; }
-    .stat-box {
-      background: var(--bg-tertiary); border: 1px solid var(--border);
-      border-radius: 8px; padding: 10px 8px; text-align: center;
-    }
-    .stat-box .num { font-size: 20px; font-weight: 700; color: var(--accent); line-height: 1; }
-    .stat-box .lbl { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+/* Tags */
+.tags{display:flex;flex-wrap:wrap;gap:4px;min-height:20px}
+.stag{padding:3px 8px;border-radius:10px;font-size:11px;font-weight:500}
+.stag-kpi{background:rgba(249,115,22,.12);color:var(--orange2);border:1px solid rgba(249,115,22,.25)}
+.stag-doc{background:rgba(88,166,255,.1);color:var(--blue);border:1px solid rgba(88,166,255,.2)}
+.stag-sql{background:rgba(63,185,80,.1);color:var(--green);border:1px solid rgba(63,185,80,.2)}
+.stag-direct{background:rgba(188,140,255,.1);color:var(--purple);border:1px solid rgba(188,140,255,.2)}
 
-    /* Task types */
-    .tag-row { display: flex; flex-wrap: wrap; gap: 4px; min-height: 24px; }
-    .tag {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;
-    }
-    .tag-kpi { background: rgba(249,115,22,.15); color: var(--accent); border: 1px solid rgba(249,115,22,.3); }
-    .tag-doc { background: rgba(88,166,255,.15); color: var(--blue); border: 1px solid rgba(88,166,255,.3); }
-    .tag-sql { background: rgba(63,185,80,.15); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
-    .tag-direct { background: rgba(188,140,255,.15); color: var(--purple); border: 1px solid rgba(188,140,255,.3); }
+/* Quick btns */
+.qlist{display:flex;flex-direction:column;gap:2px}
+.qbtn{background:transparent;border:none;border-radius:var(--radius-sm);padding:8px 10px;color:var(--t2);font-size:12px;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:8px;line-height:1.4}
+.qbtn:hover{background:var(--bg3);color:var(--t1)}
+.qbtn .qi{font-size:12px;flex-shrink:0;width:16px;text-align:center}
 
-    /* Quick btns */
-    .quick-list { display: flex; flex-direction: column; gap: 3px; }
-    .qbtn {
-      background: transparent; border: 1px solid transparent;
-      border-radius: 6px; padding: 7px 10px;
-      color: var(--text-secondary); font-size: 12px;
-      cursor: pointer; text-align: left; transition: all .15s;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .qbtn:hover { background: var(--bg-tertiary); border-color: var(--border); color: var(--text-primary); }
-    .qbtn .icon { font-size: 13px; flex-shrink: 0; }
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg0)}
 
-    /* New chat btn */
-    .new-chat-btn {
-      margin: 12px; padding: 9px;
-      background: var(--accent); border: none; border-radius: 8px;
-      color: #fff; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: background .15s;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .new-chat-btn:hover { background: var(--accent-dark); }
+/* Messages */
+.messages{flex:1;overflow-y:auto;scroll-behavior:smooth}
+.messages::-webkit-scrollbar{width:6px}
+.messages::-webkit-scrollbar-track{background:transparent}
+.messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.messages::-webkit-scrollbar-thumb:hover{background:var(--border2)}
 
-    /* ── CHAT AREA ── */
-    .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+/* Welcome */
+.welcome{max-width:640px;margin:80px auto 0;padding:0 24px;text-align:center}
+.w-logo{width:64px;height:64px;background:linear-gradient(135deg,var(--orange),var(--orange2));border-radius:16px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 0 32px rgba(249,115,22,.2)}
+.welcome h2{font-size:24px;font-weight:700;color:var(--t1);margin-bottom:10px}
+.welcome p{font-size:14px;color:var(--t2);line-height:1.7;margin-bottom:28px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.chip{background:var(--bg2);border:1px solid var(--border);padding:8px 14px;border-radius:20px;font-size:12px;color:var(--t2);cursor:pointer;transition:all .2s}
+.chip:hover{border-color:var(--orange);color:var(--orange2);background:var(--orange-dim)}
 
-    .messages {
-      flex: 1; overflow-y: auto;
-      padding: 0; scroll-behavior: smooth;
-    }
-    .messages::-webkit-scrollbar { width: 5px; }
-    .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* Message row */
+.mrow{padding:20px 0;border-bottom:1px solid rgba(255,255,255,.02)}
+.mrow-inner{max-width:780px;margin:0 auto;padding:0 24px;display:flex;gap:14px}
+.mrow.user{background:rgba(255,255,255,.015)}
+.mav{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px}
+.mav-user{background:linear-gradient(135deg,var(--orange),var(--orange2))}
+.mav-bot{background:var(--bg3);border:1px solid var(--border)}
+.mname{font-size:12px;font-weight:600;color:var(--t3);margin-bottom:7px}
+.mbody{flex:1;min-width:0}
+.mtext{font-size:14px;line-height:1.75;color:var(--t1)}
+.mtext p{margin-bottom:8px}
+.mtext p:last-child{margin-bottom:0}
+.mtext ul,.mtext ol{padding-left:20px;margin:8px 0;display:flex;flex-direction:column;gap:4px}
+.mtext li{color:var(--t1);line-height:1.65}
+.mtext strong{color:var(--orange3);font-weight:600}
+.mtext em{color:var(--t2);font-style:italic}
+.mtext code{background:var(--bg3);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-family:'SF Mono',monospace;font-size:12px;color:var(--orange2)}
+.mtext h3,.mtext h4{color:var(--orange3);margin:12px 0 6px;font-weight:600}
+.mtext h3{font-size:15px}.mtext h4{font-size:13px}
 
-    /* Welcome */
-    .welcome {
-      max-width: 680px; margin: 60px auto; padding: 0 24px;
-      text-align: center;
-    }
-    .welcome .w-icon { font-size: 52px; margin-bottom: 16px; }
-    .welcome h2 { font-size: 26px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
-    .welcome p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px; }
-    .welcome-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-    .chip {
-      background: var(--bg-secondary); border: 1px solid var(--border);
-      padding: 6px 14px; border-radius: 16px; font-size: 12px;
-      color: var(--text-secondary); cursor: pointer; transition: all .15s;
-    }
-    .chip:hover { border-color: var(--accent); color: var(--accent); }
+/* KPI card inline */
+.kpi-inline{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:var(--radius);padding:14px 16px;margin-top:10px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.kpi-big{font-size:32px;font-weight:800;color:var(--orange);line-height:1}
+.kpi-unit{font-size:13px;color:var(--t2);margin-top:2px}
+.kpi-sublabel{font-size:12px;color:var(--t3)}
 
-    /* Message rows */
-    .msg-row {
-      padding: 20px 24px; border-bottom: 1px solid transparent;
-      transition: background .1s;
-    }
-    .msg-row:hover { background: rgba(255,255,255,.01); }
-    .msg-row.user { background: rgba(255,255,255,.02); }
+/* Footer meta */
+.mfooter{margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ftag{padding:2px 7px;border-radius:8px;font-size:11px;font-weight:500}
+.ftag-kpi{background:rgba(249,115,22,.1);color:var(--orange2)}
+.ftag-doc{background:rgba(88,166,255,.1);color:var(--blue)}
+.ftag-sql{background:rgba(63,185,80,.1);color:var(--green)}
+.ftag-direct{background:rgba(188,140,255,.1);color:var(--purple)}
+.flat{font-size:11px;color:var(--t4)}
+.fplan-btn{background:none;border:none;font-size:11px;color:var(--t4);cursor:pointer;padding:0;transition:color .15s}
+.fplan-btn:hover{color:var(--t2)}
+.fplan{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-top:6px;display:none}
+.fplan.open{display:flex;flex-direction:column;gap:5px}
+.fplan-step{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--t2)}
+.fplan-n{width:18px;height:18px;background:var(--bg4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--orange);flex-shrink:0}
 
-    .msg-inner { max-width: 780px; margin: 0 auto; display: flex; gap: 14px; }
-    .msg-avatar {
-      width: 32px; height: 32px; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; flex-shrink: 0; margin-top: 2px;
-    }
-    .user .msg-avatar { background: linear-gradient(135deg, var(--accent), #fb923c); }
-    .assistant .msg-avatar { background: var(--bg-tertiary); border: 1px solid var(--border); }
+/* Typing */
+.typing-row{padding:20px 0}
+.typing-inner{max-width:780px;margin:0 auto;padding:0 24px;display:flex;gap:14px;align-items:flex-start}
+.tdots{display:flex;gap:5px;align-items:center;padding:8px 0}
+.tdots span{width:7px;height:7px;background:var(--t4);border-radius:50%;animation:td 1.4s infinite}
+.tdots span:nth-child(2){animation-delay:.18s}
+.tdots span:nth-child(3){animation-delay:.36s}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
 
-    .msg-content { flex: 1; min-width: 0; }
-    .msg-name { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
-    .msg-text {
-      font-size: 14px; line-height: 1.75; color: var(--text-primary);
-    }
-    .msg-text strong { color: var(--accent-light); }
-    .msg-text p { margin-bottom: 10px; }
-    .msg-text p:last-child { margin-bottom: 0; }
-    .msg-text ul, .msg-text ol { padding-left: 20px; margin-bottom: 10px; }
-    .msg-text li { margin-bottom: 4px; }
-    .msg-text code {
-      background: var(--bg-tertiary); border: 1px solid var(--border);
-      padding: 1px 5px; border-radius: 4px; font-family: monospace; font-size: 12px;
-    }
+/* Error */
+.err{max-width:780px;margin:8px auto;padding:0 24px}
+.err-box{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.25);border-radius:var(--radius);padding:12px 16px;color:var(--red);font-size:13px}
 
-    /* KPI result cards */
-    .kpi-card {
-      background: var(--bg-secondary); border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      border-radius: 8px; padding: 14px 16px; margin-top: 12px;
-    }
-    .kpi-card .kpi-val { font-size: 28px; font-weight: 700; color: var(--accent); }
-    .kpi-card .kpi-unit { font-size: 14px; color: var(--text-secondary); margin-left: 4px; }
-    .kpi-card .kpi-name { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-    .kpi-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-    .kpi-detail { background: var(--bg-tertiary); border-radius: 6px; padding: 8px 10px; }
-    .kpi-detail .d-val { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-    .kpi-detail .d-lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-
-    /* Meta footer */
-    .msg-meta { margin-top: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .meta-tag { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
-    .meta-tag.kpi { background: rgba(249,115,22,.15); color: var(--accent); }
-    .meta-tag.doc { background: rgba(88,166,255,.15); color: var(--blue); }
-    .meta-tag.sql { background: rgba(63,185,80,.15); color: var(--green); }
-    .meta-tag.direct { background: rgba(188,140,255,.15); color: var(--purple); }
-    .meta-lat { font-size: 11px; color: var(--text-muted); }
-    .meta-expand {
-      font-size: 11px; color: var(--text-muted); cursor: pointer;
-      background: none; border: none; padding: 0;
-    }
-    .meta-expand:hover { color: var(--text-secondary); }
-    .meta-plan {
-      margin-top: 8px; background: var(--bg-tertiary); border-radius: 6px;
-      padding: 10px 12px; display: none;
-    }
-    .meta-plan.open { display: block; }
-    .plan-step {
-      display: flex; align-items: flex-start; gap: 8px;
-      font-size: 12px; color: var(--text-secondary); padding: 3px 0;
-    }
-    .step-num {
-      width: 18px; height: 18px; background: var(--bg-hover);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 9px; font-weight: 700; color: var(--accent); flex-shrink: 0;
-    }
-
-    /* Typing */
-    .typing-row { padding: 20px 24px; }
-    .typing-inner { max-width: 780px; margin: 0 auto; display: flex; gap: 14px; }
-    .typing-dots { display: flex; gap: 4px; align-items: center; padding: 8px 0; }
-    .typing-dots span {
-      width: 7px; height: 7px; background: var(--text-muted);
-      border-radius: 50%; animation: tdot 1.4s infinite;
-    }
-    .typing-dots span:nth-child(2) { animation-delay: .2s; }
-    .typing-dots span:nth-child(3) { animation-delay: .4s; }
-    @keyframes tdot { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-6px);opacity:1} }
-
-    /* Error */
-    .error-row { padding: 12px 24px; }
-    .error-box {
-      max-width: 780px; margin: 0 auto;
-      background: rgba(248,81,73,.1); border: 1px solid rgba(248,81,73,.3);
-      border-radius: 8px; padding: 12px 16px;
-      color: var(--red); font-size: 13px;
-    }
-
-    /* ── INPUT ── */
-    .input-section { flex-shrink: 0; padding: 16px 24px 20px; }
-    .input-box-wrap { max-width: 780px; margin: 0 auto; }
-    .input-box {
-      background: var(--bg-secondary); border: 1px solid var(--border);
-      border-radius: 12px; overflow: hidden;
-      transition: border-color .2s;
-      box-shadow: 0 2px 8px rgba(0,0,0,.3);
-    }
-    .input-box:focus-within { border-color: var(--accent); }
-    .input-top { display: flex; align-items: flex-end; padding: 12px 14px; gap: 10px; }
-    #userInput {
-      flex: 1; background: transparent; border: none; outline: none;
-      color: var(--text-primary); font-size: 14px; resize: none;
-      max-height: 150px; min-height: 22px; font-family: inherit; line-height: 1.5;
-    }
-    #userInput::placeholder { color: var(--text-muted); }
-    .send-btn {
-      width: 34px; height: 34px; flex-shrink: 0;
-      background: var(--accent); border: none; border-radius: 7px;
-      color: #fff; cursor: pointer; transition: all .15s;
-      display: flex; align-items: center; justify-content: center; font-size: 14px;
-    }
-    .send-btn:hover { background: var(--accent-dark); transform: scale(1.05); }
-    .send-btn:disabled { background: var(--bg-tertiary); color: var(--text-muted); transform: none; cursor: not-allowed; }
-    .input-bottom {
-      padding: 0 14px 10px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .input-hint { font-size: 11px; color: var(--text-muted); }
-    .char-count { font-size: 11px; color: var(--text-muted); }
-  </style>
+/* INPUT AREA */
+.input-area{flex-shrink:0;padding:12px 24px 20px;background:linear-gradient(to top,var(--bg0) 60%,transparent)}
+.input-wrap{max-width:780px;margin:0 auto}
+.input-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s,box-shadow .2s;box-shadow:var(--shadow)}
+.input-box:focus-within{border-color:rgba(249,115,22,.5);box-shadow:0 0 0 3px rgba(249,115,22,.08),var(--shadow)}
+.input-top{display:flex;align-items:flex-end;padding:14px 14px 10px}
+#inp{flex:1;background:transparent;border:none;outline:none;color:var(--t1);font-size:14px;resize:none;max-height:160px;min-height:24px;font-family:inherit;line-height:1.6;padding-right:8px}
+#inp::placeholder{color:var(--t4)}
+.send{width:36px;height:36px;flex-shrink:0;background:var(--orange);border:none;border-radius:9px;color:#fff;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.send:hover{background:var(--orange2);transform:scale(1.08)}
+.send:disabled{background:var(--bg4);color:var(--t4);transform:none;cursor:not-allowed}
+.send svg{pointer-events:none}
+.input-bot{display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px}
+.input-hint{font-size:11px;color:var(--t4)}
+.input-hint kbd{background:var(--bg3);border:1px solid var(--border);padding:1px 5px;border-radius:4px;font-size:10px}
+</style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-left">
-    <div class="logo">🏭</div>
-    <div>
-      <div class="header-title">Aciérie Maghreb Steel — Assistant KPI IA</div>
-      <div class="header-sub">Indicateurs de performance industrielle · EAF · LF · CCM · PAF</div>
-    </div>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">🏭</div>
+  <div class="topbar-info">
+    <div class="topbar-title">Maghreb Steel · Assistant KPI IA</div>
+    <div class="topbar-sub">EAF · LF · CCM · PAF · Indicateurs de performance</div>
   </div>
-  <div class="header-right">
-    <div class="model-badge">⚡ Groq · llama-3.1-8b</div>
-    <div class="status-pill"><div class="dot"></div>En ligne</div>
+  <div class="topbar-right">
+    <span class="pill pill-model">⚡ Groq · llama-3.1-8b</span>
+    <span class="pill pill-green"><span class="dot-live"></span>En ligne</span>
   </div>
 </div>
 
-<!-- LAYOUT -->
-<div class="layout">
+<!-- APP -->
+<div class="app">
 
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <button class="new-chat-btn" onclick="newChat()">＋ Nouvelle conversation</button>
-
-    <div class="sidebar-inner">
-      <div class="section-label">Métriques session</div>
-      <div class="stats-grid">
-        <div class="stat-box"><div class="num" id="m-q">0</div><div class="lbl">Questions</div></div>
-        <div class="stat-box"><div class="num" id="m-lat">—</div><div class="lbl">Latence moy.</div></div>
-        <div class="stat-box"><div class="num" id="m-kpi">0</div><div class="lbl">KPI calculés</div></div>
-        <div class="stat-box"><div class="num" id="m-doc">0</div><div class="lbl">Doc répondus</div></div>
+    <div class="sidebar-top">
+      <button class="btn-new" onclick="newChat()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nouvelle conversation
+      </button>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="sec">
+        <div class="sec-label">Session</div>
+        <div class="stats2">
+          <div class="scard"><div class="scard-val" id="sq">0</div><div class="scard-lbl">Questions</div></div>
+          <div class="scard"><div class="scard-val" id="slat">—</div><div class="scard-lbl">Latence ms</div></div>
+          <div class="scard"><div class="scard-val" id="skpi">0</div><div class="scard-lbl">KPI</div></div>
+          <div class="scard"><div class="scard-val" id="sdoc">0</div><div class="scard-lbl">Doc</div></div>
+        </div>
       </div>
-
-      <div class="section-label">Types de requêtes</div>
-      <div class="tag-row" id="task-tags"><span style="font-size:11px;color:var(--text-muted)">Aucune requête</span></div>
-
-      <div class="section-label">Questions fréquentes</div>
-      <div class="quick-list">
-        <button class="qbtn" onclick="ask('Quel est le taux de disponibilité EAF ?')"><span class="icon">📈</span>Taux de disponibilité EAF</button>
-        <button class="qbtn" onclick="ask('Quelle est la consommation électrique totale ?')"><span class="icon">⚡</span>Consommation électrique</button>
-        <button class="qbtn" onclick="ask('Combien de coulées ont été produites ?')"><span class="icon">🔥</span>Production coulées</button>
-        <button class="qbtn" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')"><span class="icon">⚠️</span>Défauts brames</button>
-        <button class="qbtn" onclick="ask('Quels sont les arrêts les plus longs ?')"><span class="icon">🛑</span>Top arrêts EAF</button>
-        <button class="qbtn" onclick="ask('Quelle est la consommation électrique par mois ?')"><span class="icon">📅</span>Conso par mois</button>
-        <button class="qbtn" onclick="ask('Comment fonctionne le four EAF ?')"><span class="icon">📖</span>Procédé EAF</button>
-        <button class="qbtn" onclick="ask('Quel est le rôle du four LF ?')"><span class="icon">📖</span>Rôle du four LF</button>
-        <button class="qbtn" onclick="ask('Quelle est la consommation d oxygène EAF ?')"><span class="icon">💨</span>Conso oxygène</button>
-        <button class="qbtn" onclick="ask('Quel est le poids moyen des brames produites ?')"><span class="icon">⚖️</span>Poids moyen brames</button>
+      <div class="sec">
+        <div class="sec-label">Types détectés</div>
+        <div class="tags" id="stags"><span style="font-size:11px;color:var(--t4)">—</span></div>
+      </div>
+      <div class="sec">
+        <div class="sec-label">KPIs disponibles</div>
+        <div class="qlist">
+          <button class="qbtn" onclick="ask('Quel est le taux de disponibilité EAF ?')"><span class="qi">📈</span>Taux de disponibilité EAF</button>
+          <button class="qbtn" onclick="ask('Quelle est la consommation électrique totale ?')"><span class="qi">⚡</span>Consommation électrique</button>
+          <button class="qbtn" onclick="ask('Quelle est la consommation électrique par mois ?')"><span class="qi">📅</span>Conso électrique / mois</button>
+          <button class="qbtn" onclick="ask('Combien de coulées ont été produites ?')"><span class="qi">🔥</span>Production coulées</button>
+          <button class="qbtn" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')"><span class="qi">⚠️</span>Défauts brames</button>
+          <button class="qbtn" onclick="ask('Quels sont les arrêts les plus longs ?')"><span class="qi">🛑</span>Top arrêts EAF</button>
+          <button class="qbtn" onclick="ask('Quelle est la consommation d oxygène EAF ?')"><span class="qi">💨</span>Consommation oxygène</button>
+          <button class="qbtn" onclick="ask('Quel est le poids moyen des brames ?')"><span class="qi">⚖️</span>Poids moyen brames</button>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-label">Documentation</div>
+        <div class="qlist">
+          <button class="qbtn" onclick="ask('Comment fonctionne le four EAF ?')"><span class="qi">📖</span>Procédé EAF</button>
+          <button class="qbtn" onclick="ask('Quel est le rôle du four LF ?')"><span class="qi">📖</span>Rôle du four LF</button>
+          <button class="qbtn" onclick="ask('Comment fonctionne la coulée continue CCM ?')"><span class="qi">📖</span>Coulée continue CCM</button>
+          <button class="qbtn" onclick="ask('Qu est ce que le PAF ?')"><span class="qi">📖</span>Parc à ferraille PAF</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- CHAT -->
-  <div class="chat-area">
-    <div class="messages" id="messages">
+  <!-- MAIN -->
+  <div class="main">
+    <div class="messages" id="msgs">
       <div class="welcome" id="welcome">
-        <div class="w-icon">🏭</div>
+        <div class="w-logo">🏭</div>
         <h2>Comment puis-je vous aider ?</h2>
-        <p>Je suis votre assistant IA spécialisé pour l'Aciérie Maghreb Steel.<br>
-        Posez vos questions sur les KPIs de production, la consommation énergétique,<br>
-        les défauts qualité ou le fonctionnement des équipements.</p>
-        <div class="welcome-chips">
+        <p>Assistant IA spécialisé pour l'Aciérie Maghreb Steel.<br>
+        Posez vos questions sur les KPIs, la production ou les équipements.</p>
+        <div class="chips">
           <span class="chip" onclick="ask('Quel est le taux de disponibilité EAF ?')">📈 TD% EAF</span>
-          <span class="chip" onclick="ask('Quelle est la consommation électrique totale ?')">⚡ Conso électrique</span>
+          <span class="chip" onclick="ask('Quelle est la consommation électrique totale ?')">⚡ Conso élec</span>
           <span class="chip" onclick="ask('Combien de coulées ont été produites ?')">🔥 Production</span>
           <span class="chip" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')">⚠️ Défauts</span>
           <span class="chip" onclick="ask('Comment fonctionne le four EAF ?')">📖 EAF</span>
@@ -358,22 +240,17 @@
       </div>
     </div>
 
-    <div class="input-section">
-      <div class="input-box-wrap">
+    <div class="input-area">
+      <div class="input-wrap">
         <div class="input-box">
           <div class="input-top">
-            <textarea id="userInput" rows="1"
-              placeholder="Posez votre question sur les KPIs, la production, les arrêts..."></textarea>
-            <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
+            <textarea id="inp" rows="1" placeholder="Posez votre question sur les KPIs ou les équipements..."></textarea>
+            <button class="send" id="sbtn" onclick="send()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
           </div>
-          <div class="input-bottom">
-            <span class="input-hint">Entrée pour envoyer · Shift+Entrée pour nouvelle ligne</span>
-            <span class="char-count" id="charCount">0</span>
+          <div class="input-bot">
+            <span class="input-hint"><kbd>Enter</kbd> envoyer · <kbd>Shift+Enter</kbd> nouvelle ligne</span>
           </div>
         </div>
       </div>
@@ -383,228 +260,173 @@
 
 <script>
 const API = "http://localhost:8000/api/v1";
-let qCount=0, totalLat=0, kpiCount=0, docCount=0;
-const taskMap = {};
+let qc=0,tl=0,kc=0,dc=0;
+const tm={};
 
-// Auto-resize textarea
-const ta = document.getElementById('userInput');
-ta.addEventListener('input', () => {
-  ta.style.height = 'auto';
-  ta.style.height = Math.min(ta.scrollHeight, 150) + 'px';
-  document.getElementById('charCount').textContent = ta.value.length;
-});
-ta.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-});
+const ta = document.getElementById('inp');
+ta.addEventListener('input',()=>{ ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,160)+'px'; });
+ta.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
 
-function ask(q) { ta.value = q; ta.style.height = 'auto'; sendMessage(); }
-
-function newChat() {
-  document.getElementById('messages').innerHTML =
-    `<div class="welcome" id="welcome">
-      <div class="w-icon">🏭</div>
-      <h2>Comment puis-je vous aider ?</h2>
-      <p>Je suis votre assistant IA spécialisé pour l'Aciérie Maghreb Steel.<br>
-      Posez vos questions sur les KPIs, la production ou les équipements.</p>
-      <div class="welcome-chips">
-        <span class="chip" onclick="ask('Quel est le taux de disponibilité EAF ?')">📈 TD% EAF</span>
-        <span class="chip" onclick="ask('Quelle est la consommation électrique totale ?')">⚡ Conso</span>
-        <span class="chip" onclick="ask('Combien de coulées ont été produites ?')">🔥 Production</span>
-        <span class="chip" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')">⚠️ Défauts</span>
-      </div>
-    </div>`;
+function ask(q){ ta.value=q; ta.style.height='auto'; send(); }
+function newChat(){
+  document.getElementById('msgs').innerHTML=`<div class="welcome" id="welcome">
+    <div class="w-logo">🏭</div><h2>Comment puis-je vous aider ?</h2>
+    <p>Assistant IA spécialisé pour l'Aciérie Maghreb Steel.</p>
+    <div class="chips">
+      <span class="chip" onclick="ask('Quel est le taux de disponibilité EAF ?')">📈 TD% EAF</span>
+      <span class="chip" onclick="ask('Quelle est la consommation électrique totale ?')">⚡ Conso</span>
+      <span class="chip" onclick="ask('Combien de coulées ont été produites ?')">🔥 Production</span>
+      <span class="chip" onclick="ask('Comment fonctionne le four EAF ?')">📖 EAF</span>
+    </div></div>`;
+  qc=0;tl=0;kc=0;dc=0;
+  document.getElementById('sq').textContent='0';
+  document.getElementById('slat').textContent='—';
+  document.getElementById('skpi').textContent='0';
+  document.getElementById('sdoc').textContent='0';
+  document.getElementById('stags').innerHTML='<span style="font-size:11px;color:var(--t4)">—</span>';
 }
 
-// Markdown-like formatter
-function formatText(text) {
-  const lines = text.split('\n');
-  let html = '';
-  let inList = false;
-
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i]
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;');
-
-    // Bold
-    line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    // Code inline
-    line = line.replace(/`([^`]+)`/g, '<code style="background:#21262d;border:1px solid #30363d;padding:1px 5px;border-radius:4px;font-family:monospace;font-size:12px">$1</code>');
-
-    // Headers
-    if (line.match(/^### /)) {
-      if (inList) { html += '</ul>'; inList = false; }
-      html += `<h4 style="color:#fed7aa;font-size:13px;margin:10px 0 4px;font-weight:600">${line.replace(/^### /,'')}</h4>`;
-    } else if (line.match(/^## /)) {
-      if (inList) { html += '</ul>'; inList = false; }
-      html += `<h3 style="color:#fed7aa;font-size:14px;margin:12px 0 6px;font-weight:700">${line.replace(/^## /,'')}</h3>`;
-    }
-    // Bullet list
-    else if (line.match(/^[\*\-\+] /)) {
-      if (!inList) { html += '<ul style="padding-left:20px;margin:8px 0;display:flex;flex-direction:column;gap:5px">'; inList = true; }
-      html += `<li style="color:#e6edf3;line-height:1.6">${line.replace(/^[\*\-\+] /,'')}</li>`;
-    }
-    // Numbered list
-    else if (line.match(/^\d+\. /)) {
-      if (!inList) { html += '<ul style="padding-left:20px;margin:8px 0;display:flex;flex-direction:column;gap:5px;list-style:decimal">'; inList = true; }
-      html += `<li style="color:#e6edf3;line-height:1.6">${line.replace(/^\d+\. /,'')}</li>`;
-    }
-    // Empty line
-    else if (line.trim() === '') {
-      if (inList) { html += '</ul>'; inList = false; }
-      html += '<br>';
-    }
-    // Normal paragraph
-    else {
-      if (inList) { html += '</ul>'; inList = false; }
-      html += `<p style="margin:4px 0;line-height:1.7">${line}</p>`;
-    }
+function fmt(text){
+  const lines=text.split('\n');
+  let html='',inUL=false,inOL=false;
+  function closeList(){ if(inUL){html+='</ul>';inUL=false;} if(inOL){html+='</ol>';inOL=false;} }
+  function proc(l){
+    l=l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    l=l.replace(/\*\*\*(.*?)\*\*\*/g,'<strong><em>$1</em></strong>');
+    l=l.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    l=l.replace(/\*(.*?)\*/g,'<em>$1</em>');
+    l=l.replace(/`([^`]+)`/g,'<code>$1</code>');
+    return l;
   }
-
-  if (inList) html += '</ul>';
+  for(let i=0;i<lines.length;i++){
+    const raw=lines[i];
+    const l=proc(raw);
+    if(/^### /.test(raw)){closeList();html+=`<h4>${l.replace(/^### /,'')}</h4>`;}
+    else if(/^## /.test(raw)){closeList();html+=`<h3>${l.replace(/^## /,'')}</h3>`;}
+    else if(/^[\-\*\+] /.test(raw)){
+      if(inOL){html+='</ol>';inOL=false;}
+      if(!inUL){html+='<ul>';inUL=true;}
+      html+=`<li>${l.replace(/^[\-\*\+] /,'')}</li>`;
+    }
+    else if(/^\d+\. /.test(raw)){
+      if(inUL){html+='</ul>';inUL=false;}
+      if(!inOL){html+='<ol>';inOL=true;}
+      html+=`<li>${l.replace(/^\d+\. /,'')}</li>`;
+    }
+    else if(raw.trim()===''){closeList();html+='<br>';}
+    else{closeList();html+=`<p>${l}</p>`;}
+  }
+  closeList();
   return html;
 }
 
-function tagCls(t) {
-  if (t==='kpi'||t==='sql') return 'kpi';
-  if (t==='doc') return 'doc';
-  if (t==='direct') return 'direct';
+function tclass(t){
+  if(t==='kpi'||t==='sql') return 'kpi';
+  if(t==='doc') return 'doc';
+  if(t==='direct') return 'direct';
   return 'sql';
 }
 
-function addUserMsg(text) {
+function addUser(q){
   document.getElementById('welcome')?.remove();
-  const msgs = document.getElementById('messages');
-  const d = document.createElement('div');
-  d.className = 'msg-row user';
-  d.innerHTML = `
-    <div class="msg-inner">
-      <div class="msg-avatar">👤</div>
-      <div class="msg-content">
-        <div class="msg-name">Vous</div>
-        <div class="msg-text">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>
-      </div>
-    </div>`;
-  msgs.appendChild(d);
-  msgs.scrollTop = msgs.scrollHeight;
+  const m=document.getElementById('msgs');
+  const d=document.createElement('div');
+  d.className='mrow user';
+  d.innerHTML=`<div class="mrow-inner">
+    <div class="mav mav-user">👤</div>
+    <div class="mbody">
+      <div class="mname">Vous</div>
+      <div class="mtext"><p>${q.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p></div>
+    </div></div>`;
+  m.appendChild(d); m.scrollTop=m.scrollHeight;
 }
 
-function addTyping() {
-  const msgs = document.getElementById('messages');
-  const d = document.createElement('div');
-  d.className = 'typing-row'; d.id = 'typing';
-  d.innerHTML = `
-    <div class="typing-inner">
-      <div class="msg-avatar assistant" style="background:var(--bg-tertiary);border:1px solid var(--border);border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center">🏭</div>
-      <div>
-        <div class="msg-name" style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px">Assistant KPI</div>
-        <div class="typing-dots"><span></span><span></span><span></span></div>
-      </div>
-    </div>`;
-  msgs.appendChild(d);
-  msgs.scrollTop = msgs.scrollHeight;
+function addTyping(){
+  const m=document.getElementById('msgs');
+  const d=document.createElement('div');
+  d.className='typing-row';d.id='trow';
+  d.innerHTML=`<div class="typing-inner">
+    <div class="mav mav-bot">🏭</div>
+    <div>
+      <div class="mname">Assistant KPI</div>
+      <div class="tdots"><span></span><span></span><span></span></div>
+    </div></div>`;
+  m.appendChild(d); m.scrollTop=m.scrollHeight;
 }
 
-function addAssistantMsg(data) {
-  const msgs = document.getElementById('messages');
-  const answer = data.answer || '';
-  const taskType = data.task_type || '';
-  const plan = data.plan || [];
-  const lat = data.metadata?.total_latency_ms || 0;
-  const planId = 'plan_' + Date.now();
-
-  const planHTML = plan.map((s,i) =>
-    `<div class="plan-step"><span class="step-num">${i+1}</span><span>${s}</span></div>`
-  ).join('');
-
-  const d = document.createElement('div');
-  d.className = 'msg-row assistant';
-  d.innerHTML = `
-    <div class="msg-inner">
-      <div class="msg-avatar" style="background:var(--bg-tertiary);border:1px solid var(--border)">🏭</div>
-      <div class="msg-content">
-        <div class="msg-name">Assistant KPI · Maghreb Steel</div>
-        <div class="msg-text">${formatText(answer)}</div>
-        <div class="msg-meta">
-          <span class="meta-tag ${tagCls(taskType)}">${taskType}</span>
-          <span class="meta-lat">⚡ ${lat}ms</span>
-          ${plan.length ? `<button class="meta-expand" onclick="togglePlan('${planId}')">▾ Voir le plan</button>` : ''}
-        </div>
-        ${plan.length ? `<div class="meta-plan" id="${planId}">${planHTML}</div>` : ''}
+function addBot(data){
+  const m=document.getElementById('msgs');
+  const ans=data.answer||'';
+  const tt=data.task_type||'';
+  const plan=data.plan||[];
+  const lat=data.metadata?.total_latency_ms||0;
+  const pid='p'+Date.now();
+  const planHTML=plan.map((s,i)=>`<div class="fplan-step"><span class="fplan-n">${i+1}</span><span>${s}</span></div>`).join('');
+  const d=document.createElement('div');
+  d.className='mrow assistant';
+  d.innerHTML=`<div class="mrow-inner">
+    <div class="mav mav-bot">🏭</div>
+    <div class="mbody">
+      <div class="mname">Assistant KPI · Maghreb Steel</div>
+      <div class="mtext">${fmt(ans)}</div>
+      <div class="mfooter">
+        <span class="ftag ftag-${tclass(tt)}">${tt||'—'}</span>
+        <span class="flat">⚡ ${lat}ms</span>
+        ${plan.length?`<button class="fplan-btn" onclick="togglePlan('${pid}')">▾ Plan</button>`:''}
       </div>
-    </div>`;
-  msgs.appendChild(d);
-  msgs.scrollTop = msgs.scrollHeight;
+      ${plan.length?`<div class="fplan" id="${pid}">${planHTML}</div>`:''}
+    </div></div>`;
+  m.appendChild(d); m.scrollTop=m.scrollHeight;
 }
 
-function togglePlan(id) {
-  const el = document.getElementById(id);
+function togglePlan(id){
+  const el=document.getElementById(id);
   el.classList.toggle('open');
-  const btn = el.previousElementSibling.querySelector('.meta-expand');
-  if (btn) btn.textContent = el.classList.contains('open') ? '▴ Masquer' : '▾ Voir le plan';
+  const b=el.previousElementSibling.querySelector('.fplan-btn');
+  if(b) b.textContent=el.classList.contains('open')?'▴ Plan':'▾ Plan';
 }
 
-function addError(msg) {
-  const msgs = document.getElementById('messages');
-  const d = document.createElement('div');
-  d.className = 'error-row';
-  d.innerHTML = `<div class="error-box">⚠️ ${msg}</div>`;
-  msgs.appendChild(d);
-  msgs.scrollTop = msgs.scrollHeight;
+function updateStats(data){
+  qc++;
+  const lat=data.metadata?.total_latency_ms||0;
+  tl+=lat;
+  const t=data.task_type||'';
+  if(t==='kpi'||t==='sql') kc++; else if(t==='doc') dc++;
+  tm[t]=(tm[t]||0)+1;
+  document.getElementById('sq').textContent=qc;
+  document.getElementById('slat').textContent=Math.round(tl/qc);
+  document.getElementById('skpi').textContent=kc;
+  document.getElementById('sdoc').textContent=dc;
+  const ts=document.getElementById('stags');
+  ts.innerHTML=Object.entries(tm).map(([k,v])=>
+    `<span class="stag stag-${tclass(k)}">${k} ${v}</span>`).join('');
 }
 
-function updateMetrics(data) {
-  qCount++;
-  const lat = data.metadata?.total_latency_ms || 0;
-  totalLat += lat;
-  const t = data.task_type || '';
-  if (t==='kpi'||t==='sql') kpiCount++;
-  else if (t==='doc') docCount++;
-  taskMap[t] = (taskMap[t]||0) + 1;
-
-  document.getElementById('m-q').textContent = qCount;
-  document.getElementById('m-lat').textContent = Math.round(totalLat/qCount);
-  document.getElementById('m-kpi').textContent = kpiCount;
-  document.getElementById('m-doc').textContent = docCount;
-
-  const tt = document.getElementById('task-tags');
-  tt.innerHTML = Object.entries(taskMap)
-    .map(([k,v]) => `<span class="tag tag-${tagCls(k)}">${k} <strong>${v}</strong></span>`)
-    .join('');
-}
-
-async function sendMessage() {
-  const q = ta.value.trim();
-  if (!q || document.getElementById('sendBtn').disabled) return;
-
-  ta.value = ''; ta.style.height = 'auto';
-  document.getElementById('charCount').textContent = '0';
-  document.getElementById('sendBtn').disabled = true;
-
-  addUserMsg(q);
-  addTyping();
-
-  try {
-    const r = await fetch(`${API}/chat`, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({question: q, session_id: 'acierie_session'}),
+async function send(){
+  const q=ta.value.trim();
+  if(!q||document.getElementById('sbtn').disabled) return;
+  ta.value=''; ta.style.height='auto';
+  document.getElementById('sbtn').disabled=true;
+  addUser(q); addTyping();
+  try{
+    const r=await fetch(`${API}/chat`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question:q,session_id:'acierie_main'})
     });
-    document.getElementById('typing')?.remove();
-
-    if (!r.ok) throw new Error(`Erreur serveur (${r.status})`);
-    const data = await r.json();
-
-    addAssistantMsg(data);
-    updateMetrics(data);
-  } catch(err) {
-    document.getElementById('typing')?.remove();
-    addError(`${err.message} — Vérifiez que l'API tourne sur <code>localhost:8000</code>`);
+    document.getElementById('trow')?.remove();
+    if(!r.ok) throw new Error(`Erreur ${r.status}`);
+    const data=await r.json();
+    addBot(data); updateStats(data);
+  }catch(e){
+    document.getElementById('trow')?.remove();
+    const m=document.getElementById('msgs');
+    const d=document.createElement('div');
+    d.className='err';
+    d.innerHTML=`<div class="err-box">⚠️ ${e.message} — Vérifiez que l'API tourne sur <code>localhost:8000</code></div>`;
+    m.appendChild(d); m.scrollTop=m.scrollHeight;
   }
-
-  document.getElementById('sendBtn').disabled = false;
-  ta.focus();
+  document.getElementById('sbtn').disabled=false; ta.focus();
 }
 </script>
 </body>

@@ -32,3 +32,11 @@ for a in arrets['data']:
     print(f"   {a}\n")
 
 print("✅ Tous les KPIs OK !")
+
+# Test oxygène
+oxy = engine.get_consommation_oxygene()
+print(f"Oxygène = {oxy}")
+
+# Test brames
+brames = engine.get_poids_brames()
+print(f"Brames = {brames}")
