@@ -177,11 +177,35 @@ class SQLAgent:
 
         logger.info("SQLAgent démarre", query=query[:80])
 
+        # Détecter KPIs
         detected_kpis = detect_kpi(query)
 
+        # Priorité KPIs — du plus spécifique au plus général
+        priority_order = [
+            "consommation_oxygene",
+            "consommation_gaz",
+            "defauts_brames",
+            "production_brames",
+            "duree_tap_to_tap",
+            "ferraille_chargee",
+            "taux_disponibilite",
+            "poids_acier",
+            "production_coulees",
+            "consommation_electrique",
+        ]
+
+        result = {}
+        mode = "free_sql"
+
         if detected_kpis:
-            kpi_key = detected_kpis[0]
-            logger.info("KPI détecté", kpi=kpi_key)
+            # Sélectionner le KPI le plus prioritaire
+            kpi_key = detected_kpis[-1]
+            for pk in priority_order:
+                if pk in detected_kpis:
+                    kpi_key = pk
+                    break
+
+            logger.info("KPI détecté", kpi=kpi_key, all=detected_kpis)
             result = self._handle_kpi(kpi_key, query)
             mode = "kpi_predefined"
         else:
@@ -191,13 +215,14 @@ class SQLAgent:
 
         latency = round((time.time() - t_start) * 1000, 2)
 
+        # Formater résultat pour le contexte
         context = self._format_result(query, result, mode)
 
         return {
             **state,
             "retrieved_context": context,
             "tool_results": [result],
-            "action_history": state.get("action_history", []) + [{
+            "action_history": [{
                 "agent": "sql_agent",
                 "action": mode,
                 "kpis_detected": detected_kpis,

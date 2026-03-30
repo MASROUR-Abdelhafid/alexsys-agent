@@ -19,11 +19,11 @@ KPI_DEFINITIONS = {
         "nom": "Consommation Électrique (Wh)",
         "description": "Somme consommation EAF + LF",
         "unite": "Wh",
-        "formule": "SUM(EAF.TOTAL_ELEC_EGY) + SUM(LF.ELEC_CONS_TOTAL)",
         "tables": ["EAF", "LF"],
         "mots_cles": [
             "électrique", "electrique", "énergie", "energie",
-            "consommation", "kwh", "wh", "conso elec"
+            "kwh", "wh", "conso elec", "elec",
+            "consommation electrique", "consommation électrique",
         ],
     },
     "production_coulees": {
