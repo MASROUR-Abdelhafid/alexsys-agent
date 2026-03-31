@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Maghreb Steel · Dashboard KPI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0f1117;--s1:#161b24;--s2:#1c2333;--s3:#222d3d;--s4:#2a3650;
+  --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.1);
+  --o:#f97316;--o2:#fb923c;--o3:#fdba74;
+  --t1:#f1f5f9;--t2:#94a3b8;--t3:#475569;--t4:#1e293b;
+  --green:#22c55e;--blue:#3b82f6;--red:#ef4444;--purple:#a855f7;--cyan:#06b6d4;
+  --r:10px;--r2:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg)}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t1);font-size:14px;min-height:100vh}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px}
+
+/* TOPBAR */
+.topbar{
+  height:52px;position:sticky;top:0;z-index:50;
+  background:rgba(15,17,23,.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;padding:0 20px;gap:12px;
+}
+.logo{width:30px;height:30px;background:var(--o);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.top-title{font-size:14px;font-weight:600}
+.top-sub{font-size:11px;color:var(--t3)}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.btn-chat{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:8px;
+  background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.2);
+  color:var(--o2);font-size:12px;font-weight:600;
+  cursor:pointer;text-decoration:none;transition:all .15s;
+  font-family:inherit;
+}
+.btn-chat:hover{background:rgba(249,115,22,.2);border-color:var(--o)}
+.refresh-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:8px;
+  background:var(--s2);border:1px solid var(--b1);
+  color:var(--t2);font-size:12px;cursor:pointer;
+  font-family:inherit;transition:all .15s;
+}
+.refresh-btn:hover{background:var(--s3);color:var(--t1)}
+.ldot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:lp 2s infinite}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.3}}
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.15);color:#4ade80}
+
+/* MAIN */
+.main{max-width:1400px;margin:0 auto;padding:20px}
+
+/* Header */
+.dash-header{margin-bottom:20px;display:flex;align-items:flex-end;justify-content:space-between}
+.dash-title{font-size:22px;font-weight:700;letter-spacing:-.3px}
+.dash-sub{font-size:13px;color:var(--t2);margin-top:4px}
+.last-update{font-size:11px;color:var(--t3)}
+
+/* KPI SUMMARY ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi-card{
+  background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);
+  padding:16px 18px;position:relative;overflow:hidden;cursor:default;
+  transition:border-color .2s,transform .15s;
+}
+.kpi-card:hover{border-color:var(--b2);transform:translateY(-2px)}
+.kpi-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.kc-o::before{background:var(--o)}
+.kc-g::before{background:var(--green)}
+.kc-b::before{background:var(--blue)}
+.kc-p::before{background:var(--purple)}
+.kpi-card-lbl{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;font-weight:500;margin-bottom:8px}
+.kpi-card-val{font-size:30px;font-weight:700;line-height:1;letter-spacing:-1px;margin-bottom:4px}
+.kpi-card-unit{font-size:14px;color:var(--t2);font-weight:400;margin-left:3px}
+.kpi-card-sub{font-size:12px;color:var(--t3)}
+.kpi-card-ico{position:absolute;right:14px;top:14px;font-size:22px;opacity:.15}
+.kc-o .kpi-card-val{color:var(--o)}
+.kc-g .kpi-card-val{color:var(--green)}
+.kc-b .kpi-card-val{color:var(--blue)}
+.kc-p .kpi-card-val{color:var(--purple)}
+
+/* CHARTS GRID */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.charts-grid-3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.chart-card{
+  background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:18px;
+}
+.chart-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.chart-sub{font-size:11px;color:var(--t3);margin-bottom:14px}
+.chart-wrap{position:relative}
+
+/* GAUGE */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;padding:10px 0}
+.gauge-svg{width:200px;height:110px}
+.gauge-val{font-size:32px;font-weight:700;color:var(--o);text-align:center;margin-top:-8px;letter-spacing:-1px}
+.gauge-lbl{font-size:12px;color:var(--t3);text-align:center;margin-top:2px}
+.gauge-details{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px;width:100%}
+.gd-item{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:8px 10px}
+.gd-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.gd-val{font-size:14px;font-weight:600;color:var(--t1);margin-top:2px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:8px 10px;color:var(--t3);font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--b1);font-weight:500}
+.tbl td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.03);color:var(--t1)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.02)}
+.bar-cell{display:flex;align-items:center;gap:8px}
+.mini-bar{height:5px;background:var(--o);border-radius:3px;min-width:2px;transition:width .5s}
+.badge{padding:2px 7px;border-radius:6px;font-size:10px;font-weight:500}
+.bg-o{background:rgba(249,115,22,.1);color:var(--o2)}
+.bg-r{background:rgba(239,68,68,.1);color:#fca5a5}
+.bg-y{background:rgba(234,179,8,.1);color:#fde047}
+.bg-g{background:rgba(34,197,94,.1);color:#4ade80}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;height:200px;color:var(--t3);font-size:13px;gap:10px}
+.spin{width:18px;height:18px;border:2px solid var(--b2);border-top-color:var(--o);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ERROR */
+.err-box{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--r);padding:12px 16px;color:#fca5a5;font-size:13px;margin:20px 0}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">🏭</div>
+  <div>
+    <div class="top-title">Dashboard KPI · Maghreb Steel</div>
+    <div class="top-sub">Aciérie · EAF · LF · CCM · PAF</div>
+  </div>
+  <div class="top-right">
+    <span class="status-pill"><span class="ldot"></span>Données réelles</span>
+    <button class="refresh-btn" onclick="loadData()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.87"/></svg>
+      Actualiser
+    </button>
+    <a href="index.html" class="btn-chat">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Chat KPI
+    </a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">Tableau de Bord — Indicateurs de Performance</div>
+      <div class="dash-sub">Aciérie Maghreb Steel · Données de production en temps réel</div>
+    </div>
+    <div class="last-update" id="last-update">—</div>
+  </div>
+
+  <div id="content">
+    <div class="loading"><div class="spin"></div>Chargement des données...</div>
+  </div>
+</div>
+
+<script>
+const API = "http://localhost:8000/api/v1";
+let charts = {};
+
+Chart.defaults.color = '#475569';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = 'Inter';
+
+function destroyCharts(){
+  Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});
+  charts={};
+}
+
+async function loadData(){
+  document.getElementById('content').innerHTML=
+    '<div class="loading"><div class="spin"></div>Chargement des données...</div>';
+  destroyCharts();
+
+  try{
+    const r = await fetch(`${API}/dashboard`);
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+    if(d.status==='error') throw new Error(d.message);
+    render(d);
+    document.getElementById('last-update').textContent =
+      'Mis à jour le ' + new Date().toLocaleString('fr-FR');
+  }catch(e){
+    document.getElementById('content').innerHTML =
+      `<div class="err-box">⚠️ Erreur chargement : ${e.message}<br>
+      <small>Vérifiez que l'API tourne sur localhost:8000</small></div>`;
+  }
+}
+
+function render(d){
+  const td    = d.taux_disponibilite   || {};
+  const conso = d.consommation_electrique || {};
+  const prod  = d.production_coulees   || {};
+  const def   = d.defauts_brames       || {};
+  const arr   = d.arrets_by_type       || {};
+  const oxy   = d.oxygene              || {};
+  const bra   = d.brames               || {};
+
+  const tdVal   = td.valeur || 0;
+  const consoMwh= (d.consommation_electrique?.valeur_totale_mwh ||
+                   d.consommation_electrique?.total_mwh || 0);
+  const nbCoul  = prod.total_coulees || 0;
+  const nbDef   = def.total_defauts  || 0;
+
+  const consoData = conso.data || [];
+  const prodData  = prod.data  || [];
+  const defData   = (def.data  || []).filter(x=>x.nb_defauts>0 && x.type_defaut!=='RAS').slice(0,6);
+  const arrData   = (arr.data  || []).filter(x=>x.categorie!=='Technique').slice(0,7);
+
+  document.getElementById('content').innerHTML = `
+    <!-- KPI SUMMARY -->
+    <div class="kpi-row">
+      <div class="kpi-card kc-o">
+        <div class="kpi-card-ico">📈</div>
+        <div class="kpi-card-lbl">Taux de disponibilité EAF</div>
+        <div><span class="kpi-card-val">${tdVal.toFixed(1)}</span><span class="kpi-card-unit">%</span></div>
+        <div class="kpi-card-sub">${td.details?.nb_jours||0} jours analysés</div>
+      </div>
+      <div class="kpi-card kc-b">
+        <div class="kpi-card-ico">⚡</div>
+        <div class="kpi-card-lbl">Consommation électrique</div>
+        <div><span class="kpi-card-val">${Number(consoMwh).toFixed(1)}</span><span class="kpi-card-unit">MWh</span></div>
+        <div class="kpi-card-sub">EAF + LF combinés</div>
+      </div>
+      <div class="kpi-card kc-g">
+        <div class="kpi-card-ico">🔥</div>
+        <div class="kpi-card-lbl">Production coulées</div>
+        <div><span class="kpi-card-val">${nbCoul.toLocaleString('fr')}</span></div>
+        <div class="kpi-card-sub">${(bra.details?.poids_total_tonnes||0).toLocaleString('fr')} t acier</div>
+      </div>
+      <div class="kpi-card kc-p">
+        <div class="kpi-card-ico">⚠️</div>
+        <div class="kpi-card-lbl">Défauts brames (total)</div>
+        <div><span class="kpi-card-val">${nbDef.toLocaleString('fr')}</span></div>
+        <div class="kpi-card-sub">${defData.length} types détectés</div>
+      </div>
+    </div>
+
+    <!-- ROW 1 : Gauge + Conso Bar + Production Line -->
+    <div class="charts-grid-3">
+      <div class="chart-card">
+        <div class="chart-title">⚡ Consommation électrique par mois</div>
+        <div class="chart-sub">EAF + LF en MWh</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chartConso"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">📈 Taux de disponibilité EAF</div>
+        <div class="chart-sub">Gauge — période complète</div>
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" viewBox="0 0 200 110">
+            <defs>
+              <linearGradient id="ggrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#ef4444"/>
+                <stop offset="50%" style="stop-color:#f97316"/>
+                <stop offset="100%" style="stop-color:#22c55e"/>
+              </linearGradient>
+            </defs>
+            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="18" stroke-linecap="round"/>
+            <path id="gaugeFill" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#ggrad)" stroke-width="18" stroke-linecap="round" stroke-dasharray="0 251"/>
+            <text id="gaugePct" x="100" y="88" text-anchor="middle" font-size="22" font-weight="700" font-family="Inter" fill="#f97316">—</text>
+            <text x="18" y="115" font-size="9" fill="#475569" font-family="Inter">0%</text>
+            <text x="175" y="115" font-size="9" fill="#475569" font-family="Inter">100%</text>
+          </svg>
+          <div class="gauge-details">
+            <div class="gd-item"><div class="gd-lbl">Temps requis</div><div class="gd-val" id="gd1">—</div></div>
+            <div class="gd-item"><div class="gd-lbl">Arrêts non-dispo</div><div class="gd-val" id="gd2">—</div></div>
+            <div class="gd-item"><div class="gd-lbl">Arrêts programmés</div><div class="gd-val" id="gd3">—</div></div>
+            <div class="gd-item"><div class="gd-lbl">Nb jours</div><div class="gd-val" id="gd4">—</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🔥 Production coulées</div>
+        <div class="chart-sub">Coulées par mois</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chartProd"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2 : Défauts Pie + Arrêts Table + Oxygène + Brames -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">🛑 Arrêts EAF — Top par durée</div>
+        <div class="chart-sub">Hors arrêts techniques et programmés</div>
+        <table class="tbl" id="tblArrets"></table>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">⚠️ Défauts brames — Répartition</div>
+        <div class="chart-sub">Hors "RAS" (sans défaut)</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chartDef"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3 : Oxygène + Brames stats -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">💨 Consommation Oxygène EAF</div>
+        <div class="chart-sub">Four à Arc Électrique</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px" id="oxyStats"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">⚖️ Statistiques Brames CCM</div>
+        <div class="chart-sub">Poids et dimensions</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px" id="braStats"></div>
+      </div>
+    </div>
+  `;
+
+  // ── GAUGE ──
+  const pct = tdVal/100;
+  const total = 251;
+  document.getElementById('gaugeFill').setAttribute('stroke-dasharray', `${pct*total} ${total}`);
+  document.getElementById('gaugePct').textContent = tdVal.toFixed(1)+'%';
+  document.getElementById('gd1').textContent = (td.details?.temps_requis_heures||0).toLocaleString('fr')+' h';
+  document.getElementById('gd2').textContent = (td.details?.arrets_non_dispo_heures||0).toLocaleString('fr')+' h';
+  document.getElementById('gd3').textContent = (td.details?.arrets_programmes_heures||0).toLocaleString('fr')+' h';
+  document.getElementById('gd4').textContent = (td.details?.nb_jours||0)+' j';
+
+  // ── CONSO BAR ──
+  if(consoData.length>0){
+    const labels = consoData.map(x=>{
+      const p=x.periode||'';
+      if(p.includes('-W')) return 'S'+p.split('W')[1];
+      if(p.includes('-')) return p.slice(0,7);
+      return p;
+    });
+    const eafMwh = consoData.map(x=>((x.conso_eaf_wh||0)/1e6).toFixed(2));
+    const lfMwh  = consoData.map(x=>((x.conso_lf_wh||0)/1e6).toFixed(2));
+    const ctx = document.getElementById('chartConso').getContext('2d');
+    charts.conso = new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels,
+        datasets:[
+          {label:'EAF (MWh)',data:eafMwh,backgroundColor:'rgba(249,115,22,.7)',borderRadius:4,stack:'s'},
+          {label:'LF (MWh)', data:lfMwh, backgroundColor:'rgba(59,130,246,.6)',borderRadius:4,stack:'s'},
+        ]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}},tooltip:{mode:'index'}},
+        scales:{
+          x:{ticks:{color:'#475569',maxRotation:45},grid:{display:false}},
+          y:{ticks:{color:'#475569',callback:v=>v+' MWh'},grid:{color:'rgba(255,255,255,.04)'}}
+        }
+      }
+    });
+  }
+
+  // ── PROD LINE ──
+  if(prodData.length>0){
+    const labels=prodData.map(x=>{const p=x.periode||'';return p.includes('-')?p.slice(0,7):p});
+    const vals=prodData.map(x=>x.nb_coulees||0);
+    const ctx=document.getElementById('chartProd').getContext('2d');
+    charts.prod=new Chart(ctx,{
+      type:'line',
+      data:{
+        labels,
+        datasets:[{
+          label:'Coulées',data:vals,
+          borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.1)',
+          borderWidth:2,pointRadius:4,pointBackgroundColor:'#22c55e',
+          fill:true,tension:.3
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{color:'#475569',maxRotation:45},grid:{display:false}},
+          y:{ticks:{color:'#475569'},grid:{color:'rgba(255,255,255,.04)'},beginAtZero:true}
+        }
+      }
+    });
+  }
+
+  // ── DÉFAUTS PIE ──
+  if(defData.length>0){
+    const colors=['#f97316','#3b82f6','#a855f7','#22c55e','#ef4444','#06b6d4','#eab308','#ec4899'];
+    const ctx=document.getElementById('chartDef').getContext('2d');
+    charts.def=new Chart(ctx,{
+      type:'doughnut',
+      data:{
+        labels:defData.map(x=>`${x.type_defaut} (G${x.gravite})`),
+        datasets:[{
+          data:defData.map(x=>x.nb_defauts),
+          backgroundColor:colors.slice(0,defData.length),
+          borderColor:'rgba(255,255,255,.05)',
+          borderWidth:2,hoverOffset:6
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{position:'right',labels:{color:'#94a3b8',font:{size:11},boxWidth:12,padding:10}},
+          tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed} (${ctx.dataset.data.reduce((a,b)=>a+b,0)>0?((ctx.parsed/ctx.dataset.data.reduce((a,b)=>a+b,0))*100).toFixed(1)+'%':''})`}}
+        }
+      }
+    });
+  }
+
+  // ── ARRÊTS TABLE ──
+  if(arrData.length>0){
+    const maxH=Math.max(...arrData.map(x=>x.duree_totale_heures||0));
+    const rows=arrData.map(a=>{
+      const pct=maxH>0?((a.duree_totale_heures/maxH)*100).toFixed(0):0;
+      const cat=a.categorie||'';
+      const cls=cat==='Incident'?'bg-r':cat==='Fonctionnel'?'bg-y':cat==='Mécanique'?'bg-o':cat==='Électrique'?'bg-o':'bg-g';
+      return `<tr>
+        <td>${a.type_arret||''}</td>
+        <td><span class="badge ${cls}">${cat}</span></td>
+        <td>${(a.nb_arrets||0).toLocaleString('fr')}</td>
+        <td>
+          <div class="bar-cell">
+            <div class="mini-bar" style="width:${pct}px"></div>
+            <span>${(a.duree_totale_heures||0).toFixed(1)}h</span>
+          </div>
+        </td>
+        <td>${(a.duree_moyenne_min||0).toFixed(1)} min</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('tblArrets').innerHTML=`
+      <thead><tr>
+        <th>Type</th><th>Catégorie</th><th>Nb</th><th>Durée totale</th><th>Moy/arrêt</th>
+      </tr></thead><tbody>${rows}</tbody>`;
+  }
+
+  // ── OXYGÈNE STATS ──
+  const oxyDet=oxy.details||{};
+  document.getElementById('oxyStats').innerHTML=`
+    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:12px">
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Total O₂</div>
+      <div style="font-size:20px;font-weight:700;color:var(--o)">${(oxyDet.total_nm3||0).toLocaleString('fr')}</div>
+      <div style="font-size:11px;color:var(--t3)">Nm³</div>
+    </div>
+    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:12px">
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Moy / coulée</div>
+      <div style="font-size:20px;font-weight:700;color:var(--cyan)">${(oxyDet.moyenne_par_coulee_nm3||0).toLocaleString('fr')}</div>
+      <div style="font-size:11px;color:var(--t3)">Nm³/coulée</div>
+    </div>
+    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:12px">
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Nb coulées</div>
+      <div style="font-size:20px;font-weight:700;color:var(--green)">${(oxyDet.nb_coulees||0).toLocaleString('fr')}</div>
+      <div style="font-size:11px;color:var(--t3)">coulées</div>
+    </div>`;
+
+  // ── BRAMES STATS ──
+  const braDet=bra.details||{};
+  document.getElementById('braStats').innerHTML=`
+    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:12px">
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Poids moyen</div>
+      <div style="font-size:20px;font-weight:700;color:var(--o)">${(braDet.poids_moyen_kg||0).toLocaleString('fr')}</div>
+      <div style="font-size:11px;color:var(--t3)">kg / brame</div>
+    </div>
+    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:12px">
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Total produit</div>
+      <div style="font-size:20px;font-weight:700;color:var(--blue)">${(braDet.poids_total_tonnes||0).toLocaleString('fr')}</div>
+      <div style="font-size:11px;color:var(--t3)">tonnes</div>
+    </div>
+    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:12px">
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Nb brames</div>
+      <div style="font-size:20px;font-weight:700;color:var(--green)">${(braDet.nb_brames||0).toLocaleString('fr')}</div>
+      <div style="font-size:11px;color:var(--t3)">brames</div>
+    </div>`;
+}
+
+loadData();
+</script>
+</body>
+</html>
