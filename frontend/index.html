@@ -5,391 +5,257 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Maghreb Steel · KPI Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#06080f;
-  --s1:#0c1018;--s2:#111620;--s3:#161d2a;--s4:#1c2535;--s5:#222e42;
-  --b1:rgba(255,255,255,.05);--b2:rgba(255,255,255,.08);--b3:rgba(255,255,255,.12);
-  --o:#f97316;--o2:#fb923c;--o3:#fdba74;--o4:#fff7ed;
-  --og:rgba(249,115,22,.15);--og2:rgba(249,115,22,.08);
-  --blue:#3b82f6;--green:#22c55e;--red:#ef4444;--purple:#a855f7;--cyan:#06b6d4;
-  --t1:#e8f0fe;--t2:#8898aa;--t3:#4a5568;--t4:#2d3748;
-  --r:12px;--r2:16px;--r3:20px;
-  --shadow:0 8px 40px rgba(0,0,0,.5);
-  --glow:0 0 30px rgba(249,115,22,.15);
+  --bg:#0f1117;--s1:#161b24;--s2:#1c2333;--s3:#222d3d;--s4:#2a3650;
+  --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.1);
+  --o:#f97316;--o2:#fb923c;--o3:#fdba74;
+  --t1:#f1f5f9;--t2:#94a3b8;--t3:#475569;--t4:#1e293b;
+  --blue:#3b82f6;--green:#22c55e;--red:#ef4444;
+  --r:10px;--r2:14px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t1);font-size:14px;display:flex;flex-direction:column}
 ::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--b2);border-radius:10px}
-::-webkit-scrollbar-thumb:hover{background:var(--b3)}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px}
 
-/* ─── TOPBAR ─── */
+/* TOPBAR */
 .topbar{
-  height:54px;flex-shrink:0;z-index:50;
-  background:linear-gradient(180deg,rgba(12,16,24,.95) 0%,rgba(12,16,24,.85) 100%);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  height:52px;flex-shrink:0;
+  background:var(--s1);
   border-bottom:1px solid var(--b1);
-  display:flex;align-items:center;padding:0 18px;gap:12px;
+  display:flex;align-items:center;padding:0 16px;gap:12px;
 }
-.t-logo{
-  width:34px;height:34px;border-radius:9px;flex-shrink:0;
-  background:linear-gradient(135deg,#f97316 0%,#fb923c 50%,#fbbf24 100%);
-  display:flex;align-items:center;justify-content:center;font-size:17px;
-  box-shadow:0 0 20px rgba(249,115,22,.4),0 2px 8px rgba(0,0,0,.3);
-  position:relative;
-}
-.t-logo::after{
-  content:'';position:absolute;inset:0;border-radius:9px;
-  background:linear-gradient(135deg,rgba(255,255,255,.2),transparent);
-}
-.t-info{flex:1}
-.t-name{font-size:14px;font-weight:700;letter-spacing:-.2px;
-  background:linear-gradient(90deg,#f1f5f9,#fdba74);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.t-sub{font-size:10px;color:var(--t3);margin-top:1px;letter-spacing:.3px}
-.t-right{display:flex;align-items:center;gap:6px}
-.tbadge{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;
-  backdrop-filter:blur(8px);
-}
-.tb-live{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#4ade80}
-.tb-model{background:rgba(255,255,255,.04);border:1px solid var(--b1);color:var(--t3)}
-.ldot{width:6px;height:6px;background:#4ade80;border-radius:50%;
-  box-shadow:0 0 8px #22c55e;animation:lp 2.5s ease-in-out infinite}
-@keyframes lp{0%,100%{opacity:1;box-shadow:0 0 8px #22c55e}50%{opacity:.5;box-shadow:0 0 16px #22c55e}}
+.logo{width:32px;height:32px;background:var(--o);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.top-title{font-size:14px;font-weight:600;color:var(--t1)}
+.top-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.pill-g{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.15);color:#4ade80}
+.pill-m{background:var(--s2);border:1px solid var(--b1);color:var(--t3)}
+.ldot{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:lp 2s infinite}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* ─── LAYOUT ─── */
+/* LAYOUT */
 .layout{display:flex;flex:1;overflow:hidden}
 
-/* ─── SIDEBAR ─── */
+/* SIDEBAR */
 .sidebar{
-  width:250px;flex-shrink:0;
-  background:linear-gradient(180deg,var(--s1) 0%,var(--bg) 100%);
+  width:240px;flex-shrink:0;
+  background:var(--s1);
   border-right:1px solid var(--b1);
-  display:flex;flex-direction:column;overflow:hidden;
+  display:flex;flex-direction:column;
 }
-.sb-top{padding:12px 12px 8px}
-.btn-nc{
-  width:100%;padding:9px 14px;border-radius:var(--r);
-  background:linear-gradient(135deg,rgba(249,115,22,.12),rgba(251,146,60,.06));
-  border:1px solid rgba(249,115,22,.2);
+.sb-btn{
+  margin:12px;padding:9px;border-radius:var(--r);
+  background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.2);
   color:var(--o2);font-size:12px;font-weight:600;
-  cursor:pointer;transition:all .2s;font-family:inherit;
-  display:flex;align-items:center;justify-content:center;gap:7px;
+  cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:all .15s;
 }
-.btn-nc:hover{
-  background:linear-gradient(135deg,rgba(249,115,22,.2),rgba(251,146,60,.12));
-  border-color:rgba(249,115,22,.4);transform:translateY(-1px);
-  box-shadow:0 4px 16px rgba(249,115,22,.15);
-}
-.sb-body{flex:1;overflow-y:auto;padding:0 10px 16px}
-.sec{margin-top:14px}
+.sb-btn:hover{background:rgba(249,115,22,.18);border-color:var(--o)}
+.sb-scroll{flex:1;overflow-y:auto;padding:0 8px 12px}
 .sec-lbl{
-  font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;
-  color:var(--t4);padding:0 4px;margin-bottom:7px;
-  display:flex;align-items:center;gap:6px;
+  font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;
+  color:var(--t4);padding:10px 6px 5px;
 }
-.sec-lbl::after{content:'';flex:1;height:1px;background:var(--b1);margin-left:6px}
-
-/* Stats */
-.sg{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.sc{
-  background:linear-gradient(135deg,var(--s3),var(--s2));
-  border:1px solid var(--b1);border-radius:var(--r);
-  padding:10px 8px;text-align:center;transition:all .2s;cursor:default;
-  position:relative;overflow:hidden;
-}
-.sc::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(249,115,22,.3),transparent);
-}
-.sc:hover{border-color:rgba(249,115,22,.15);transform:translateY(-1px)}
-.sc-n{font-size:22px;font-weight:800;color:var(--o);line-height:1;
-  background:linear-gradient(135deg,#f97316,#fb923c);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.sc-l{font-size:10px;color:var(--t3);margin-top:3px;font-weight:500}
-
-/* Tags */
-.tw{display:flex;flex-wrap:wrap;gap:4px;min-height:20px}
-.st{padding:3px 8px;border-radius:8px;font-size:11px;font-weight:500;transition:transform .15s}
-.st:hover{transform:scale(1.05)}
-.stk{background:rgba(249,115,22,.1);color:#fb923c;border:1px solid rgba(249,115,22,.18)}
-.std{background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.18)}
-.sts{background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.18)}
-.stx{background:rgba(168,85,247,.1);color:#c084fc;border:1px solid rgba(168,85,247,.18)}
-
-/* Quick btns */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:4px}
+.stat{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:9px 8px;text-align:center}
+.stat-n{font-size:20px;font-weight:700;color:var(--o);line-height:1}
+.stat-l{font-size:10px;color:var(--t3);margin-top:2px}
+.tag-row{display:flex;flex-wrap:wrap;gap:3px;min-height:18px}
+.stag{padding:2px 7px;border-radius:8px;font-size:11px;font-weight:500}
+.sk{background:rgba(249,115,22,.1);color:var(--o2);border:1px solid rgba(249,115,22,.15)}
+.sd{background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.15)}
+.sx{background:rgba(168,85,247,.1);color:#c084fc;border:1px solid rgba(168,85,247,.15)}
+.sdiv{height:1px;background:var(--b1);margin:8px 4px}
 .ql{display:flex;flex-direction:column;gap:1px}
 .qb{
-  background:transparent;border:none;border-radius:8px;
-  padding:7px 9px;color:var(--t2);font-size:12px;
-  cursor:pointer;text-align:left;transition:all .18s;
-  display:flex;align-items:center;gap:8px;font-family:inherit;line-height:1.4;
+  background:transparent;border:none;border-radius:7px;
+  padding:7px 8px;color:var(--t2);font-size:12px;
+  cursor:pointer;text-align:left;transition:all .15s;
+  display:flex;align-items:center;gap:8px;font-family:inherit;
 }
-.qb:hover{background:rgba(249,115,22,.06);color:var(--t1);padding-left:13px;border-left:2px solid rgba(249,115,22,.4)}
-.qi{font-size:12px;width:16px;text-align:center;flex-shrink:0;opacity:.8}
-.sdiv{height:1px;background:var(--b1);margin:10px 2px}
+.qb:hover{background:rgba(249,115,22,.06);color:var(--t1)}
+.qb .qi{font-size:11px;width:15px;text-align:center;flex-shrink:0;opacity:.7}
 
-/* ─── MAIN ─── */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
-.main-bg{
-  position:absolute;inset:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 60% 40% at 20% 10%,rgba(249,115,22,.03) 0%,transparent 70%),
-    radial-gradient(ellipse 40% 30% at 80% 80%,rgba(59,130,246,.02) 0%,transparent 70%);
-}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 
-/* Messages */
-.msgs{flex:1;overflow-y:auto;position:relative;z-index:1}
+/* MESSAGES */
+.msgs{flex:1;overflow-y:auto;padding:0 0 8px}
 
 /* Welcome */
-.welcome{max-width:580px;margin:60px auto 0;padding:0 24px;text-align:center}
-.wi{
-  width:68px;height:68px;margin:0 auto 20px;border-radius:18px;
-  background:linear-gradient(135deg,#f97316,#fb923c,#fbbf24);
-  display:flex;align-items:center;justify-content:center;font-size:32px;
-  box-shadow:0 0 50px rgba(249,115,22,.2),0 10px 40px rgba(0,0,0,.4);
-  position:relative;
-}
-.wi::after{
-  content:'';position:absolute;inset:-1px;border-radius:19px;
-  background:linear-gradient(135deg,rgba(255,255,255,.15),transparent,rgba(249,115,22,.1));
-  pointer-events:none;
-}
-.welcome h2{
-  font-size:27px;font-weight:800;margin-bottom:10px;letter-spacing:-.4px;
-  background:linear-gradient(135deg,var(--t1) 40%,var(--o3));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.welcome p{font-size:14px;color:var(--t2);line-height:1.8;margin-bottom:28px}
-.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:7px}
+.welcome{max-width:560px;margin:56px auto 0;padding:0 20px;text-align:center}
+.wi{width:60px;height:60px;margin:0 auto 18px;border-radius:16px;background:var(--o);display:flex;align-items:center;justify-content:center;font-size:28px}
+.welcome h2{font-size:22px;font-weight:700;margin-bottom:8px;color:var(--t1)}
+.welcome p{font-size:13px;color:var(--t2);line-height:1.75;margin-bottom:22px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .chip{
-  background:rgba(255,255,255,.03);border:1px solid var(--b2);
-  padding:8px 14px;border-radius:20px;font-size:12px;
-  color:var(--t2);cursor:pointer;transition:all .2s;font-family:inherit;
+  background:var(--s2);border:1px solid var(--b2);
+  padding:7px 13px;border-radius:20px;font-size:12px;
+  color:var(--t2);cursor:pointer;transition:all .18s;font-family:inherit;
 }
-.chip:hover{
-  border-color:rgba(249,115,22,.4);color:var(--o2);
-  background:rgba(249,115,22,.06);transform:translateY(-2px);
-  box-shadow:0 4px 16px rgba(249,115,22,.1);
-}
+.chip:hover{border-color:rgba(249,115,22,.4);color:var(--o2);background:rgba(249,115,22,.06)}
 
 /* Message row */
-.mrow{padding:18px 0;transition:background .15s;position:relative}
-.mrow.user{background:rgba(249,115,22,.02)}
-.mrow.user::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
-  background:linear-gradient(180deg,transparent,rgba(249,115,22,.3),transparent);
-}
-.mi{max-width:820px;margin:0 auto;padding:0 24px;display:flex;gap:13px}
-.mav{
-  width:31px;height:31px;border-radius:8px;flex-shrink:0;margin-top:2px;
-  display:flex;align-items:center;justify-content:center;font-size:14px;
-}
-.mav-u{
-  background:linear-gradient(135deg,#f97316,#fb923c);
-  box-shadow:0 2px 10px rgba(249,115,22,.35);
-}
-.mav-b{
-  background:linear-gradient(135deg,var(--s4),var(--s3));
-  border:1px solid var(--b2);
-}
+.mrow{padding:14px 0}
+.mrow.user{background:rgba(255,255,255,.015)}
+.mi{max-width:800px;margin:0 auto;padding:0 20px;display:flex;gap:11px}
+.mav{width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:1px}
+.mav-u{background:var(--o)}
+.mav-b{background:var(--s3);border:1px solid var(--b2);color:var(--t2);font-size:11px;font-weight:600}
 .mb{flex:1;min-width:0}
-.mwho{font-size:11px;font-weight:600;color:var(--t3);margin-bottom:7px;display:flex;align-items:center;gap:7px}
-.mwho-badge{
-  padding:1px 6px;border-radius:6px;font-size:10px;font-weight:500;
-  background:rgba(249,115,22,.1);color:var(--o2);border:1px solid rgba(249,115,22,.15);
-}
-.mt{font-size:14px;line-height:1.8;color:var(--t1)}
-.mt p{margin-bottom:9px}.mt p:last-child{margin-bottom:0}
-.mt ul,.mt ol{padding-left:20px;margin:9px 0;display:flex;flex-direction:column;gap:5px}
-.mt li{color:var(--t1);line-height:1.7;
-  position:relative;
-}
+.mwho{font-size:11px;color:var(--t3);margin-bottom:6px}
+.mt{font-size:14px;line-height:1.75;color:var(--t1)}
+.mt p{margin-bottom:8px}.mt p:last-child{margin-bottom:0}
+.mt ul{padding-left:18px;margin:8px 0;display:flex;flex-direction:column;gap:4px}
+.mt ol{padding-left:18px;margin:8px 0;display:flex;flex-direction:column;gap:4px}
+.mt li{color:var(--t1);line-height:1.65}
 .mt ul li::marker{color:var(--o2)}
 .mt strong{color:var(--o3);font-weight:600}
 .mt em{color:var(--t2)}
-.mt code{
-  background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.15);
-  padding:2px 7px;border-radius:5px;
-  font-family:'SF Mono','Fira Code','Courier New',monospace;
-  font-size:12px;color:var(--o2);
-}
-.mt h3{color:var(--o3);font-size:14px;font-weight:700;margin:13px 0 6px}
-.mt h4{color:var(--o3);font-size:13px;font-weight:600;margin:10px 0 5px}
+.mt code{background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.12);padding:1px 6px;border-radius:4px;font-family:monospace;font-size:12px;color:var(--o2)}
+.mt h3,.mt h4{color:var(--o3);font-weight:600;margin:10px 0 5px}
+.mt h3{font-size:14px}.mt h4{font-size:13px}
 
-/* Footer */
-.mf{margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.ftg{padding:3px 8px;border-radius:7px;font-size:11px;font-weight:500}
+/* KPI Card */
+.kpi-card{
+  background:var(--s2);
+  border:1px solid var(--b1);
+  border-left:3px solid var(--o);
+  border-radius:var(--r2);
+  padding:16px;margin-top:10px;
+}
+.kpi-hero{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
+.kpi-num{font-size:36px;font-weight:700;color:var(--o);line-height:1;letter-spacing:-1px}
+.kpi-unit{font-size:16px;color:var(--t2);font-weight:400}
+.kpi-name{font-size:12px;color:var(--t3);margin-bottom:12px}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.kpi-box{background:var(--bg);border:1px solid var(--b1);border-radius:var(--r);padding:9px 11px}
+.kpi-box-lbl{font-size:10px;color:var(--t3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
+.kpi-box-val{font-size:15px;font-weight:600;color:var(--t1)}
+.kpi-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.kpi-item{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:var(--bg);border:1px solid var(--b1);border-radius:var(--r)}
+.kpi-item-name{font-size:12px;color:var(--t2)}
+.kpi-item-val{font-size:13px;font-weight:600;color:var(--t1)}
+.kpi-bar-wrap{margin-top:10px}
+.kpi-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.kpi-bar-lbl{font-size:11px;color:var(--t2);width:90px;flex-shrink:0;text-align:right}
+.kpi-bar-track{flex:1;height:6px;background:var(--b1);border-radius:3px;overflow:hidden}
+.kpi-bar-fill{height:100%;background:var(--o);border-radius:3px}
+.kpi-bar-val{font-size:11px;color:var(--t2);width:70px;flex-shrink:0}
+
+/* Footer meta */
+.mf{margin-top:8px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.ftg{padding:2px 7px;border-radius:7px;font-size:11px;font-weight:500}
 .fk{background:rgba(249,115,22,.08);color:var(--o2);border:1px solid rgba(249,115,22,.12)}
 .fd{background:rgba(59,130,246,.08);color:#60a5fa;border:1px solid rgba(59,130,246,.12)}
 .fs{background:rgba(34,197,94,.08);color:#4ade80;border:1px solid rgba(34,197,94,.12)}
 .fx{background:rgba(168,85,247,.08);color:#c084fc;border:1px solid rgba(168,85,247,.12)}
-.flat{font-size:11px;color:var(--t4);display:flex;align-items:center;gap:3px}
-.flat svg{opacity:.5}
+.flat{font-size:11px;color:var(--t4)}
 .fplb{background:none;border:none;font-size:11px;color:var(--t4);cursor:pointer;padding:0;font-family:inherit;transition:color .15s}
 .fplb:hover{color:var(--t2)}
-.fpl{
-  background:linear-gradient(135deg,var(--s3),var(--s2));
-  border:1px solid var(--b1);border-radius:10px;
-  padding:11px 13px;margin-top:8px;display:none;flex-direction:column;gap:6px;
-}
+.fpl{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:10px 12px;margin-top:7px;display:none;flex-direction:column;gap:5px}
 .fpl.open{display:flex}
-.fps{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--t2)}
-.fpn{
-  width:19px;height:19px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,rgba(249,115,22,.15),rgba(251,146,60,.08));
-  border:1px solid rgba(249,115,22,.2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:9px;font-weight:700;color:var(--o2);
-}
+.fps{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--t2)}
+.fpn{width:18px;height:18px;border-radius:50%;background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.15);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--o2);flex-shrink:0}
 
 /* Typing */
-.tr{padding:18px 0}
-.tri{max-width:820px;margin:0 auto;padding:0 24px;display:flex;gap:13px;align-items:flex-start}
-.tdots{display:flex;gap:5px;align-items:center;padding:7px 0}
-.tdots span{
-  width:7px;height:7px;border-radius:50%;
-  background:linear-gradient(135deg,var(--o),var(--o2));
-  animation:tda 1.5s ease-in-out infinite;
-}
-.tdots span:nth-child(2){animation-delay:.15s}
-.tdots span:nth-child(3){animation-delay:.3s}
-@keyframes tda{0%,60%,100%{transform:translateY(0) scale(.8);opacity:.4}30%{transform:translateY(-7px) scale(1.1);opacity:1}}
+.tr{padding:14px 0}
+.tri{max-width:800px;margin:0 auto;padding:0 20px;display:flex;gap:11px;align-items:flex-start}
+.tdots{display:flex;gap:4px;align-items:center;padding:6px 0}
+.tdots span{width:7px;height:7px;border-radius:50%;background:var(--t4);animation:td 1.4s ease-in-out infinite}
+.tdots span:nth-child(2){animation-delay:.14s}
+.tdots span:nth-child(3){animation-delay:.28s}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-6px);opacity:1;background:var(--o)}}
 
 /* Error */
-.ew{max-width:820px;margin:0 auto;padding:8px 24px}
-.eb{
-  background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);
-  border-radius:10px;padding:12px 16px;color:#fca5a5;font-size:13px;
-}
+.ew{max-width:800px;margin:0 auto;padding:6px 20px}
+.eb{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--r);padding:10px 14px;color:#fca5a5;font-size:13px}
 
-/* ─── INPUT ─── */
-.inp-sec{flex-shrink:0;padding:10px 24px 16px;position:relative;z-index:10}
-.inp-sec::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(to top,var(--bg) 50%,transparent);
-}
-.inp-wrap{max-width:820px;margin:0 auto;position:relative;z-index:1}
+/* INPUT */
+.inp-sec{flex-shrink:0;padding:10px 20px 16px;background:linear-gradient(to top,var(--bg) 60%,transparent)}
+.inp-wrap{max-width:800px;margin:0 auto}
 .inp-box{
-  background:linear-gradient(135deg,var(--s2),var(--s1));
-  border:1px solid var(--b2);border-radius:16px;overflow:hidden;
-  transition:border-color .2s,box-shadow .2s;
-  box-shadow:0 4px 32px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.03);
+  background:var(--s2);border:1px solid var(--b2);border-radius:14px;
+  overflow:hidden;transition:border-color .2s;
+  box-shadow:0 2px 20px rgba(0,0,0,.25);
 }
-.inp-box:focus-within{
-  border-color:rgba(249,115,22,.35);
-  box-shadow:0 0 0 3px rgba(249,115,22,.05),0 4px 32px rgba(0,0,0,.3);
-}
-.inp-top{display:flex;align-items:flex-end;padding:13px 13px 9px;gap:10px}
-#inp{
-  flex:1;background:transparent;border:none;outline:none;
-  color:var(--t1);font-size:14px;resize:none;
-  max-height:160px;min-height:24px;
-  font-family:'Inter',sans-serif;line-height:1.65;padding-right:6px;
-}
+.inp-box:focus-within{border-color:rgba(249,115,22,.35)}
+.inp-top{display:flex;align-items:flex-end;padding:12px 12px 8px;gap:9px}
+#inp{flex:1;background:transparent;border:none;outline:none;color:var(--t1);font-size:14px;resize:none;max-height:140px;min-height:22px;font-family:'Inter',sans-serif;line-height:1.55;padding-right:4px}
 #inp::placeholder{color:var(--t4)}
-.sbtn{
-  width:38px;height:38px;flex-shrink:0;
-  background:linear-gradient(135deg,#f97316,#fb923c);
-  border:none;border-radius:10px;color:#fff;
-  cursor:pointer;transition:all .2s;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 12px rgba(249,115,22,.4);
-  position:relative;overflow:hidden;
-}
-.sbtn::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);
-}
-.sbtn:hover{transform:scale(1.1) translateY(-1px);box-shadow:0 6px 20px rgba(249,115,22,.5)}
-.sbtn:disabled{background:var(--s4);color:var(--t4);transform:none;box-shadow:none;cursor:not-allowed}
-.sbtn:disabled::before{display:none}
-.inp-bot{display:flex;justify-content:space-between;align-items:center;padding:0 13px 9px}
+.sbtn{width:36px;height:36px;flex-shrink:0;background:var(--o);border:none;border-radius:9px;color:#fff;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.sbtn:hover{background:var(--o2);transform:scale(1.08)}
+.sbtn:disabled{background:var(--s4);color:var(--t4);transform:none;cursor:not-allowed}
+.inp-bot{padding:0 12px 9px;display:flex;justify-content:space-between}
 .inp-hint{font-size:11px;color:var(--t4)}
-.inp-hint kbd{
-  background:rgba(255,255,255,.04);border:1px solid var(--b1);
-  padding:1px 5px;border-radius:4px;font-size:10px;font-family:inherit;
-  color:var(--t3);
-}
+.inp-hint kbd{background:var(--s3);border:1px solid var(--b1);padding:1px 4px;border-radius:3px;font-size:10px;color:var(--t3);font-family:inherit}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="t-logo">🏭</div>
-  <div class="t-info">
-    <div class="t-name">Maghreb Steel · Assistant KPI IA</div>
-    <div class="t-sub">INDICATEURS DE PERFORMANCE · EAF · LF · CCM · PAF</div>
+  <div class="logo">🏭</div>
+  <div>
+    <div class="top-title">Maghreb Steel · Assistant KPI IA</div>
+    <div class="top-sub">EAF · LF · CCM · PAF · Indicateurs de performance</div>
   </div>
-  <div class="t-right">
-    <span class="tbadge tb-model">⚡ Groq · Llama 3.1</span>
-    <span class="tbadge tb-live"><span class="ldot"></span>En ligne</span>
+  <div class="top-right">
+    <span class="pill pill-m">⚡ Groq · Llama 3.1</span>
+    <span class="pill pill-g"><span class="ldot"></span>En ligne</span>
   </div>
 </div>
 
 <div class="layout">
   <div class="sidebar">
-    <div class="sb-top">
-      <button class="btn-nc" onclick="newChat()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nouvelle conversation
-      </button>
-    </div>
-    <div class="sb-body">
-      <div class="sec">
-        <div class="sec-lbl">Session</div>
-        <div class="sg">
-          <div class="sc"><div class="sc-n" id="sq">0</div><div class="sc-l">Questions</div></div>
-          <div class="sc"><div class="sc-n" id="sl">—</div><div class="sc-l">Latence ms</div></div>
-          <div class="sc"><div class="sc-n" id="sk">0</div><div class="sc-l">KPI</div></div>
-          <div class="sc"><div class="sc-n" id="sd">0</div><div class="sc-l">Doc</div></div>
-        </div>
+    <button class="sb-btn" onclick="newChat()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nouvelle conversation
+    </button>
+    <div class="sb-scroll">
+      <div class="sec-lbl">Session</div>
+      <div class="stats-grid">
+        <div class="stat"><div class="stat-n" id="sq">0</div><div class="stat-l">Questions</div></div>
+        <div class="stat"><div class="stat-n" id="sl">—</div><div class="stat-l">Latence ms</div></div>
+        <div class="stat"><div class="stat-n" id="sk">0</div><div class="stat-l">KPI</div></div>
+        <div class="stat"><div class="stat-n" id="sd">0</div><div class="stat-l">Doc</div></div>
       </div>
-      <div class="sec">
-        <div class="sec-lbl">Types</div>
-        <div class="tw" id="tw"><span style="font-size:11px;color:var(--t4)">—</span></div>
+      <div class="sec-lbl" style="margin-top:8px">Types</div>
+      <div class="tag-row" id="tw"><span style="font-size:11px;color:var(--t4)">—</span></div>
+      <div class="sdiv"></div>
+      <div class="sec-lbl">📊 KPIs Production</div>
+      <div class="ql">
+        <button class="qb" onclick="ask('Quel est le taux de disponibilité EAF ?')"><span class="qi">📈</span>Taux de disponibilité EAF</button>
+        <button class="qb" onclick="ask('Quelle est la consommation électrique totale ?')"><span class="qi">⚡</span>Consommation électrique</button>
+        <button class="qb" onclick="ask('Quelle est la consommation électrique par mois ?')"><span class="qi">📅</span>Conso élec / mois</button>
+        <button class="qb" onclick="ask('Combien de coulées ont été produites ?')"><span class="qi">🔥</span>Production coulées</button>
+        <button class="qb" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')"><span class="qi">⚠️</span>Défauts brames</button>
+        <button class="qb" onclick="ask('Quels sont les arrêts les plus longs ?')"><span class="qi">🛑</span>Top arrêts EAF</button>
+        <button class="qb" onclick="ask('Quelle est la consommation d oxygène EAF ?')"><span class="qi">💨</span>Consommation oxygène</button>
+        <button class="qb" onclick="ask('Quel est le poids moyen des brames ?')"><span class="qi">⚖️</span>Poids moyen brames</button>
       </div>
       <div class="sdiv"></div>
-      <div class="sec">
-        <div class="sec-lbl">📊 KPIs</div>
-        <div class="ql">
-          <button class="qb" onclick="ask('Quel est le taux de disponibilité EAF ?')"><span class="qi">📈</span>Taux de disponibilité EAF</button>
-          <button class="qb" onclick="ask('Quelle est la consommation électrique totale ?')"><span class="qi">⚡</span>Consommation électrique</button>
-          <button class="qb" onclick="ask('Quelle est la consommation électrique par mois ?')"><span class="qi">📅</span>Conso élec / mois</button>
-          <button class="qb" onclick="ask('Combien de coulées ont été produites ?')"><span class="qi">🔥</span>Production coulées</button>
-          <button class="qb" onclick="ask('Quels sont les défauts les plus fréquents sur les brames ?')"><span class="qi">⚠️</span>Défauts brames</button>
-          <button class="qb" onclick="ask('Quels sont les arrêts les plus longs ?')"><span class="qi">🛑</span>Top arrêts EAF</button>
-          <button class="qb" onclick="ask('Quelle est la consommation d oxygène EAF ?')"><span class="qi">💨</span>Consommation oxygène</button>
-          <button class="qb" onclick="ask('Quel est le poids moyen des brames ?')"><span class="qi">⚖️</span>Poids moyen brames</button>
-        </div>
-      </div>
-      <div class="sdiv"></div>
-      <div class="sec">
-        <div class="sec-lbl">📖 Documentation</div>
-        <div class="ql">
-          <button class="qb" onclick="ask('Comment fonctionne le four EAF ?')"><span class="qi">🔬</span>Procédé EAF</button>
-          <button class="qb" onclick="ask('Quel est le rôle du four LF ?')"><span class="qi">🔬</span>Rôle du four LF</button>
-          <button class="qb" onclick="ask('Comment fonctionne la coulée continue CCM ?')"><span class="qi">🔬</span>Coulée continue CCM</button>
-          <button class="qb" onclick="ask('Qu est ce que le PAF ?')"><span class="qi">🔬</span>Parc à ferraille PAF</button>
-        </div>
+      <div class="sec-lbl">📖 Documentation</div>
+      <div class="ql">
+        <button class="qb" onclick="ask('Comment fonctionne le four EAF ?')"><span class="qi">🔬</span>Procédé EAF</button>
+        <button class="qb" onclick="ask('Quel est le rôle du four LF ?')"><span class="qi">🔬</span>Rôle du four LF</button>
+        <button class="qb" onclick="ask('Comment fonctionne la coulée continue CCM ?')"><span class="qi">🔬</span>Coulée continue CCM</button>
+        <button class="qb" onclick="ask('Qu est ce que le PAF ?')"><span class="qi">🔬</span>Parc à ferraille PAF</button>
       </div>
     </div>
   </div>
 
   <div class="main">
-    <div class="main-bg"></div>
     <div class="msgs" id="msgs">
       <div class="welcome" id="welcome">
         <div class="wi">🏭</div>
         <h2>Comment puis-je vous aider ?</h2>
-        <p>Votre assistant IA pour l'Aciérie Maghreb Steel.<br>
-        KPIs de production · Consommation énergétique · Qualité · Équipements.</p>
+        <p>Votre assistant IA pour l'Aciérie Maghreb Steel.<br>KPIs de production · Consommation · Qualité · Équipements.</p>
         <div class="chips">
           <span class="chip" onclick="ask('Quel est le taux de disponibilité EAF ?')">📈 TD% EAF</span>
           <span class="chip" onclick="ask('Quelle est la consommation électrique totale ?')">⚡ Consommation</span>
@@ -407,7 +273,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <div class="inp-top">
             <textarea id="inp" rows="1" placeholder="Posez votre question sur les KPIs ou les équipements..."></textarea>
             <button class="sbtn" id="sbtn" onclick="send()">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="position:relative;z-index:1">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <line x1="22" y1="2" x2="11" y2="13"/>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>
@@ -426,7 +292,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 const API="http://localhost:8000/api/v1";
 let qc=0,tl=0,kc=0,dc=0;const tm={};
 const ta=document.getElementById('inp');
-ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,160)+'px'});
+ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,140)+'px'});
 ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
 function ask(q){ta.value=q;ta.style.height='auto';send()}
 function tc(t){return t==='kpi'||t==='sql'?'k':t==='doc'?'d':t==='direct'?'x':'s'}
@@ -446,13 +312,69 @@ function newChat(){
   document.getElementById('tw').innerHTML='<span style="font-size:11px;color:var(--t4)">—</span>';
 }
 
+// Parse réponse pour affichage KPI card vs texte normal
+function parseKPI(answer){
+  const lines=answer.split('\n').filter(l=>l.trim());
+  const mainLine=lines[0]||'';
+
+  // Détecter valeur principale
+  const numMatch=mainLine.match(/([\d\s,\.]+)\s*(%|MWh|Wh|Nm³|kg|t|coulées|h|jours?)/i);
+  if(!numMatch) return null;
+
+  const val=numMatch[1].trim();
+  const unit=numMatch[2];
+
+  // Extraire détails (lignes avec ":")
+  const details=[];
+  for(let i=1;i<lines.length;i++){
+    const l=lines[i].replace(/^[\-\*\+]\s*/,'');
+    const parts=l.split(':');
+    if(parts.length>=2){
+      details.push({label:parts[0].trim(),value:parts.slice(1).join(':').trim()});
+    }
+  }
+
+  return {val,unit,details,fullText:answer};
+}
+
+function buildKPICard(parsed,answer){
+  if(!parsed||parsed.details.length<2) return null;
+
+  // Nom KPI depuis première ligne
+  const firstLine=answer.split('\n')[0];
+  const nameMatch=firstLine.match(/^(.*?)\s+(?:est de|sont|a été|ont été)/i);
+  const name=nameMatch?nameMatch[1]:'KPI';
+
+  let html=`<div class="kpi-card">
+    <div class="kpi-hero">
+      <span class="kpi-num">${parsed.val}</span>
+      <span class="kpi-unit">${parsed.unit}</span>
+    </div>
+    <div class="kpi-name">${name}</div>`;
+
+  if(parsed.details.length>=2){
+    // Afficher en grille si 2-4 détails
+    const grid=parsed.details.slice(0,4);
+    html+=`<div class="kpi-grid">`;
+    for(const d of grid){
+      html+=`<div class="kpi-box">
+        <div class="kpi-box-lbl">${d.label}</div>
+        <div class="kpi-box-val">${d.value}</div>
+      </div>`;
+    }
+    html+=`</div>`;
+  }
+
+  html+=`</div>`;
+  return html;
+}
+
 function fmt(text){
   const lines=text.split('\n');
   let h='',ul=false,ol=false;
   function cL(){if(ul){h+='</ul>';ul=false}if(ol){h+='</ol>';ol=false}}
   function p(l){
     l=l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    l=l.replace(/\*\*\*(.*?)\*\*\*/g,'<strong><em>$1</em></strong>');
     l=l.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
     l=l.replace(/\*(.*?)\*/g,'<em>$1</em>');
     l=l.replace(/`([^`]+)`/g,'<code>$1</code>');
@@ -492,11 +414,8 @@ function addUser(q){
 function addTyping(){
   const m=document.getElementById('msgs');
   const d=document.createElement('div');d.className='tr';d.id='tr';
-  d.innerHTML=`<div class="tri"><div class="mav mav-b">🏭</div>
-    <div><div class="mwho" style="margin-bottom:7px">
-      <span style="font-size:11px;font-weight:600;color:var(--t3)">Assistant KPI</span>
-      <span class="mwho-badge">Maghreb Steel</span>
-    </div>
+  d.innerHTML=`<div class="tri"><div class="mav mav-b">MS</div>
+    <div><div class="mwho" style="margin-bottom:6px">Assistant KPI</div>
     <div class="tdots"><span></span><span></span><span></span></div>
     </div></div>`;
   m.appendChild(d);m.scrollTop=m.scrollHeight;
@@ -504,24 +423,37 @@ function addTyping(){
 
 function addBot(data){
   const m=document.getElementById('msgs');
-  const ans=data.answer||'';const tt=data.task_type||'';
-  const plan=data.plan||[];const lat=data.metadata?.total_latency_ms||0;
+  const ans=data.answer||'';
+  const tt=data.task_type||'';
+  const plan=data.plan||[];
+  const lat=data.metadata?.total_latency_ms||0;
   const pid='p'+Date.now();
+
+  // Essayer de parser comme KPI card
+  let contentHTML='';
+  if(tt==='kpi'||tt==='sql'){
+    const parsed=parseKPI(ans);
+    const card=parsed?buildKPICard(parsed,ans):null;
+    if(card){
+      // Afficher intro + card
+      const firstLine=ans.split('\n')[0];
+      contentHTML=`<p>${firstLine.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>${card}`;
+    } else {
+      contentHTML=fmt(ans);
+    }
+  } else {
+    contentHTML=fmt(ans);
+  }
+
   const ph=plan.map((s,i)=>`<div class="fps"><span class="fpn">${i+1}</span><span>${s}</span></div>`).join('');
   const d=document.createElement('div');d.className='mrow assistant';
-  d.innerHTML=`<div class="mi"><div class="mav mav-b">🏭</div>
+  d.innerHTML=`<div class="mi"><div class="mav mav-b">MS</div>
     <div class="mb">
-      <div class="mwho">
-        <span>Assistant KPI</span>
-        <span class="mwho-badge">Maghreb Steel</span>
-      </div>
-      <div class="mt">${fmt(ans)}</div>
+      <div class="mwho">Assistant KPI · Maghreb Steel</div>
+      <div class="mt">${contentHTML}</div>
       <div class="mf">
         <span class="ftg f${tc(tt)}">${tt||'—'}</span>
-        <span class="flat">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${lat}ms
-        </span>
+        <span class="flat">⚡ ${lat}ms</span>
         ${plan.length?`<button class="fplb" onclick="tp('${pid}')">▾ Plan</button>`:''}
       </div>
       ${plan.length?`<div class="fpl" id="${pid}">${ph}</div>`:''}
@@ -545,7 +477,7 @@ function upd(data){
   document.getElementById('sk').textContent=kc;
   document.getElementById('sd').textContent=dc;
   document.getElementById('tw').innerHTML=Object.entries(tm).map(([k,v])=>
-    `<span class="st st${tc(k)}">${k} ${v}</span>`).join('');
+    `<span class="stag s${tc(k)}">${k} ${v}</span>`).join('');
 }
 
 async function send(){
