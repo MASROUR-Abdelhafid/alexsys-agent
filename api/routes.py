@@ -67,3 +67,33 @@ async def get_kpis():
             for k, v in KPI_DEFINITIONS.items()
         ]
     }
+
+
+@router.get("/dashboard")
+async def get_dashboard_data():
+    """Données complètes pour le dashboard."""
+    from kpi.engine import KPIEngine
+    engine = KPIEngine()
+
+    try:
+        td    = engine.get_taux_disponibilite()
+        conso = engine.get_consommation_electrique(groupby="mois")
+        prod  = engine.get_production_coulees(groupby="mois")
+        defauts = engine.get_defauts_brames(limit=8)
+        arrets  = engine.get_arrets_by_type(limit=6)
+        oxy   = engine.get_consommation_oxygene()
+        brames = engine.get_poids_brames()
+
+        return {
+            "taux_disponibilite":    td,
+            "consommation_electrique": conso,
+            "production_coulees":    prod,
+            "defauts_brames":        defauts,
+            "arrets_by_type":        arrets,
+            "oxygene":               oxy,
+            "brames":                brames,
+            "status":                "ok",
+        }
+    except Exception as e:
+        logger.error("Erreur dashboard", error=str(e))
+        return {"status": "error", "message": str(e)}
