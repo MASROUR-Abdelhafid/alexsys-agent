@@ -51,20 +51,30 @@ class PlannerAgent:
             "date", "heure", "météo", "actualité", "news",
             "blague", "poème", "histoire",
         ]
+
         if any(w in query_lower for w in hors_domaine) and not is_kpi_query(query):
             task_type = "direct"
             plan = ["Répondre directement"]
 
-        elif is_kpi_query(query):
+        # ✅ KPI uniquement si ce n'est PAS une question explicative
+        elif is_kpi_query(query) and not any(
+            w in query_lower for w in [
+                "comment", "fonctionne", "fonctionnement",
+                "qu est ce", "qu'est", "c'est quoi",
+                "présentation", "rôle", "role", "expliquer",
+                "describe", "definition", "qu est",
+            ]
+        ):
             task_type = "kpi"
             plan = ["Détecter KPI", "Calculer via KPIEngine", "Générer réponse"]
 
+        # 📚 Documentation (questions explicatives)
         elif is_doc_query(query):
             task_type = "doc"
             plan = ["Rechercher dans documentation", "Générer réponse"]
 
+        # 🤖 Cas ambigus → LLM Planner
         else:
-            # LLM pour les cas ambigus
             try:
                 messages = [
                     SystemMessage(content=PLANNER_PROMPT),
@@ -72,13 +82,16 @@ class PlannerAgent:
                 ]
                 response = self.llm.invoke(messages)
                 raw = response.content.strip()
+
                 if "```json" in raw:
                     raw = raw.split("```json")[1].split("```")[0].strip()
                 elif "```" in raw:
                     raw = raw.split("```")[1].split("```")[0].strip()
+
                 data = json.loads(raw)
                 task_type = data.get("task_type", "sql")
                 plan = data.get("plan", ["Analyser", "Répondre"])
+
             except Exception as e:
                 logger.error("Erreur Planner LLM", error=str(e))
                 task_type = "sql"
