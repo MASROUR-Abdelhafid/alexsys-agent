@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
 import os
 
+API_TOKEN: str = os.getenv("API_TOKEN", "maghreb_steel_2025")
+
 load_dotenv()
 
 class Config:
