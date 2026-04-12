@@ -39,7 +39,7 @@ def run_benchmark():
         answer = result.get("final_response", "")
         task_type = result.get("task_type", "")
         type_ok = task_type in [tc["type"], "sql"] if tc["type"] == "kpi" else task_type == tc["type"]
-        answer_ok = tc["expect"].lower() in answer.lower().replace(" ", "").replace(",", "").replace(".", "")
+        answer_ok = tc["expect"].lower().replace(" ", "") in answer.lower().replace(" ", "").replace(",", "").replace(".", "")
         ok = type_ok and answer_ok
         if ok:
             passed += 1

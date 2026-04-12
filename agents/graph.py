@@ -13,6 +13,30 @@ from agents.sql_agent import SQLAgent
 from agents.retriever import RetrieverAgent
 from agents.generator import GeneratorAgent
 
+import json
+import logging
+import os
+
+os.makedirs("logs", exist_ok=True)
+_audit = logging.getLogger("audit")
+_audit.setLevel(logging.INFO)
+if not _audit.handlers:
+    _h = logging.FileHandler("logs/audit.log", encoding="utf-8")
+    _h.setFormatter(logging.Formatter("%(message)s"))
+    _audit.addHandler(_h)
+
+
+def _log_audit(query, task_type, latency_ms, session_id, error=""):
+    from datetime import datetime
+    _audit.info(json.dumps({
+        "timestamp": datetime.now().isoformat(),
+        "session_id": session_id,
+        "query": query[:100],
+        "task_type": task_type,
+        "latency_ms": latency_ms,
+        "error": error,
+    }, ensure_ascii=False))
+
 logger = structlog.get_logger(__name__)
 
 
@@ -117,6 +141,13 @@ def run_agent(query: str, session_id: str = "default") -> dict:
 
     logger.info("Agent démarré", query=query[:80], session=session_id)
     final_state = agent_graph.invoke(initial_state)
+    _log_audit(
+    query=query,
+    task_type=final_state.get("task_type", ""),
+    latency_ms=final_state.get("metadata", {}).get("total_latency_ms", 0),
+    session_id=session_id,
+    error="; ".join(final_state.get("errors", [])),
+)
     logger.info(
         "Agent terminé",
         task_type=final_state.get("task_type"),
