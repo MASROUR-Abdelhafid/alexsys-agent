@@ -173,19 +173,62 @@ async def export_kpis_csv(role: str = Depends(get_role)):
     prod   = engine.get_production_coulees(groupby="mois")
     oxy    = engine.get_consommation_oxygene()
     brames = engine.get_poids_brames()
+    defauts = engine.get_defauts_brames(limit=5)
 
+    # UTF-8 BOM pour compatibilité Excel Windows
     output = io.StringIO()
-    writer = csv.writer(output)
-    writer.writerow(["KPI", "Valeur", "Unité", "Source"])
-    writer.writerow(["Taux Disponibilité EAF", td.get("valeur"), "%", "Gold"])
-    writer.writerow(["Conso Électrique Totale", conso.get("total_mwh"), "MWh", "Gold"])
-    writer.writerow(["Production Coulées", prod.get("total_coulees"), "coulées", "Gold"])
-    writer.writerow(["Consommation Oxygène", oxy.get("valeur"), "Nm³", "Gold"])
-    writer.writerow(["Poids Moyen Brames", brames.get("valeur"), "kg", "Gold"])
+    output.write('\ufeff')  # BOM UTF-8
+    writer = csv.writer(output, delimiter=';')
+    writer.writerow(["KPI", "Valeur", "Unité", "Détail", "Source", "Statut"])
+    writer.writerow([
+        "Taux Disponibilité EAF",
+        td.get("valeur", 0),
+        "%",
+        f"Nb jours: {td.get('details', {}).get('nb_jours', 0)}",
+        "Gold", "Officiel"
+    ])
+    writer.writerow([
+        "Consommation Électrique Totale",
+        conso.get("total_mwh", 0),
+        "MWh",
+        f"EAF + LF combinés",
+        "Gold", "Officiel"
+    ])
+    writer.writerow([
+        "Production Coulées",
+        prod.get("total_coulees", 0),
+        "coulées",
+        f"Période complète",
+        "Gold", "Officiel"
+    ])
+    writer.writerow([
+        "Consommation Oxygène EAF",
+        oxy.get("valeur", 0),
+        "Nm³",
+        f"Moy/coulée: {oxy.get('details', {}).get('moyenne_par_coulee_nm3', 0)} Nm³",
+        "Gold", "Officiel"
+    ])
+    writer.writerow([
+        "Poids Moyen Brames",
+        brames.get("valeur", 0),
+        "kg",
+        f"Total: {brames.get('details', {}).get('poids_total_tonnes', 0)} t",
+        "Gold", "Officiel"
+    ])
+    writer.writerow([
+        "Défauts Brames Total",
+        defauts.get("total_defauts", 0),
+        "défauts",
+        f"Types détectés: {len(defauts.get('data', []))}",
+        "Gold", "Officiel"
+    ])
 
     output.seek(0)
     return StreamingResponse(
-        iter([output.getvalue()]),
-        media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=kpis_maghreb_steel.csv"}
+        iter([output.getvalue().encode('utf-8-sig')]),
+        media_type="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": "attachment; filename=kpis_maghreb_steel.csv",
+            "Content-Type": "text/csv; charset=utf-8"
+        }
     )
