@@ -157,15 +157,12 @@ class DocumentIngestionPipeline:
 
                 chunk = {
                     "content": chunk_text.strip(),
-                    "metadata": {
-                        "source": source,
-                        "chunk_id": chunk_id,
-                        "chunk_index": idx,
-                        "total_chunks": total,
-                        "char_count": len(chunk_text),
-                        "word_count": len(chunk_text.split()),
-                        "section": section,
-                    }
+                    "source": os.path.basename(source),
+                    "page": doc.metadata.get("page", 0) + 1,  # page réelle PDF (1-indexed)
+                    "section": section or "Documentation Aciérie",
+                    "chunk_id": chunk_id,
+                    "chunk_index": idx,
+                    "char_count": len(chunk_text),
                 }
                 all_chunks.append(chunk)
 
@@ -174,7 +171,7 @@ class DocumentIngestionPipeline:
             total_documents=len(documents),
             total_chunks=len(all_chunks),
             avg_chunk_size=sum(
-                c["metadata"]["char_count"] for c in all_chunks
+                c.get("char_count", len(c.get("content", ""))) for c in all_chunks
             ) // max(len(all_chunks), 1),
         )
 
@@ -205,13 +202,15 @@ class DocumentIngestionPipeline:
         enriched_chunks = []
         for chunk in chunks:
             enriched_chunk = {
-                **chunk,
-                "source": os.path.basename(chunk.get("source", "")),
-                "page": chunk.get("page", 1),
-                "section": chunk.get("section", "unknown"),
-                "chunk_length": len(chunk.get("content", "")),
-                "timestamp": datetime.now().isoformat(),
+                "content":       chunk.get("content", ""),
+                "source":        chunk.get("source", "PDF Aciérie"),
+                "page":          chunk.get("page", 1),
+                "section":       chunk.get("section", "Documentation"),
+                "chunk_id":      chunk.get("chunk_id", ""),
+                "chunk_index":   chunk.get("chunk_index", 0),
+                "chunk_length":  len(chunk.get("content", "")),
+                "timestamp":     datetime.now().isoformat(),
             }
             enriched_chunks.append(enriched_chunk)
-        
+
         return enriched_chunks
