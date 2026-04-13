@@ -78,29 +78,24 @@ class MilvusVectorStore:
         self.collection.load()
         logger.info("Collection créée avec index HNSW", name=COLLECTION_NAME, dim=EMBEDDING_DIM)
 
-    def insert_chunks(self, chunks: List[Dict[str, Any]]) -> int:
-        if not self.collection:
-            raise RuntimeError("Collection non initialisée.")
-
-        texts = [c["content"] for c in chunks]
-        logger.info("Génération des embeddings...", count=len(texts))
-        embeddings = self.embedding_model.encode(texts, batch_size=32, show_progress=True)
-
+    def insert_chunks(self, chunks: list) -> int:
+        """Insère les chunks dans Milvus."""
+        if not chunks:
+            return 0
+        embeddings = self._embed([c["content"] for c in chunks])
         data = [
-            [c["metadata"]["chunk_id"] for c in chunks],
+            [c.get("chunk_id", "") for c in chunks],
+            [c["content"] for c in chunks],
+            [c.get("source", "") for c in chunks],
+            [c.get("section", "") or "" for c in chunks],
+            [int(c.get("page", 1) or 1) for c in chunks],
             embeddings.tolist(),
-            [c["content"][:4000] for c in chunks],
-            [c["metadata"]["source"] for c in chunks],
-            [c["metadata"]["chunk_index"] for c in chunks],
-            [c["metadata"].get("section", "") or "" for c in chunks],
         ]
-
         self.collection.insert(data)
         self.collection.flush()
-
-        count = self.collection.num_entities
-        logger.info("Chunks insérés", inserted=len(chunks), total=count)
-        return len(chunks)
+        inserted = len(chunks)
+        logger.info("Chunks insérés", inserted=inserted, total=len(chunks))
+        return inserted
 
     def dense_search(self, query: str, top_k: int = 10) -> List[Dict[str, Any]]:
         if not self.collection:
