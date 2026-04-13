@@ -190,27 +190,23 @@ class RetrieverAgent:
                 "action_history": [{"agent": "retriever", "action": "error", "error": str(e)}],
             }
 
-    def _build_context_with_citations(self, query: str, chunks: list) -> str:
-        """Formate les chunks avec citations de source."""
+    def _build_context_with_citations(self, query, chunks):
         if not chunks:
             return self._fallback_context(query)
 
-        parts = [f"Documentation technique — {len(chunks)} sources pertinentes :\n"]
-
+        parts = [f"Documentation — {len(chunks)} sources :\n"]
         for i, chunk in enumerate(chunks):
-            score = chunk.get("cross_encoder_score", chunk.get("rrf_score", 0))
-            section = chunk.get("section", "") or ""
+            score  = chunk.get("cross_encoder_score", 0)
+            section = chunk.get("section", "")
+            page   = chunk.get("page", "?")
+            source = chunk.get("source", "PDF Aciérie")
             content = chunk.get("content", "")
 
-            source_label = f"[Source {i+1}"
-            if section:
-                source_label += f" · {section[:50]}"
-            source_label += f" · pertinence: {score:.2f}]"
-
-            parts.append(f"\n{source_label}\n{content}")
+            label = f"[Source {i+1} · {section} · page {page} · pertinence: {score:.2f}]"
+            parts.append(f"\n{label}\n{content}")
 
         parts.append(
-            "\n\n📌 Source : Description du procédé de fabrication — Aciérie Maghreb Steel"
+            "\n\n📌 Source : Description du procédé — Aciérie Maghreb Steel"
         )
         return "\n".join(parts)
 

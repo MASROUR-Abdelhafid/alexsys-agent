@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 
+
 # from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -189,6 +190,8 @@ class DocumentIngestionPipeline:
         Returns:
             Liste de chunks prêts pour l'indexation
         """
+        from datetime import datetime
+        
         path = Path(source)
 
         if path.is_dir():
@@ -196,4 +199,19 @@ class DocumentIngestionPipeline:
         else:
             documents = self.load_file(str(path))
 
-        return self.chunk_documents(documents)
+        chunks = self.chunk_documents(documents)
+        
+        # Enrichissement des métadonnées de chaque chunk
+        enriched_chunks = []
+        for chunk in chunks:
+            enriched_chunk = {
+                **chunk,
+                "source": os.path.basename(chunk.get("source", "")),
+                "page": chunk.get("page", 1),
+                "section": chunk.get("section", "unknown"),
+                "chunk_length": len(chunk.get("content", "")),
+                "timestamp": datetime.now().isoformat(),
+            }
+            enriched_chunks.append(enriched_chunk)
+        
+        return enriched_chunks

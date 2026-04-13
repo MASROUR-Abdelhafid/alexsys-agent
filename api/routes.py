@@ -1,6 +1,6 @@
 """Routes FastAPI Aciérie — avec sécurité token."""
 import time
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Depends
 from typing import Optional
 from api.schemas import QueryRequest, QueryResponse, HealthResponse
 from agents.graph import run_agent
@@ -11,22 +11,42 @@ logger = structlog.get_logger(__name__)
 router = APIRouter()
 
 
-def verify_token(authorization: Optional[str] = Header(None)):
-    """Vérifie le token d'autorisation."""
+
+ROLES = {
+    "maghreb_admin_2025":    "admin",
+    "maghreb_steel_2025":    "operateur",
+    "maghreb_readonly_2025": "lecteur",
+}
+
+def get_role(authorization: Optional[str] = Header(None)) -> str:
+    """Retourne le rôle selon le token."""
     if config.APP_ENV == "development":
-        return True
+        return "admin"
     if not authorization:
         raise HTTPException(status_code=401, detail="Token manquant")
-    token = authorization.replace("Bearer ", "")
-    if token != config.API_TOKEN:
+    token = authorization.replace("Bearer ", "").strip()
+    role = ROLES.get(token)
+    if not role:
         raise HTTPException(status_code=403, detail="Token invalide")
-    return True
+    return role
+
+
+def require_operateur(role: str = Depends(get_role)):
+    if role not in ["admin", "operateur"]:
+        raise HTTPException(status_code=403, detail="Rôle insuffisant — opérateur requis")
+    return role
+
+
+def require_admin(role: str = Depends(get_role)):
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Rôle insuffisant — admin requis")
+    return role
 
 
 @router.post("/chat", response_model=QueryResponse)
 async def chat(
     request: QueryRequest,
-    authorization: Optional[str] = Header(None),
+    role: str = Depends(get_role),
 ):
     """Point d'entrée principal du chatbot aciérie."""
     t_start = time.time()
@@ -36,7 +56,6 @@ async def chat(
             session_id=request.session_id,
         )
         latency = round((time.time() - t_start) * 1000, 2)
-
         # Log audit
         logger.info(
             "AUDIT",
@@ -44,9 +63,9 @@ async def chat(
             query=request.question[:80],
             task_type=result.get("task_type"),
             session=request.session_id,
+            role=role,
             latency_ms=latency,
         )
-
         return QueryResponse(
             question=request.question,
             answer=result.get("final_response", ""),
@@ -57,11 +76,12 @@ async def chat(
                 **result.get("metadata", {}),
                 "total_latency_ms": latency,
                 "actions": len(result.get("action_history", [])),
+                "user_role": role,
             },
             errors=result.get("errors", []),
         )
     except Exception as e:
-        logger.error("Erreur API /chat", error=str(e))
+        logger.error("Erreur API /chat", error=str(e), role=role)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -83,9 +103,12 @@ async def health():
 
 
 @router.get("/kpis")
-async def get_kpis():
+async def get_kpis(role: str = Depends(get_role)):
     """Liste des KPIs Gold disponibles."""
     from kpi.definitions import KPI_DEFINITIONS
+    
+    logger.info("GET /kpis", role=role)
+    
     return {
         "kpis": [
             {
@@ -99,13 +122,17 @@ async def get_kpis():
         ],
         "total": len(KPI_DEFINITIONS),
         "source": "Aciérie Maghreb Steel — Base officielle",
+        "accessed_by": role,
     }
 
 
 @router.get("/dashboard")
-async def get_dashboard_data():
+async def get_dashboard_data(role: str = Depends(get_role)):
     """Données complètes pour le dashboard."""
     from kpi.engine import KPIEngine
+    
+    logger.info("GET /dashboard", role=role)
+    
     engine = KPIEngine()
     try:
         td      = engine.get_taux_disponibilite()
@@ -115,6 +142,7 @@ async def get_dashboard_data():
         arrets  = engine.get_arrets_by_type(limit=6)
         oxy     = engine.get_consommation_oxygene()
         brames  = engine.get_poids_brames()
+        
         return {
             "taux_disponibilite":     td,
             "consommation_electrique": conso,
@@ -125,7 +153,39 @@ async def get_dashboard_data():
             "brames":                 brames,
             "status":                 "ok",
             "source":                 "Gold — Données officielles Aciérie",
+            "accessed_by":            role,
         }
     except Exception as e:
-        logger.error("Erreur dashboard", error=str(e))
+        logger.error("Erreur dashboard", error=str(e), role=role)
         return {"status": "error", "message": str(e)}
+    
+
+@router.get("/export/kpis")
+async def export_kpis_csv(role: str = Depends(get_role)):
+    """Export CSV des KPIs Gold pour outils BI externes."""
+    import csv, io
+    from fastapi.responses import StreamingResponse
+    from kpi.engine import KPIEngine
+
+    engine = KPIEngine()
+    td     = engine.get_taux_disponibilite()
+    conso  = engine.get_consommation_electrique(groupby="mois")
+    prod   = engine.get_production_coulees(groupby="mois")
+    oxy    = engine.get_consommation_oxygene()
+    brames = engine.get_poids_brames()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["KPI", "Valeur", "Unité", "Source"])
+    writer.writerow(["Taux Disponibilité EAF", td.get("valeur"), "%", "Gold"])
+    writer.writerow(["Conso Électrique Totale", conso.get("total_mwh"), "MWh", "Gold"])
+    writer.writerow(["Production Coulées", prod.get("total_coulees"), "coulées", "Gold"])
+    writer.writerow(["Consommation Oxygène", oxy.get("valeur"), "Nm³", "Gold"])
+    writer.writerow(["Poids Moyen Brames", brames.get("valeur"), "kg", "Gold"])
+
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=kpis_maghreb_steel.csv"}
+    )
