@@ -82,15 +82,19 @@ class MilvusVectorStore:
         """Insère les chunks dans Milvus."""
         if not chunks:
             return 0
-        embeddings = self._embed([c["content"] for c in chunks])
+        
+        # Utiliser embedding_model.encode() au lieu de _embed()
+        embeddings = self.embedding_model.encode([c["content"] for c in chunks])
+        
         data = [
             [c.get("chunk_id", "") for c in chunks],
+            embeddings.tolist(),  # Les embeddings viennent AVANT content dans le schema
             [c["content"] for c in chunks],
             [c.get("source", "") for c in chunks],
+            [int(c.get("chunk_index", 0) or 0) for c in chunks],
             [c.get("section", "") or "" for c in chunks],
-            [int(c.get("page", 1) or 1) for c in chunks],
-            embeddings.tolist(),
         ]
+        
         self.collection.insert(data)
         self.collection.flush()
         inserted = len(chunks)
