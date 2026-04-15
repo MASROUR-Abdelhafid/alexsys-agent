@@ -293,6 +293,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 </div>
 
 <script>
+const TOKEN = "maghreb_steel_2025";  // token opérateur
 const API="http://localhost:8000/api/v1";
 let qc=0,tl=0,kc=0,dc=0;const tm={};
 const ta=document.getElementById('inp');
@@ -462,6 +463,20 @@ function addBot(data){
       </div>
       ${plan.length?`<div class="fpl" id="${pid}">${ph}</div>`:''}
     </div></div>`;
+  // Ajouter le feedback après la div .mf existante
+  const fbId = 'fb' + Date.now();
+  const fbHtml = `
+  <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
+    <span style="font-size:11px;color:var(--t4)">Utile ?</span>
+    <button id="btn-pos-${fbId}" onclick="sendFeedback('${fbId}','positive','${ans.slice(0,100)}','${tt}')"
+      style="background:transparent;border:1px solid var(--b1);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:12px;color:var(--t3);font-family:inherit;transition:all .15s">👍</button>
+    <button id="btn-neg-${fbId}" onclick="sendFeedback('${fbId}','negative','${ans.slice(0,100)}','${tt}')"
+      style="background:transparent;border:1px solid var(--b1);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:12px;color:var(--t3);font-family:inherit;transition:all .15s">👎</button>
+    <span id="fb-msg-${fbId}" style="font-size:11px;color:var(--t4)"></span>
+  </div>`;
+
+  // Injecter dans le mbody après mfooter
+  d.querySelector('.mbody').insertAdjacentHTML('beforeend', fbHtml);
   m.appendChild(d);
   
   // Ajouter les boutons de feedback
@@ -511,7 +526,11 @@ async function send(){
   addUser(q);addTyping();
   try{
     const r=await fetch(`${API}/chat`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${TOKEN}`
+      },
       body:JSON.stringify({question:q,session_id:'acierie'})
     });
     document.getElementById('tr')?.remove();
@@ -531,31 +550,54 @@ async function send(){
 // Stocker les dernières questions/réponses pour le feedback
 const lastMessages = {};
 
-async function sendFeedback(btn, rating, pid){
-  const row = btn.closest('.mrow');
-  const q = row?.previousElementSibling?.querySelector('.mtext p')?.textContent || '';
-  const a = row?.querySelector('.mtext')?.textContent?.slice(0,200) || '';
+// async function sendFeedback(btn, rating, pid){
+//   const row = btn.closest('.mrow');
+//   const q = row?.previousElementSibling?.querySelector('.mtext p')?.textContent || '';
+//   const a = row?.querySelector('.mtext')?.textContent?.slice(0,200) || '';
 
-  try {
-    await fetch(`${API}/feedback`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        session_id: 'acierie',
-        question: q,
-        answer: a,
-        rating: rating,
-        task_type: row?.querySelector('.ftg')?.textContent || '',
-      })
-    });
-    const fbSpan = document.getElementById('fb-' + pid);
-    if(fbSpan) fbSpan.textContent = rating === 'positive' ? '✓ Merci !' : '✓ Noté';
-    btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
-  } catch(e) {
-    console.error('Feedback error:', e);
-  }
+//   try {
+//     await fetch(`${API}/feedback`, {
+//       method: 'POST',
+//       headers: {'Content-Type': 'application/json'},
+//       body: JSON.stringify({
+//         session_id: 'acierie',
+//         question: q,
+//         answer: a,
+//         rating: rating,
+//         task_type: row?.querySelector('.ftg')?.textContent || '',
+//       })
+//     });
+//     const fbSpan = document.getElementById('fb-' + pid);
+//     if(fbSpan) fbSpan.textContent = rating === 'positive' ? '✓ Merci !' : '✓ Noté';
+//     btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+//   } catch(e) {
+//     console.error('Feedback error:', e);
+//   }
+// }
+
+async function sendFeedback(fbId, rating, answer, taskType) {
+    document.getElementById('btn-pos-'+fbId).disabled = true;
+    document.getElementById('btn-neg-'+fbId).disabled = true;
+    const msg = document.getElementById('fb-msg-'+fbId);
+    try {
+        await fetch(`${API}/feedback`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer maghreb_steel_2025',
+            },
+            body: JSON.stringify({
+                session_id: 'acierie',
+                answer: answer,
+                rating: rating,
+                task_type: taskType,
+            })
+        });
+        if(msg) msg.textContent = rating === 'positive' ? '✓ Merci !' : '✓ Noté';
+    } catch(e) {
+        if(msg) msg.textContent = '⚠️ Erreur';
+    }
 }
-
 </script>
 </body>
 </html>

@@ -184,7 +184,9 @@ async function loadData(){
   destroyCharts();
 
   try{
-    const r = await fetch(`${API}/dashboard`);
+    const r = await fetch(`${API}/dashboard`, {
+      headers: { 'Authorization': 'Bearer maghreb_steel_2025' }
+    });
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
     if(d.status==='error') throw new Error(d.message);
@@ -197,7 +199,6 @@ async function loadData(){
       <small>Vérifiez que l'API tourne sur localhost:8000</small></div>`;
   }
 }
-
 function render(d){
   const td    = d.taux_disponibilite   || {};
   const conso = d.consommation_electrique || {};

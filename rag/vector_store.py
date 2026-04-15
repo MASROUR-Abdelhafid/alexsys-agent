@@ -46,12 +46,13 @@ class MilvusVectorStore:
 
     def _build_schema(self) -> CollectionSchema:
         fields = [
-            FieldSchema(name="chunk_id", dtype=DataType.VARCHAR, max_length=64, is_primary=True, auto_id=False),
-            FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=EMBEDDING_DIM),
-            FieldSchema(name="content", dtype=DataType.VARCHAR, max_length=4096),
-            FieldSchema(name="source", dtype=DataType.VARCHAR, max_length=512),
-            FieldSchema(name="chunk_index", dtype=DataType.INT64),
-            FieldSchema(name="section", dtype=DataType.VARCHAR, max_length=512),
+            FieldSchema(name="chunk_id",     dtype=DataType.VARCHAR, max_length=64,   is_primary=True, auto_id=False),
+            FieldSchema(name="embedding",    dtype=DataType.FLOAT_VECTOR, dim=EMBEDDING_DIM),
+            FieldSchema(name="content",      dtype=DataType.VARCHAR, max_length=4096),
+            FieldSchema(name="source",       dtype=DataType.VARCHAR, max_length=512),
+            FieldSchema(name="chunk_index",  dtype=DataType.INT64),
+            FieldSchema(name="section",      dtype=DataType.VARCHAR, max_length=512),
+            FieldSchema(name="page",         dtype=DataType.INT64),  # ← NOUVEAU
         ]
         return CollectionSchema(fields=fields, description="Alexsys knowledge base")
 
@@ -93,6 +94,7 @@ class MilvusVectorStore:
             [c.get("source", "") for c in chunks],
             [int(c.get("chunk_index", 0) or 0) for c in chunks],
             [c.get("section", "") or "" for c in chunks],
+            [int(c.get("page", 1) or 1) for c in chunks], 
         ]
         
         self.collection.insert(data)
@@ -117,18 +119,20 @@ class MilvusVectorStore:
             anns_field="embedding",
             param=search_params,
             limit=top_k,
-            output_fields=["content", "source", "chunk_index", "section"],
+            output_fields=["content", "source", "chunk_index", "section", "page"],
         )
 
         hits = []
         for hit in results[0]:
+            # ✅ Utiliser hit.entity.get() SANS valeur par défaut
             hits.append({
-                "chunk_id": hit.id,
-                "content": hit.entity.get("content"),
-                "source": hit.entity.get("source"),
+                "chunk_id":    hit.id,
+                "content":     hit.entity.get("content"),
+                "source":      hit.entity.get("source"),
                 "chunk_index": hit.entity.get("chunk_index"),
-                "section": hit.entity.get("section"),
-                "score": float(hit.score),
+                "section":     hit.entity.get("section"),
+                "page":        hit.entity.get("page") or 1,  # ← Changé ici
+                "score":       float(hit.score),
                 "retrieval_type": "dense",
             })
 
