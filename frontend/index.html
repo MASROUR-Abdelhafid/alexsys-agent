@@ -462,7 +462,26 @@ function addBot(data){
       </div>
       ${plan.length?`<div class="fpl" id="${pid}">${ph}</div>`:''}
     </div></div>`;
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
+  m.appendChild(d);
+  
+  // Ajouter les boutons de feedback
+  const fbDiv = document.createElement('div');
+  fbDiv.style.cssText = 'display:flex;gap:6px;margin-top:8px;align-items:center';
+  fbDiv.innerHTML = `
+    <span style="font-size:11px;color:var(--t4)">Utile ?</span>
+    <button onclick="sendFeedback(this,'positive','${pid}')" 
+      style="background:transparent;border:1px solid var(--b1);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:12px;color:var(--t3);transition:all .15s"
+      onmouseover="this.style.borderColor='#22c55e';this.style.color='#4ade80'"
+      onmouseout="this.style.borderColor='var(--b1)';this.style.color='var(--t3)'">👍</button>
+    <button onclick="sendFeedback(this,'negative','${pid}')"
+      style="background:transparent;border:1px solid var(--b1);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:12px;color:var(--t3);transition:all .15s"
+      onmouseover="this.style.borderColor='#ef4444';this.style.color='#fca5a5'"
+      onmouseout="this.style.borderColor='var(--b1)';this.style.color='var(--t3)'">👎</button>
+    <span id="fb-${pid}" style="font-size:11px;color:var(--t4)"></span>
+  `;
+  d.querySelector('.mb').appendChild(fbDiv);
+  
+  m.scrollTop=m.scrollHeight;
 }
 
 function tp(id){
@@ -508,6 +527,35 @@ async function send(){
   }
   document.getElementById('sbtn').disabled=false;ta.focus();
 }
+
+// Stocker les dernières questions/réponses pour le feedback
+const lastMessages = {};
+
+async function sendFeedback(btn, rating, pid){
+  const row = btn.closest('.mrow');
+  const q = row?.previousElementSibling?.querySelector('.mtext p')?.textContent || '';
+  const a = row?.querySelector('.mtext')?.textContent?.slice(0,200) || '';
+
+  try {
+    await fetch(`${API}/feedback`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        session_id: 'acierie',
+        question: q,
+        answer: a,
+        rating: rating,
+        task_type: row?.querySelector('.ftg')?.textContent || '',
+      })
+    });
+    const fbSpan = document.getElementById('fb-' + pid);
+    if(fbSpan) fbSpan.textContent = rating === 'positive' ? '✓ Merci !' : '✓ Noté';
+    btn.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+  } catch(e) {
+    console.error('Feedback error:', e);
+  }
+}
+
 </script>
 </body>
 </html>

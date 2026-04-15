@@ -16,45 +16,48 @@ def main():
     print("🏭 INDEXATION RAG — DOCUMENTATION ACIÉRIE")
     print("=" * 60)
 
-    # 1. Ingestion PDF
-    print("\n📄 Étape 1/3 : Ingestion du PDF...")
-    config = IngestionConfig(
-        chunk_size=600,
-        chunk_overlap=80,
-        min_chunk_size=50,
-    )
-    pipeline = DocumentIngestionPipeline(config)
+    config_ing = IngestionConfig(chunk_size=600, chunk_overlap=80, min_chunk_size=50)
+    pipeline = DocumentIngestionPipeline(config_ing)
 
+    all_chunks = []
+
+    # 1. PDF principal
+    print("\n📄 Étape 1/4 : Ingestion du PDF procédés...")
     pdf_path = "data/acierie/Description_du_processus_acierie.pdf"
     if not os.path.exists(pdf_path):
-        # Essayer avec accent
         pdf_path = "data/acierie/Description_du_processus_aciérie.pdf"
 
-    if not os.path.exists(pdf_path):
-        print(f"❌ PDF introuvable : {pdf_path}")
-        print("   Fichiers disponibles :")
-        for f in os.listdir("data/acierie"):
-            print(f"   - {f}")
-        return
+    if os.path.exists(pdf_path):
+        chunks_pdf = pipeline.ingest(pdf_path)
+        all_chunks.extend(chunks_pdf)
+        print(f"   ✅ {len(chunks_pdf)} chunks depuis PDF")
+    else:
+        print("   ⚠️  PDF introuvable")
 
-    chunks = pipeline.ingest(pdf_path)
-    print(f"   ✅ {len(chunks)} chunks produits depuis le PDF")
-    for i, c in enumerate(chunks[:3]):
-        print(f"   [{i+1}] {c['content'][:80]}...")
+    # 2. Descriptions schémas/images
+    print("\n📄 Étape 2/4 : Ingestion descriptions schémas...")
+    schemas_path = "data/acierie/schemas_description.txt"
+    if os.path.exists(schemas_path):
+        chunks_schemas = pipeline.ingest(schemas_path)
+        all_chunks.extend(chunks_schemas)
+        print(f"   ✅ {len(chunks_schemas)} chunks depuis schémas")
+    else:
+        print("   ⚠️  Fichier schémas introuvable")
 
-    # 2. Connexion Milvus
-    print("\n🗄️  Étape 2/3 : Initialisation Milvus...")
+    print(f"\n   📊 Total chunks : {len(all_chunks)}")
+
+    # 3. Connexion Milvus
+    print("\n🗄️  Étape 3/4 : Initialisation Milvus...")
     store = MilvusVectorStore()
     store.create_collection(drop_if_exists=True)
     stats = store.get_collection_stats()
     print(f"   ✅ Collection '{stats['name']}' prête")
 
-    # 3. Indexation
-    print("\n⚡ Étape 3/3 : Génération embeddings + insertion...")
-    inserted = store.insert_chunks(chunks)
+    # 4. Indexation
+    print("\n⚡ Étape 4/4 : Génération embeddings + insertion...")
+    inserted = store.insert_chunks(all_chunks)
     print(f"   ✅ {inserted} chunks indexés dans Milvus")
 
-    # Résumé
     stats = store.get_collection_stats()
     print("\n" + "=" * 60)
     print("📊 RÉSUMÉ INDEXATION")
@@ -66,14 +69,14 @@ def main():
     print("\n🔍 Test recherche RAG...")
     queries = [
         "comment fonctionne le four EAF",
-        "rôle du four poche LF",
-        "coulée continue CCM brames",
+        "schéma procédé aciérie",
+        "capacité parc ferraille",
     ]
     for q in queries:
         results = store.dense_search(q, top_k=2)
         print(f"\n   Q: '{q}'")
         for r in results:
-            print(f"   Score: {r['score']:.4f} | {r['content'][:80]}...")
+            print(f"   Score: {r['score']:.4f} | {r['content'][:70]}...")
 
     print("\n✅ INDEXATION COMPLÈTE !")
 

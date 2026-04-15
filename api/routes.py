@@ -1,5 +1,6 @@
 """Routes FastAPI Aciérie — avec sécurité token."""
 import time
+import os
 from fastapi import APIRouter, HTTPException, Header, Depends
 from typing import Optional
 from api.schemas import QueryRequest, QueryResponse, HealthResponse
@@ -232,3 +233,52 @@ async def export_kpis_csv(role: str = Depends(get_role)):
             "Content-Type": "text/csv; charset=utf-8"
         }
     )
+
+
+@router.post("/feedback")
+async def feedback(
+    request: dict,
+    role: str = Depends(get_role),
+):
+    """Enregistre le feedback utilisateur pour amélioration continue."""
+    import json
+    from datetime import datetime
+    os.makedirs("logs", exist_ok=True)
+    entry = {
+        "timestamp": datetime.now().isoformat(),
+        "session_id": request.get("session_id", ""),
+        "question": request.get("question", ""),
+        "answer": request.get("answer", "")[:200],
+        "rating": request.get("rating", ""),  # "positive" ou "negative"
+        "comment": request.get("comment", ""),
+        "task_type": request.get("task_type", ""),
+    }
+    with open("logs/feedback.log", "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    logger.info("Feedback enregistré", rating=entry["rating"], task_type=entry["task_type"])
+    return {"status": "ok", "message": "Feedback enregistré"}
+
+
+@router.get("/admin/stats")
+async def admin_stats(role: str = Depends(require_admin)):
+    """Statistiques d'utilisation — admin uniquement."""
+    import json
+    from collections import Counter
+    stats = {"total_requetes": 0, "par_type": {}, "latence_moy": 0, "feedback": {}}
+    # Audit log
+    if os.path.exists("logs/audit.log"):
+        with open("logs/audit.log", encoding="utf-8") as f:
+            entries = [json.loads(l) for l in f if l.strip()]
+        stats["total_requetes"] = len(entries)
+        types = Counter(e.get("task_type", "") for e in entries)
+        stats["par_type"] = dict(types)
+        latencies = [e.get("latency_ms", 0) for e in entries if e.get("latency_ms")]
+        stats["latence_moy"] = round(sum(latencies) / len(latencies), 0) if latencies else 0
+    # Feedback log
+    if os.path.exists("logs/feedback.log"):
+        with open("logs/feedback.log", encoding="utf-8") as f:
+            feedbacks = [json.loads(l) for l in f if l.strip()]
+        ratings = Counter(f.get("rating", "") for f in feedbacks)
+        stats["feedback"] = dict(ratings)
+        stats["total_feedbacks"] = len(feedbacks)
+    return stats

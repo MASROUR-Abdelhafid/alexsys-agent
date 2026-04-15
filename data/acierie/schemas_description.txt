@@ -1,0 +1,43 @@
+=== Schéma 1 : Vue générale de l'aciérie ===
+L'aciérie comprend quatre zones principales interconnectées :
+- PAF (Parc à Ferraille) : zone de réception et stockage de la ferraille
+- EAF (Four à Arc Électrique) : zone de fusion de la ferraille
+- LF (Four Poche) : zone d'affinage et traitement secondaire
+- CCM (Coulée Continue) : zone de solidification et découpe des brames
+Le flux de production suit le chemin : PAF → EAF → LF → CCM
+
+=== Schéma 2 : Procédé EAF détaillé ===
+Le four EAF est composé de :
+- Cuve de fusion cylindrique en acier réfractaire
+- 3 électrodes en graphite (diamètre 600mm)
+- Système de chargement par panier (2-3 paniers par coulée)
+- Système d'injection : oxygène (lances), carbone (injecteurs), chaux
+- Transformateur 120 MVA
+- Système de captation des fumées
+Paramètres clés : température fusion 1600-1700°C, durée tap-to-tap 45-60 min
+
+=== Schéma 3 : Procédé LF détaillé ===
+Le four poche LF est composé de :
+- Couvercle avec 3 électrodes graphite (20 MVA)
+- Système de brassage argon (fond de poche)
+- Système d'injection de fil (calcium, aluminium)
+- Système de mesure température et prélèvement échantillon
+Paramètres clés : température traitement 1550-1620°C, durée 20-40 min
+
+=== Schéma 4 : Procédé CCM détaillé ===
+La machine de coulée continue comprend :
+- Tourelle porte-poches (ladle turret) : rotation 2 poches
+- Tundish : répartiteur d'acier liquide (capacité 15-20 tonnes)
+- Moule oscillant en cuivre refroidi à eau
+- Zone de refroidissement secondaire (sprays eau)
+- Système d'oxycoupage automatique
+- Machine de marquage des brames
+Format brames : épaisseur 200-250mm, largeur 900-1600mm, longueur 4-12m
+
+=== Schéma 5 : PAF — Parc à Ferraille ===
+Le parc à ferraille est organisé en :
+- Zone de réception et pesée (pont bascule)
+- Boxes de stockage par catégorie (A1, A2, A3, B1, B2, ferraille légère, lourde)
+- Zone de préparation (cisaille, oxycoupage)
+- Zone de chargement paniers (pont roulant 80t)
+Capacité : 50 000 tonnes stockage maximum
