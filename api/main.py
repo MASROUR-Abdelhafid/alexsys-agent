@@ -5,6 +5,18 @@ import structlog
 
 from api.routes import router
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 logger = structlog.get_logger(__name__)
 
 app = FastAPI(

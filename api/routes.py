@@ -259,6 +259,73 @@ async def feedback(
     return {"status": "ok", "message": "Feedback enregistré"}
 
 
+@router.post("/index-document")
+async def index_document(
+    file: bytes = None,
+    role: str = Depends(get_role),
+):
+    """Indexe un nouveau document PDF ou TXT dans Milvus."""
+    from fastapi import UploadFile, File
+    return {"status": "use /index-document-upload"}
+
+
+@router.post("/upload-document")
+async def upload_document(
+    file: "UploadFile",
+    role: str = Depends(get_role),
+):
+    """Upload et indexe un document dans Milvus."""
+    from fastapi import UploadFile
+    import tempfile, os
+    from rag.ingestion import DocumentIngestionPipeline, IngestionConfig
+    from rag.vector_store import MilvusVectorStore
+
+    # Vérifier extension
+    filename = file.filename or "document"
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    if ext not in ["pdf", "txt"]:
+        raise HTTPException(status_code=400, detail="Format non supporté. PDF ou TXT uniquement.")
+
+    # Sauvegarder temporairement
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=f".{ext}",
+        dir="data/acierie"
+    ) as tmp:
+        content = await file.read()
+        tmp.write(content)
+        tmp_path = tmp.name
+
+    try:
+        # Indexer
+        config_ing = IngestionConfig(chunk_size=600, chunk_overlap=80)
+        pipeline = DocumentIngestionPipeline(config_ing)
+        chunks = pipeline.ingest(tmp_path)
+
+        store = MilvusVectorStore()
+        inserted = store.insert_chunks(chunks)
+
+        logger.info(
+            "Document indexé via interface",
+            filename=filename,
+            chunks=inserted,
+            role=role,
+        )
+
+        return {
+            "status": "ok",
+            "filename": filename,
+            "chunks_indexed": inserted,
+            "message": f"✅ {inserted} chunks indexés depuis '{filename}'",
+        }
+    except Exception as e:
+        logger.error("Erreur indexation document", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+
+
 @router.get("/admin/stats")
 async def admin_stats(role: str = Depends(require_admin)):
     """Statistiques d'utilisation — admin uniquement."""

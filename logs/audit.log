@@ -62,3 +62,11 @@
 {"timestamp": "2026-04-16T00:59:18.379260", "session_id": "default", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": "RetrieverAgent error: 'metadata'; RetrieverAgent error: 'metadata'"}
 {"timestamp": "2026-04-16T00:59:18.751890", "session_id": "default", "query": "Quel est le rôle du four LF ?", "task_type": "doc", "latency_ms": 0, "error": "RetrieverAgent error: 'metadata'; RetrieverAgent error: 'metadata'"}
 {"timestamp": "2026-04-16T00:59:18.757284", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T01:13:09.832714", "session_id": "acierie", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T01:13:16.729635", "session_id": "acierie", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T01:13:26.071182", "session_id": "acierie", "query": "Quels sont les arrêts les plus longs ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T01:13:27.799390", "session_id": "acierie", "query": "Quels sont les arrêts les plus longs ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T01:13:35.697201", "session_id": "acierie", "query": "bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T01:13:44.548499", "session_id": "acierie", "query": "hello", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T01:13:55.000375", "session_id": "acierie", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T01:16:44.748461", "session_id": "acierie", "query": "Quelle est la consommation électrique totale ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
