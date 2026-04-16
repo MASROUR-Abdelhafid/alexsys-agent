@@ -103,13 +103,10 @@ class RetrieverAgent:
         return [docs[cid] for cid, _ in ranked]
 
     def retrieve(self, state: AgentState) -> AgentState:
-        """Nœud LangGraph : retrieval RAG complet."""
         t_start = time.time()
         query = state["query"]
-
         logger.info("RetrieverAgent démarre", query=query[:80])
 
-        # Fallback si non initialisé
         if not RetrieverAgent._initialized:
             self._setup()
             if not RetrieverAgent._initialized:
@@ -121,44 +118,45 @@ class RetrieverAgent:
 
         try:
             # 1. Dense search
-            dense_results = RetrieverAgent._vector_store.dense_search(
-                query=query, top_k=15
-            )
+            dense_results = RetrieverAgent._vector_store.dense_search(query=query, top_k=15)
 
-            # 2. BM25 sparse search
+            # 2. Normaliser tous les résultats — supprimer "metadata" si présent
+            def normalize(chunk):
+                if "metadata" in chunk and isinstance(chunk["metadata"], dict):
+                    flat = {**chunk}
+                    for k, v in chunk["metadata"].items():
+                        if k not in flat:
+                            flat[k] = v
+                    del flat["metadata"]
+                    return flat
+                return chunk
+
+            dense_results = [normalize(c) for c in dense_results]
+
+            # 3. BM25 sparse search
             sparse_results = []
             if RetrieverAgent._bm25:
                 sparse_results = RetrieverAgent._bm25.search(query=query, top_k=15)
+                sparse_results = [normalize(c) for c in sparse_results]
 
-            # 3. RRF Fusion
-            if sparse_results:
-                fused = self._rrf_fusion(dense_results, sparse_results)
-            else:
-                fused = dense_results
-
+            # 4. RRF Fusion
+            fused = self._rrf_fusion(dense_results, sparse_results) if sparse_results else dense_results
             candidates = fused[:20]
 
-            # 4. Reranking Cross-Encoder
+            # 5. Reranking
             if RetrieverAgent._reranker and candidates:
                 reranked = RetrieverAgent._reranker.rerank(
-                    query=query,
-                    candidates=candidates,
-                    top_k=self.top_k,
+                    query=query, candidates=candidates, top_k=self.top_k
                 )
+                reranked = [normalize(c) for c in reranked]
             else:
                 reranked = candidates[:self.top_k]
 
-            # 5. Construire contexte avec citations
             context = self._build_context_with_citations(query, reranked)
-
             latency = round((time.time() - t_start) * 1000, 2)
 
-            logger.info(
-                "RetrieverAgent terminé",
-                query=query[:60],
-                chunks=len(reranked),
-                latency_ms=latency,
-            )
+            logger.info("RetrieverAgent terminé", chunks=len(reranked),
+                        latency_ms=latency, query=query[:60])
 
             return {
                 **state,
@@ -168,8 +166,6 @@ class RetrieverAgent:
                     "action": "rag_retrieve",
                     "chunks_retrieved": len(reranked),
                     "latency_ms": latency,
-                    "dense_count": len(dense_results),
-                    "sparse_count": len(sparse_results),
                 }],
                 "metadata": {
                     **state.get("metadata", {}),
