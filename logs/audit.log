@@ -108,3 +108,45 @@
 {"timestamp": "2026-04-16T17:53:11.922459", "session_id": "default", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": "RetrieverAgent error: 'metadata'; RetrieverAgent error: 'metadata'"}
 {"timestamp": "2026-04-16T17:53:21.440569", "session_id": "default", "query": "Quel est le rôle du four LF ?", "task_type": "doc", "latency_ms": 0, "error": "RetrieverAgent error: 'metadata'; RetrieverAgent error: 'metadata'"}
 {"timestamp": "2026-04-16T17:53:21.446526", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:13:42.411471", "session_id": "default", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:13:42.610390", "session_id": "default", "query": "Quelle est la consommation électrique totale ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:13:42.776248", "session_id": "default", "query": "Combien de coulées ont été produites ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:13:43.054061", "session_id": "default", "query": "Quels sont les défauts les plus fréquents ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:13:43.211033", "session_id": "default", "query": "Quelle est la consommation d oxygène EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:13:43.473510", "session_id": "default", "query": "Quel est le poids moyen des brames ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:13:43.766894", "session_id": "default", "query": "Quelle est la consommation électrique par mois ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:13:44.306233", "session_id": "default", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": "RetrieverAgent error: 'metadata'; RetrieverAgent error: 'metadata'"}
+{"timestamp": "2026-04-16T18:13:44.622577", "session_id": "default", "query": "Quel est le rôle du four LF ?", "task_type": "doc", "latency_ms": 0, "error": "RetrieverAgent error: 'metadata'; RetrieverAgent error: 'metadata'"}
+{"timestamp": "2026-04-16T18:13:44.627116", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:22:41.206273", "session_id": "default", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:22:41.410979", "session_id": "default", "query": "Quelle est la consommation électrique totale ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:22:41.563347", "session_id": "default", "query": "Combien de coulées ont été produites ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:22:41.933591", "session_id": "default", "query": "Quels sont les défauts les plus fréquents ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:22:42.110128", "session_id": "default", "query": "Quelle est la consommation d oxygène EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:22:42.300475", "session_id": "default", "query": "Quel est le poids moyen des brames ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:22:42.521637", "session_id": "default", "query": "Quelle est la consommation électrique par mois ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-16T18:22:43.092524", "session_id": "default", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": "RetrieverAgent error: 'metadata'; RetrieverAgent error: 'metadata'"}
+{"timestamp": "2026-04-16T18:22:43.356229", "session_id": "default", "query": "Quel est le rôle du four LF ?", "task_type": "doc", "latency_ms": 0, "error": "RetrieverAgent error: 'metadata'; RetrieverAgent error: 'metadata'"}
+{"timestamp": "2026-04-16T18:22:43.359416", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:46:12.807862", "session_id": "default", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:46:13.055431", "session_id": "default", "query": "Quelle est la consommation électrique totale ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:46:13.306280", "session_id": "default", "query": "Combien de coulées ont été produites ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:46:13.676821", "session_id": "default", "query": "Quels sont les défauts les plus fréquents ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:46:13.900483", "session_id": "default", "query": "Quelle est la consommation d oxygène EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:46:14.589764", "session_id": "default", "query": "Quel est le poids moyen des brames ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:46:14.882128", "session_id": "default", "query": "Quelle est la consommation électrique par mois ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:46:25.571638", "session_id": "default", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:46:36.615108", "session_id": "default", "query": "Quel est le rôle du four LF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:46:36.620524", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:48:19.728951", "session_id": "default", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:48:19.946058", "session_id": "default", "query": "Quelle est la consommation électrique totale ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:48:20.210101", "session_id": "default", "query": "Combien de coulées ont été produites ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:48:20.602576", "session_id": "default", "query": "Quels sont les défauts les plus fréquents ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:48:20.858339", "session_id": "default", "query": "Quelle est la consommation d oxygène EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:48:21.091792", "session_id": "default", "query": "Quel est le poids moyen des brames ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:48:21.340035", "session_id": "default", "query": "Quelle est la consommation électrique par mois ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:48:23.479178", "session_id": "default", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": "RetrieverAgent error: 'metadata'; RetrieverAgent error: 'metadata'"}
+{"timestamp": "2026-04-17T00:48:23.822583", "session_id": "default", "query": "Quel est le rôle du four LF ?", "task_type": "doc", "latency_ms": 0, "error": "RetrieverAgent error: 'metadata'; RetrieverAgent error: 'metadata'"}
+{"timestamp": "2026-04-17T00:48:23.826693", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:50:22.805726", "session_id": "acierie", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T00:50:25.621263", "session_id": "acierie", "query": "Quels sont les défauts les plus fréquents sur les brames ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
