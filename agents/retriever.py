@@ -87,21 +87,18 @@ class RetrieverAgent:
             RetrieverAgent._initialized = False
 
     def _rrf_fusion(self, dense, sparse, k=60):
-        """Reciprocal Rank Fusion."""
         scores = {}
         docs = {}
-
         for rank, r in enumerate(dense):
-            cid = r["chunk_id"]
+            # chunk_id peut être dans r directement ou r["metadata"]
+            cid = r.get("chunk_id") or r.get("id", f"d{rank}")
             scores[cid] = scores.get(cid, 0) + 1.0 / (k + rank + 1)
             docs[cid] = r
-
         for rank, r in enumerate(sparse):
-            cid = r["chunk_id"]
+            cid = r.get("chunk_id") or r.get("id", f"s{rank}")
             scores[cid] = scores.get(cid, 0) + 1.0 / (k + rank + 1)
             if cid not in docs:
                 docs[cid] = r
-
         ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         return [docs[cid] for cid, _ in ranked]
 
@@ -190,23 +187,36 @@ class RetrieverAgent:
                 "action_history": [{"agent": "retriever", "action": "error", "error": str(e)}],
             }
 
-    def _build_context_with_citations(self, query, chunks):
+    # Dans _build_context_with_citations, remplace l'accès aux champs :
+    def _build_context_with_citations(self, query: str, chunks: list) -> str:
         if not chunks:
             return self._fallback_context(query)
 
-        parts = [f"Documentation — {len(chunks)} sources :\n"]
-        for i, chunk in enumerate(chunks):
-            score  = chunk.get("cross_encoder_score", 0)
-            section = chunk.get("section", "")
-            page   = chunk.get("page", "?")
-            source = chunk.get("source", "PDF Aciérie")
-            content = chunk.get("content", "")
+        parts = [f"Documentation technique — {len(chunks)} sources pertinentes :\n"]
 
-            label = f"[Source {i+1} · {section} · page {page} · pertinence: {score:.2f}]"
+        for i, chunk in enumerate(chunks):
+            # Compatibilité : accès direct ou via metadata
+            if "metadata" in chunk:
+                score   = chunk.get("cross_encoder_score", chunk.get("rrf_score", 0))
+                section = chunk["metadata"].get("section", "") or ""
+                page    = chunk["metadata"].get("page", "?")
+                content = chunk.get("content", "")
+                source  = chunk["metadata"].get("source", "PDF Aciérie")
+            else:
+                score   = chunk.get("cross_encoder_score", chunk.get("rrf_score", chunk.get("score", 0)))
+                section = chunk.get("section", "") or ""
+                page    = chunk.get("page", "?")
+                content = chunk.get("content", "")
+                source  = chunk.get("source", "PDF Aciérie")
+
+            label = f"[Source {i+1}"
+            if section:
+                label += f" · {section[:50]}"
+            label += f" · page {page} · pertinence: {score:.2f}]"
             parts.append(f"\n{label}\n{content}")
 
         parts.append(
-            "\n\n📌 Source : Description du procédé — Aciérie Maghreb Steel"
+            "\n\n📌 Source : Description du procédé de fabrication — Aciérie Maghreb Steel"
         )
         return "\n".join(parts)
 

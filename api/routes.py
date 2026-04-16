@@ -7,6 +7,7 @@ from api.schemas import QueryRequest, QueryResponse, HealthResponse
 from agents.graph import run_agent
 from config import config
 import structlog
+from fastapi import APIRouter, HTTPException, Header, Depends, UploadFile, File
 
 logger = structlog.get_logger(__name__)
 router = APIRouter()
@@ -271,22 +272,25 @@ async def index_document(
 
 @router.post("/upload-document")
 async def upload_document(
-    file: "UploadFile",
+    file: UploadFile = File(...),
     role: str = Depends(get_role),
 ):
     """Upload et indexe un document dans Milvus."""
-    from fastapi import UploadFile
     import tempfile, os
     from rag.ingestion import DocumentIngestionPipeline, IngestionConfig
     from rag.vector_store import MilvusVectorStore
 
-    # Vérifier extension
     filename = file.filename or "document"
     ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
-    if ext not in ["pdf", "txt"]:
-        raise HTTPException(status_code=400, detail="Format non supporté. PDF ou TXT uniquement.")
 
-    # Sauvegarder temporairement
+    if ext not in ["pdf", "txt"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Format '{ext}' non supporté. PDF ou TXT uniquement."
+        )
+
+    os.makedirs("data/acierie", exist_ok=True)
+
     with tempfile.NamedTemporaryFile(
         delete=False,
         suffix=f".{ext}",
@@ -297,7 +301,6 @@ async def upload_document(
         tmp_path = tmp.name
 
     try:
-        # Indexer
         config_ing = IngestionConfig(chunk_size=600, chunk_overlap=80)
         pipeline = DocumentIngestionPipeline(config_ing)
         chunks = pipeline.ingest(tmp_path)
@@ -305,12 +308,7 @@ async def upload_document(
         store = MilvusVectorStore()
         inserted = store.insert_chunks(chunks)
 
-        logger.info(
-            "Document indexé via interface",
-            filename=filename,
-            chunks=inserted,
-            role=role,
-        )
+        logger.info("Document indexé via interface", filename=filename, chunks=inserted, role=role)
 
         return {
             "status": "ok",
@@ -319,12 +317,11 @@ async def upload_document(
             "message": f"✅ {inserted} chunks indexés depuis '{filename}'",
         }
     except Exception as e:
-        logger.error("Erreur indexation document", error=str(e))
+        logger.error("Erreur indexation", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
-
 
 @router.get("/admin/stats")
 async def admin_stats(role: str = Depends(require_admin)):

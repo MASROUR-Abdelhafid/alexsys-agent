@@ -441,76 +441,50 @@ function addTyping(){
 }
 
 function addBot(data){
-  const m=document.getElementById('msgs');
-  const ans=data.answer||'';
-  const tt=data.task_type||'';
-  const plan=data.plan||[];
-  const lat=data.metadata?.total_latency_ms||0;
-  const pid='p'+Date.now();
-
-  // Essayer de parser comme KPI card
-  let contentHTML='';
-  if(tt==='kpi'||tt==='sql'){
-    const parsed=parseKPI(ans);
-    const card=parsed?buildKPICard(parsed,ans):null;
-    if(card){
-      // Afficher intro + card
-      const firstLine=ans.split('\n')[0];
-      contentHTML=`<p>${firstLine.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>${card}`;
-    } else {
-      contentHTML=fmt(ans);
-    }
-  } else {
-    contentHTML=fmt(ans);
-  }
-
-  const ph=plan.map((s,i)=>`<div class="fps"><span class="fpn">${i+1}</span><span>${s}</span></div>`).join('');
-  const d=document.createElement('div');d.className='mrow assistant';
-  d.innerHTML=`<div class="mi"><div class="mav mav-b">MS</div>
-    <div class="mb">
-      <div class="mwho">Assistant KPI · Maghreb Steel</div>
-      <div class="mt">${contentHTML}</div>
-      <div class="mf">
-        <span class="ftg f${tc(tt)}">${tt||'—'}</span>
-        <span class="flat">⚡ ${lat}ms</span>
-        ${plan.length?`<button class="fplb" onclick="tp('${pid}')">▾ Plan</button>`:''}
-      </div>
-      ${plan.length?`<div class="fpl" id="${pid}">${ph}</div>`:''}
-    </div></div>`;
-  // Ajouter le feedback après la div .mf existante
+  const m = document.getElementById('msgs');
+  const ans = data.answer || '';
+  const tt  = data.task_type || '';
+  const plan = data.plan || [];
+  const lat  = data.metadata?.total_latency_ms || 0;
+  const pid  = 'p' + Date.now();
   const fbId = 'fb' + Date.now();
-  const fbHtml = `
-  <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
-    <span style="font-size:11px;color:var(--t4)">Utile ?</span>
-    <button id="btn-pos-${fbId}" onclick="sendFeedback('${fbId}','positive','${ans.slice(0,100)}','${tt}')"
-      style="background:transparent;border:1px solid var(--b1);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:12px;color:var(--t3);font-family:inherit;transition:all .15s">👍</button>
-    <button id="btn-neg-${fbId}" onclick="sendFeedback('${fbId}','negative','${ans.slice(0,100)}','${tt}')"
-      style="background:transparent;border:1px solid var(--b1);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:12px;color:var(--t3);font-family:inherit;transition:all .15s">👎</button>
-    <span id="fb-msg-${fbId}" style="font-size:11px;color:var(--t4)"></span>
-  </div>`;
 
-  // Injecter dans le mbody après mfooter
-  d.querySelector('.mbody').insertAdjacentHTML('beforeend', fbHtml);
+  const ph = plan.map((s,i) =>
+    `<div class="fps"><span class="fpn">${i+1}</span><span>${s}</span></div>`
+  ).join('');
+
+  const feedbackHtml = `
+    <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
+      <span style="font-size:11px;color:var(--t4)">Utile ?</span>
+      <button id="btn-pos-${fbId}"
+        onclick="sendFeedback('${fbId}','positive','${tt}')"
+        style="background:transparent;border:1px solid var(--b1);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:12px;color:var(--t3);font-family:inherit">👍</button>
+      <button id="btn-neg-${fbId}"
+        onclick="sendFeedback('${fbId}','negative','${tt}')"
+        style="background:transparent;border:1px solid var(--b1);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:12px;color:var(--t3);font-family:inherit">👎</button>
+      <span id="fb-msg-${fbId}" style="font-size:11px;color:var(--t4)"></span>
+    </div>`;
+
+  const d = document.createElement('div');
+  d.className = 'mrow assistant';
+  d.innerHTML = `
+    <div class="mi">
+      <div class="mav mav-b">MS</div>
+      <div class="mb">
+        <div class="mwho">Assistant KPI · Maghreb Steel</div>
+        <div class="mt">${fmt(ans)}</div>
+        <div class="mf">
+          <span class="ftg f${tc(tt)}">${tt||'—'}</span>
+          <span class="flat">⚡ ${lat}ms</span>
+          ${plan.length ? `<button class="fplb" onclick="tp('${pid}')">▾ Plan</button>` : ''}
+        </div>
+        ${plan.length ? `<div class="fpl" id="${pid}">${ph}</div>` : ''}
+        ${feedbackHtml}
+      </div>
+    </div>`;
+
   m.appendChild(d);
-  
-  // Ajouter les boutons de feedback
-  const fbDiv = document.createElement('div');
-  fbDiv.style.cssText = 'display:flex;gap:6px;margin-top:8px;align-items:center';
-  fbDiv.innerHTML = `
-    <span style="font-size:11px;color:var(--t4)">Utile ?</span>
-    <button onclick="sendFeedback(this,'positive','${pid}')" 
-      style="background:transparent;border:1px solid var(--b1);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:12px;color:var(--t3);transition:all .15s"
-      onmouseover="this.style.borderColor='#22c55e';this.style.color='#4ade80'"
-      onmouseout="this.style.borderColor='var(--b1)';this.style.color='var(--t3)'">👍</button>
-    <button onclick="sendFeedback(this,'negative','${pid}')"
-      style="background:transparent;border:1px solid var(--b1);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:12px;color:var(--t3);transition:all .15s"
-      onmouseover="this.style.borderColor='#ef4444';this.style.color='#fca5a5'"
-      onmouseout="this.style.borderColor='var(--b1)';this.style.color='var(--t3)'">👎</button>
-    <span id="fb-${pid}" style="font-size:11px;color:var(--t4)"></span>
-  `;
-  d.querySelector('.mb').appendChild(fbDiv);
-  
-  m.scrollTop=m.scrollHeight;
+  m.scrollTop = m.scrollHeight;
 }
 
 function tp(id){
@@ -618,22 +592,20 @@ async function handleFileUpload(event) {
     if (!file) return;
 
     const status = document.getElementById('upload-status');
-    const maxSize = 10 * 1024 * 1024; // 10MB
 
-    if (file.size > maxSize) {
+    if (file.size > 10 * 1024 * 1024) {
         status.textContent = '⚠️ Fichier trop grand (max 10MB)';
-        status.style.color = 'var(--red)';
+        status.style.color = '#fca5a5';
         return;
     }
 
     const ext = file.name.split('.').pop().toLowerCase();
     if (!['pdf', 'txt'].includes(ext)) {
         status.textContent = '⚠️ PDF ou TXT uniquement';
-        status.style.color = 'var(--red)';
+        status.style.color = '#fca5a5';
         return;
     }
 
-    // Afficher progression
     status.textContent = `⏳ Indexation de "${file.name}"...`;
     status.style.color = 'var(--t2)';
 
@@ -647,31 +619,27 @@ async function handleFileUpload(event) {
             body: formData,
         });
 
+        const data = await r.json();
+
         if (!r.ok) {
-            const err = await r.json();
-            throw new Error(err.detail || `Erreur ${r.status}`);
+            throw new Error(data.detail || `Erreur ${r.status}`);
         }
 
-        const data = await r.json();
         status.textContent = `✅ ${data.chunks_indexed} chunks indexés`;
-        status.style.color = 'var(--green)';
+        status.style.color = '#4ade80';
 
         // Message dans le chat
         document.getElementById('welcome')?.remove();
-        const m = document.getElementById('msgs');
-        const d = document.createElement('div');
-        d.style.cssText = 'max-width:800px;margin:8px auto;padding:0 20px';
-        d.innerHTML = `<div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);border-radius:var(--r);padding:10px 14px;font-size:13px;color:#4ade80">
+        const msgs = document.getElementById('msgs');
+        const div = document.createElement('div');
+        div.style.cssText = 'max-width:800px;margin:8px auto;padding:0 20px';
+        div.innerHTML = `<div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);border-radius:var(--r);padding:10px 14px;font-size:13px;color:#4ade80">
             📄 Document indexé : <strong>${file.name}</strong> — ${data.chunks_indexed} chunks ajoutés au RAG
         </div>`;
-        m.appendChild(d);
-        m.scrollTop = m.scrollHeight;
+        msgs.appendChild(div);
+        msgs.scrollTop = msgs.scrollHeight;
 
-        // Reset input
-        setTimeout(() => {
-            status.textContent = '';
-            event.target.value = '';
-        }, 4000);
+        setTimeout(() => { status.textContent = ''; event.target.value = ''; }, 4000);
 
     } catch(e) {
         status.textContent = `⚠️ ${e.message}`;
