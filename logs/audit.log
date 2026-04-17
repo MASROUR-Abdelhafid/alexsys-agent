@@ -180,3 +180,13 @@
 {"timestamp": "2026-04-17T19:58:59.357343", "session_id": "default", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
 {"timestamp": "2026-04-17T19:59:13.327251", "session_id": "default", "query": "Quel est le rôle du four LF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
 {"timestamp": "2026-04-17T19:59:13.332308", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:03:03.101648", "session_id": "default", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:03:03.477414", "session_id": "default", "query": "Quelle est la consommation électrique totale ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:03:03.929679", "session_id": "default", "query": "Combien de coulées ont été produites ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:03:04.712776", "session_id": "default", "query": "Quels sont les défauts les plus fréquents ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:03:05.098073", "session_id": "default", "query": "Quelle est la consommation d oxygène EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:03:05.508017", "session_id": "default", "query": "Quel est le poids moyen des brames ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:03:05.994010", "session_id": "default", "query": "Quelle est la consommation électrique par mois ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:03:17.007073", "session_id": "default", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:03:27.758640", "session_id": "default", "query": "Quel est le rôle du four LF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:03:27.764532", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}

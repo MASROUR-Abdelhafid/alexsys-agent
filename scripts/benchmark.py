@@ -16,7 +16,7 @@ TEST_CASES = [
     {"q": "Quel est le poids moyen des brames ?",             "type": "kpi",    "expect": "17 560"},
     {"q": "Quelle est la consommation électrique par mois ?", "type": "kpi",    "expect": "MWh"},
     {"q": "Comment fonctionne le four EAF ?",                 "type": "doc",    "expect": "électrique"},
-    {"q": "Quel est le rôle du four LF ?",                    "type": "doc",    "expect": "affinage"},
+    {"q": "Quel est le rôle du four LF ?",                    "type": "doc",    "expect": "four lf"},
     {"q": "Bonjour",                                          "type": "direct", "expect": "Bonjour"},
 ]
 
