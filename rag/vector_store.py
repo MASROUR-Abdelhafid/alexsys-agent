@@ -120,14 +120,15 @@ class MilvusVectorStore:
 
         hits = []
         for hit in results[0]:
+            entity = hit.entity
             hits.append({
-                "chunk_id":    hit.id,
-                "content":     hit.entity.get("content", ""),
-                "source":      hit.entity.get("source", ""),
-                "chunk_index": hit.entity.get("chunk_index", 0),
-                "section":     hit.entity.get("section", ""),
-                "page":        hit.entity.get("page", 1),
-                "score":       float(hit.score),
+                "chunk_id":       hit.id,
+                "content":        entity.get("content")    or "",
+                "source":         entity.get("source")     or "",
+                "chunk_index":    entity.get("chunk_index") or 0,
+                "section":        entity.get("section")    or "",
+                "page":           entity.get("page")       or 1,
+                "score":          float(hit.score),
                 "retrieval_type": "dense",
             })
 
