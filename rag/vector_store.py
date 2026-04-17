@@ -108,30 +108,25 @@ class MilvusVectorStore:
             raise RuntimeError("Collection non initialisée.")
 
         query_embedding = self.embedding_model.encode_single(query)
-
-        search_params = {
-            "metric_type": "COSINE",
-            "params": {"ef": 64},
-        }
+        search_params = {"metric_type": "COSINE", "params": {"ef": 64}}
 
         results = self.collection.search(
             data=[query_embedding],
             anns_field="embedding",
             param=search_params,
             limit=top_k,
-            output_fields=["content", "source", "chunk_index", "section", "page"],
+            output_fields=["content", "source", "chunk_index", "section"],
         )
 
         hits = []
         for hit in results[0]:
-            # ✅ Utiliser hit.entity.get() SANS valeur par défaut
             hits.append({
                 "chunk_id":    hit.id,
-                "content":     hit.entity.get("content"),
-                "source":      hit.entity.get("source"),
-                "chunk_index": hit.entity.get("chunk_index"),
-                "section":     hit.entity.get("section"),
-                "page":        hit.entity.get("page") or 1,  # ← Changé ici
+                "content":     hit.entity.get("content", ""),
+                "source":      hit.entity.get("source", ""),
+                "chunk_index": hit.entity.get("chunk_index", 0),
+                "section":     hit.entity.get("section", ""),
+                "page":        hit.entity.get("page", 1),
                 "score":       float(hit.score),
                 "retrieval_type": "dense",
             })

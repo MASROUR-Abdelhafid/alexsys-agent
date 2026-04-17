@@ -126,17 +126,15 @@ class BM25Retriever:
                 continue
             chunk = self.chunks[idx]
             results.append({
-                "chunk_id": chunk["metadata"]["chunk_id"],
-                "content": chunk["content"],
-                "source": chunk["metadata"]["source"],
-                "chunk_index": chunk["metadata"]["chunk_index"],
-                "section": chunk["metadata"].get("section", ""),
-                "score": score,
+                "chunk_id":    chunk.get("chunk_id") or chunk.get("metadata", {}).get("chunk_id", f"bm25_{idx}"),
+                "content":     chunk["content"],
+                "source":      chunk.get("source") or chunk.get("metadata", {}).get("source", ""),
+                "chunk_index": chunk.get("chunk_index") or chunk.get("metadata", {}).get("chunk_index", idx),
+                "section":     chunk.get("section") or chunk.get("metadata", {}).get("section", ""),
+                "page":        chunk.get("page") or chunk.get("metadata", {}).get("page", 1),
+                "score":       score,
                 "retrieval_type": "sparse",
-                "matched_tokens": [
-                    t for t in query_tokens
-                    if t in self.tokenized_corpus[idx]
-                ],
+                "matched_tokens": [t for t in query_tokens if t in self.tokenized_corpus[idx]],
             })
 
         logger.debug(
