@@ -202,3 +202,5 @@
 {"timestamp": "2026-04-17T20:30:03.104916", "session_id": "default", "query": "Comment fonctionne la coulée continue CCM ?", "task_type": "doc", "latency_ms": 0, "error": ""}
 {"timestamp": "2026-04-17T20:30:03.106936", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
 {"timestamp": "2026-04-17T20:30:03.109090", "session_id": "default", "query": "Quelle est la date d aujourd hui ?", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:33:34.731327", "session_id": "acierie", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:33:39.445533", "session_id": "acierie", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
