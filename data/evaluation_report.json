@@ -1,0 +1,122 @@
+{
+  "accuracy": "100.0%",
+  "passed": 12,
+  "total": 12,
+  "precision_kpi": "100.0%",
+  "recall_kpi": "100.0%",
+  "f1_kpi": "100.0%",
+  "latency_kpi_ms": 342,
+  "latency_doc_ms": 5747,
+  "latency_direct_ms": 3,
+  "latency_avg_ms": 1637,
+  "results": [
+    {
+      "question": "Quel est le taux de disponibilité EAF ?",
+      "expected_type": "kpi",
+      "actual_type": "kpi",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 692.36
+    },
+    {
+      "question": "Quelle est la consommation électrique totale ?",
+      "expected_type": "kpi",
+      "actual_type": "kpi",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 275.5
+    },
+    {
+      "question": "Combien de coulées ont été produites ?",
+      "expected_type": "kpi",
+      "actual_type": "kpi",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 231.02
+    },
+    {
+      "question": "Quels sont les défauts les plus fréquents ?",
+      "expected_type": "kpi",
+      "actual_type": "kpi",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 318.2
+    },
+    {
+      "question": "Quelle est la consommation d oxygène EAF ?",
+      "expected_type": "kpi",
+      "actual_type": "kpi",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 304.96
+    },
+    {
+      "question": "Quel est le poids moyen des brames ?",
+      "expected_type": "kpi",
+      "actual_type": "kpi",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 245.37
+    },
+    {
+      "question": "Quelle est la consommation électrique par mois ?",
+      "expected_type": "kpi",
+      "actual_type": "kpi",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 330.05
+    },
+    {
+      "question": "Comment fonctionne le four EAF ?",
+      "expected_type": "doc",
+      "actual_type": "doc",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 1168.35
+    },
+    {
+      "question": "Quel est le rôle du four LF ?",
+      "expected_type": "doc",
+      "actual_type": "doc",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 6256.68
+    },
+    {
+      "question": "Comment fonctionne la coulée continue CCM ?",
+      "expected_type": "doc",
+      "actual_type": "doc",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 9815.23
+    },
+    {
+      "question": "Bonjour",
+      "expected_type": "direct",
+      "actual_type": "direct",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 2.02
+    },
+    {
+      "question": "Quelle est la date d aujourd hui ?",
+      "expected_type": "direct",
+      "actual_type": "direct",
+      "type_correct": true,
+      "answer_correct": true,
+      "passed": true,
+      "latency_ms": 4.07
+    }
+  ]
+}

@@ -190,3 +190,15 @@
 {"timestamp": "2026-04-17T20:03:17.007073", "session_id": "default", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
 {"timestamp": "2026-04-17T20:03:27.758640", "session_id": "default", "query": "Quel est le rôle du four LF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
 {"timestamp": "2026-04-17T20:03:27.764532", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:29:44.159554", "session_id": "default", "query": "Quel est le taux de disponibilité EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:29:44.434043", "session_id": "default", "query": "Quelle est la consommation électrique totale ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:29:44.666072", "session_id": "default", "query": "Combien de coulées ont été produites ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:29:44.983756", "session_id": "default", "query": "Quels sont les défauts les plus fréquents ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:29:45.289226", "session_id": "default", "query": "Quelle est la consommation d oxygène EAF ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:29:45.534594", "session_id": "default", "query": "Quel est le poids moyen des brames ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:29:45.864648", "session_id": "default", "query": "Quelle est la consommation électrique par mois ?", "task_type": "kpi", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:29:47.032495", "session_id": "default", "query": "Comment fonctionne le four EAF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:29:53.289683", "session_id": "default", "query": "Quel est le rôle du four LF ?", "task_type": "doc", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:30:03.104916", "session_id": "default", "query": "Comment fonctionne la coulée continue CCM ?", "task_type": "doc", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:30:03.106936", "session_id": "default", "query": "Bonjour", "task_type": "direct", "latency_ms": 0, "error": ""}
+{"timestamp": "2026-04-17T20:30:03.109090", "session_id": "default", "query": "Quelle est la date d aujourd hui ?", "task_type": "direct", "latency_ms": 0, "error": ""}
