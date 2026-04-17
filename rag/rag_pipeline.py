@@ -1,126 +1,98 @@
 """
-Pipeline RAG complet :
-Hybrid Search → Re-ranking → Contexte pour LLM.
-Phase 1 - Étape 1.5
+Pipeline RAG Avancé - Hybrid Search & Re-ranking.
+Combine la recherche sémantique (Milvus), la recherche par mots-clés (BM25),
+et réordonne les résultats avec un Cross-Encoder.
 """
 
-import time
-from typing import List, Dict, Any, Optional
+import os
+import pickle
 import structlog
-
-from rag.hybrid_search import HybridSearchEngine
-from rag.reranker import CrossEncoderReranker
+from typing import List
+from langchain_community.vectorstores import Milvus
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from sentence_transformers import CrossEncoder
 
 logger = structlog.get_logger(__name__)
 
-
 class RAGPipeline:
-    """
-    Pipeline RAG complet industriel.
-
-    Étapes :
-    1. Hybrid Search  : Dense + Sparse → RRF fusion (20 candidats)
-    2. Re-ranking     : Cross-Encoder → Top-5 précis
-    3. Context build  : Formatage contexte pour LLM
-    """
-
-    def __init__(
-        self,
-        hybrid_candidates: int = 20,
-        rerank_top_k: int = 5,
-        dense_weight: float = 0.5,
-        sparse_weight: float = 0.5,
-    ):
-        self.hybrid_candidates = hybrid_candidates
-        self.rerank_top_k = rerank_top_k
-
-        self.hybrid_engine = HybridSearchEngine(
-            dense_weight=dense_weight,
-            sparse_weight=sparse_weight,
+    def __init__(self, milvus_host: str = "localhost", milvus_port: str = "19530"):
+        self.milvus_uri = f"http://{milvus_host}:{milvus_port}"
+        self.collection_name = "acierie_docs"
+        
+        # 1. Chargement du modèle Dense (Embeddings)
+        logger.info("Chargement des Embeddings...")
+        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        
+        # Connexion à Milvus
+        self.vector_store = Milvus(
+            embedding_function=self.embeddings,
+            connection_args={"uri": self.milvus_uri},
+            collection_name=self.collection_name
         )
-        self.reranker = CrossEncoderReranker()
-        logger.info(
-            "RAGPipeline initialisé",
-            hybrid_candidates=hybrid_candidates,
-            rerank_top_k=rerank_top_k,
-        )
+        
+        # 2. Chargement du modèle Sparse (BM25) et des chunks bruts
+        index_dir = os.path.join("data", "index")
+        bm25_path = os.path.join(index_dir, "bm25_model.pkl")
+        chunks_path = os.path.join(index_dir, "chunks_data.pkl")
+        
+        if os.path.exists(bm25_path) and os.path.exists(chunks_path):
+            with open(bm25_path, "rb") as f:
+                self.bm25 = pickle.load(f)
+            with open(chunks_path, "rb") as f:
+                self.chunks = pickle.load(f)
+            logger.info("Index BM25 chargé avec succès.")
+        else:
+            logger.warning("Fichiers BM25 introuvables. Lance run_ingestion.py d'abord.")
+            self.bm25 = None
+            self.chunks = []
 
-    def build_index(self):
-        """Construit les index (BM25)."""
-        self.hybrid_engine.build_bm25_index()
+        # 3. Chargement du Re-ranker (Modèle juge)
+        logger.info("Chargement du Cross-Encoder (Re-ranker)...")
+        self.reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+        logger.info("RAG Pipeline prêt.")
 
-    def retrieve(
-        self,
-        query: str,
-        top_k: int = 5,
-        return_metadata: bool = True,
-    ) -> Dict[str, Any]:
-        """
-        Retrieval complet avec métriques de latence.
+    def retrieve(self, query: str, top_k: int = 3) -> str:
+        """Exécute la recherche hybride et retourne le contexte formaté."""
+        logger.info("Recherche RAG démarrée", query=query)
+        candidates = {} # Dictionnaire pour éviter les doublons {texte: document_source}
 
-        Returns:
-            {
-                chunks      : List[Dict] top-K chunks re-rankés,
-                context     : str contexte formaté pour LLM,
-                metadata    : Dict métriques pipeline,
-            }
-        """
-        t_start = time.time()
+        # --- A. RECHERCHE DENSE (Milvus) ---
+        try:
+            dense_results = self.vector_store.similarity_search(query, k=5)
+            for doc in dense_results:
+                candidates[doc.page_content] = doc
+        except Exception as e:
+            logger.error("Erreur Milvus", error=str(e))
 
-        # 1. Hybrid Search
-        t0 = time.time()
-        candidates = self.hybrid_engine.search(
-            query=query,
-            top_k=self.hybrid_candidates,
-        )
-        t_hybrid = time.time() - t0
+        # --- B. RECHERCHE SPARSE (BM25) ---
+        if self.bm25 and self.chunks:
+            tokenized_query = query.lower().split()
+            # Récupère les 5 meilleurs documents selon BM25
+            sparse_results = self.bm25.get_top_n(tokenized_query, self.chunks, n=5)
+            for doc in sparse_results:
+                candidates[doc.page_content] = doc
 
-        # 2. Re-ranking
-        t0 = time.time()
-        reranked = self.reranker.rerank(
-            query=query,
-            candidates=candidates,
-            top_k=top_k,
-        )
-        t_rerank = time.time() - t0
+        if not candidates:
+            return "Aucune information technique trouvée dans les manuels."
 
-        t_total = time.time() - t_start
-
-        # 3. Construire contexte
-        context = self._build_context(reranked)
-
-        metadata = {
-            "query": query,
-            "total_latency_ms": round(t_total * 1000, 2),
-            "hybrid_latency_ms": round(t_hybrid * 1000, 2),
-            "rerank_latency_ms": round(t_rerank * 1000, 2),
-            "candidates_retrieved": len(candidates),
-            "chunks_reranked": len(reranked),
-            "top_cross_encoder_score": (
-                reranked[0]["cross_encoder_score"] if reranked else 0
-            ),
-            "retrieval_types": [r["retrieval_type"] for r in reranked],
-        }
-
-        logger.info("RAG Pipeline retrieve", **metadata)
-
-        return {
-            "chunks": reranked,
-            "context": context,
-            "metadata": metadata,
-        }
-
-    def _build_context(self, chunks: List[Dict[str, Any]]) -> str:
-        """Formate les chunks en contexte structuré pour le LLM."""
-        if not chunks:
-            return "Aucun contexte pertinent trouvé."
-
-        parts = []
-        for i, chunk in enumerate(chunks):
-            section = chunk.get("section", "")
-            section_str = f" [{section}]" if section else ""
-            parts.append(
-                f"[Source {i+1}{section_str}]\n{chunk['content']}"
-            )
-
-        return "\n\n---\n\n".join(parts)
+        # --- C. RE-RANKING (Cross-Encoder) ---
+        unique_texts = list(candidates.keys())
+        
+        # On prépare les paires (Question, Paragraphe) pour le modèle juge
+        cross_inp = [[query, text] for text in unique_texts]
+        
+        # Calcul des scores de pertinence
+        scores = self.reranker.predict(cross_inp)
+        
+        # Tri des textes selon le score du Cross-Encoder (ordre décroissant)
+        scored_results = list(zip(scores, unique_texts))
+        scored_results.sort(key=lambda x: x[0], reverse=True)
+        
+        # --- D. FORMATAGE DU CONTEXTE ---
+        # On ne garde que les 'top_k' meilleurs résultats
+        best_texts = [text for score, text in scored_results[:top_k]]
+        
+        context_str = "\n\n---\n\n".join(best_texts)
+        logger.info("Recherche terminée", nb_documents_finaux=len(best_texts))
+        
+        return f"[CONTEXTE DOCUMENTAIRE EXTRAIT (Hybrid RAG)]\n{context_str}"

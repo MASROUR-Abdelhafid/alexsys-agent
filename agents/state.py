@@ -3,12 +3,16 @@
 Phase Aciérie
 """
 
-from typing import TypedDict, List, Dict, Any, Optional, Annotated
+from typing import TypedDict, List, Dict, Any, Annotated
 import operator
-
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
 
 class AgentState(TypedDict):
     """État global partagé entre tous les nœuds du graphe."""
+
+    # --- Requis pour le pattern ReAct (ToolNode) ---
+    messages: Annotated[list[BaseMessage], add_messages]
 
     # Requête utilisateur
     query: str
