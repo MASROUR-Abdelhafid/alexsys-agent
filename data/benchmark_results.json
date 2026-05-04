@@ -2,76 +2,76 @@
   "total": 10,
   "passed": 10,
   "success_rate": "100%",
-  "avg_latency_ms": 2529.0,
+  "avg_latency_ms": 1554.0,
   "results": [
     {
       "question": "Quel est le taux de disponibilité EAF ?",
       "expected_type": "kpi",
       "actual_type": "kpi",
-      "latency_ms": 639.94,
+      "latency_ms": 622.18,
       "passed": true
     },
     {
       "question": "Quelle est la consommation électrique totale ?",
       "expected_type": "kpi",
       "actual_type": "kpi",
-      "latency_ms": 374.24,
+      "latency_ms": 236.09,
       "passed": true
     },
     {
       "question": "Combien de coulées ont été produites ?",
       "expected_type": "kpi",
       "actual_type": "kpi",
-      "latency_ms": 449.68,
+      "latency_ms": 229.8,
       "passed": true
     },
     {
       "question": "Quels sont les défauts les plus fréquents ?",
       "expected_type": "kpi",
       "actual_type": "kpi",
-      "latency_ms": 781.57,
+      "latency_ms": 303.77,
       "passed": true
     },
     {
       "question": "Quelle est la consommation d oxygène EAF ?",
       "expected_type": "kpi",
       "actual_type": "kpi",
-      "latency_ms": 382.84,
+      "latency_ms": 187.87,
       "passed": true
     },
     {
       "question": "Quel est le poids moyen des brames ?",
       "expected_type": "kpi",
       "actual_type": "kpi",
-      "latency_ms": 409.94,
+      "latency_ms": 201.04,
       "passed": true
     },
     {
       "question": "Quelle est la consommation électrique par mois ?",
       "expected_type": "kpi",
       "actual_type": "kpi",
-      "latency_ms": 483.64,
+      "latency_ms": 301.36,
       "passed": true
     },
     {
       "question": "Comment fonctionne le four EAF ?",
       "expected_type": "doc",
       "actual_type": "doc",
-      "latency_ms": 11014.58,
+      "latency_ms": 1942.99,
       "passed": true
     },
     {
       "question": "Quel est le rôle du four LF ?",
       "expected_type": "doc",
       "actual_type": "doc",
-      "latency_ms": 10748.37,
+      "latency_ms": 11507.5,
       "passed": true
     },
     {
       "question": "Bonjour",
       "expected_type": "direct",
       "actual_type": "direct",
-      "latency_ms": 4.26,
+      "latency_ms": 4.46,
       "passed": true
     }
   ]

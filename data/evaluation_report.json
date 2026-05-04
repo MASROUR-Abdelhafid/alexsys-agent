@@ -5,10 +5,10 @@
   "precision_kpi": "100.0%",
   "recall_kpi": "100.0%",
   "f1_kpi": "100.0%",
-  "latency_kpi_ms": 342,
-  "latency_doc_ms": 5747,
-  "latency_direct_ms": 3,
-  "latency_avg_ms": 1637,
+  "latency_kpi_ms": 3842,
+  "latency_doc_ms": 12906,
+  "latency_direct_ms": 5,
+  "latency_avg_ms": 5468,
   "results": [
     {
       "question": "Quel est le taux de disponibilité EAF ?",
@@ -17,7 +17,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 692.36
+      "latency_ms": 466.12
     },
     {
       "question": "Quelle est la consommation électrique totale ?",
@@ -26,7 +26,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 275.5
+      "latency_ms": 235.16
     },
     {
       "question": "Combien de coulées ont été produites ?",
@@ -35,7 +35,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 231.02
+      "latency_ms": 187.67
     },
     {
       "question": "Quels sont les défauts les plus fréquents ?",
@@ -44,7 +44,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 318.2
+      "latency_ms": 318.45
     },
     {
       "question": "Quelle est la consommation d oxygène EAF ?",
@@ -53,7 +53,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 304.96
+      "latency_ms": 8624.47
     },
     {
       "question": "Quel est le poids moyen des brames ?",
@@ -62,7 +62,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 245.37
+      "latency_ms": 6467.66
     },
     {
       "question": "Quelle est la consommation électrique par mois ?",
@@ -71,7 +71,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 330.05
+      "latency_ms": 10592.41
     },
     {
       "question": "Comment fonctionne le four EAF ?",
@@ -80,7 +80,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 1168.35
+      "latency_ms": 13617.62
     },
     {
       "question": "Quel est le rôle du four LF ?",
@@ -89,7 +89,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 6256.68
+      "latency_ms": 14450.77
     },
     {
       "question": "Comment fonctionne la coulée continue CCM ?",
@@ -98,7 +98,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 9815.23
+      "latency_ms": 10649.52
     },
     {
       "question": "Bonjour",
@@ -107,7 +107,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 2.02
+      "latency_ms": 4.58
     },
     {
       "question": "Quelle est la date d aujourd hui ?",
@@ -116,7 +116,7 @@
       "type_correct": true,
       "answer_correct": true,
       "passed": true,
-      "latency_ms": 4.07
+      "latency_ms": 4.88
     }
   ]
 }
